@@ -25,7 +25,14 @@ class ThemeResourceProvider(
     }
 
     override fun getStateColor(resId: Int?): ColorStateList? {
-        TODO("Not yet implemented")
+        resId ?: return null
+        val name = ctx.resources.getResourceName(resId)
+        val id = res.getIdentifier(name, "color", pkg)
+        return if (id != 0) {
+            res.getColorStateList(id)
+        } else {
+            ctx.getColorStateList(resId)
+        }
     }
 
     override fun getDrawable(resId: Int?): Drawable? {
