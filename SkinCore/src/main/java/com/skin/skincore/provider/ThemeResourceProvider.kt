@@ -36,6 +36,7 @@ class ThemeResourceProvider(
     }
 
     override fun getDrawable(resId: Int?): Drawable? {
-        TODO("Not yet implemented")
+        resId ?: return null
+        return ctx.getDrawable(resId)
     }
 }
