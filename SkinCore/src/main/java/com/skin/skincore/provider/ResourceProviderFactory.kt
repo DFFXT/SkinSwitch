@@ -6,5 +6,9 @@ import android.content.Context
  * 构造资源提供器
  */
 interface ResourceProviderFactory {
-    fun getResourceProvider(ctx: Context, theme: Int): IResourceProvider
+    fun getResourceProvider(ctx: Context, theme: Int): IResourceProvider?
+
+    fun getPathProvider(theme: Int): ISkinPathProvider?
+
+    fun getDefaultProvider(ctx: Context): IResourceProvider
 }

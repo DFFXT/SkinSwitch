@@ -23,4 +23,8 @@ class DefaultResourceProvider(private val ctx: Context) : IResourceProvider {
         resId ?: return null
         return ResourcesCompat.getDrawable(ctx.resources, resId, ctx.theme)
     }
+
+    override fun getMipmap(resId: Int?): Drawable? {
+        return getDrawable(resId)
+    }
 }
