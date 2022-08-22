@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="mainColor">#FF0000</color>
+    <color name="main_background">#000000</color>
+    <color name="home_title_color_u">#cccccc</color>
+    <color name="home_title_color_s">#FFFFFF</color>
 </resources>

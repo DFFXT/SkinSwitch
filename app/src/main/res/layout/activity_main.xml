@@ -7,11 +7,16 @@
     tools:context="com.skin.skinswitch.MainActivity">
     <tag android:id="@+id/sss" android:value="@string/app_name"/>
 
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
     <TextView
         android:id="@+id/tv_click"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:text="Switch To Night"
         android:textColor="@color/mainColor"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -22,7 +27,7 @@
         android:id="@+id/tv_click1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="sss"
+        android:text="Switch To Day"
         android:textColor="@color/main_color"
         android:layout_marginTop="20dp"
         app:layout_constraintTop_toBottomOf="@id/tv_click"
