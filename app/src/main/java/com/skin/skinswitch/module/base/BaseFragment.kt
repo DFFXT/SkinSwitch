@@ -23,13 +23,17 @@ abstract class BaseFragment : Fragment() {
         }
     }
 
-    override fun onGetLayoutInflater(savedInstanceState: Bundle?): LayoutInflater {
+    /*override fun onGetLayoutInflater(savedInstanceState: Bundle?): LayoutInflater {
         return LayoutInflater.from(requireContext()).apply {
             this as SkinLayoutInflater
             val factory2Method = FragmentManager::class.java.getDeclaredMethod("getLayoutInflaterFactory")
             factory2Method.isAccessible = true
             this.factory2 = factory2Method.invoke(childFragmentManager) as LayoutInflater.Factory2?
         }
+    }*/
+
+    override fun onGetLayoutInflater(savedInstanceState: Bundle?): LayoutInflater {
+        return super.onGetLayoutInflater(savedInstanceState)
     }
 
     abstract fun onLayoutId(): Int

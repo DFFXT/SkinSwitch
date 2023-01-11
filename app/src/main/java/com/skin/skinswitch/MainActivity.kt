@@ -1,30 +1,53 @@
 package com.skin.skinswitch
 
-import android.content.Context
 import android.content.res.Configuration
+import android.content.res.Resources
 import android.os.Bundle
+import android.os.Environment
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.DialogFragment
 import com.example.skinswitch.R
 import com.skin.skincore.SkinManager
-import com.skin.skincore.provider.DefaultProviderFactory
-import com.skin.skincore.provider.IResourceProvider
-import com.skin.skincore.provider.ISkinPathProvider
+import com.skin.skincore.provider.*
 import com.skin.skinswitch.const.AppConst
 import com.skin.skinswitch.module.MainFragment
-import com.skin.skinswitch.skin.NightProvider
 import java.util.*
 
 val map = WeakHashMap<View, Int>()
 
 class MainActivity : AppCompatActivity() {
+    val path =
+        Environment.getExternalStorageDirectory().absolutePath + "/skinPack-cartoon-debug - 副本.rar"
+
+    override fun getResources(): Resources {
+        return super.getResources()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        SkinManager.init(
+        //addAssetPathMethod.invoke(this.resources.assets, path)
+        val d = getDrawable(R.drawable.icon_default_head)
+        intent.extras?.keySet()?.forEach {
+            Log.i("--->", "$it:${intent.extras!![it]}")
+        }
+        val e = getDrawable(R.drawable.icon_default_head)
+      /*  val cls = Class.forName("android.content.res.ApkAssets")
+        val mtd: Method = cls.getDeclaredMethod("loadFromPath", String::class.java)
+        mtd.isAccessible = true
+        val apkAsset = mtd.invoke(null, path)
+        setApkAssetMethod.invoke(resources.assets, apkAsset, true)
+        val e = getDrawable(R.drawable.icon_default_head)*/
+        /*SkinManager.init(
             this,
             object : DefaultProviderFactory() {
                 // private val nightProvider = NightProvider(application)
+
                 override fun getPathProvider(theme: Int): ISkinPathProvider? {
+                    *//*if (theme == AppConst.THEME_NIGHT) {
+                        return DefaultSkinPathProvider(Environment.getExternalStorageDirectory().absolutePath + "/skinPack-cartoon-debug - 副本.rar")
+                    }*//*
                     return null
                 }
 
@@ -46,16 +69,20 @@ class MainActivity : AppCompatActivity() {
                     return super.getResourceProvider(ctx, theme)
                 }
             }
-        )
+        )*/
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         // map[findViewById<TextView>(R.id.tv_click)] = 0
+
         findViewById<TextView>(R.id.tv_click).setOnClickListener {
             SkinManager.switchTheme(AppConst.THEME_NIGHT)
         }
         findViewById<View>(R.id.tv_click1).setOnClickListener {
             // SecondActivity.startActivity(this)
             SkinManager.switchTheme(AppConst.THEME_DEFAULT)
+        }
+        findViewById<View>(R.id.tv_click2).setOnClickListener {
+           DialogFragment(R.layout.activity_main).show(supportFragmentManager, "1")
         }
         supportFragmentManager.beginTransaction()
             .add(R.id.container, MainFragment())

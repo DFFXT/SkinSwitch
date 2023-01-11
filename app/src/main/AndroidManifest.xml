@@ -8,6 +8,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:name="com.skin.skinswitch.App"
         android:theme="@style/Theme.SkinSwitch">
         <activity
             android:name="com.skin.skinswitch.MainActivity"

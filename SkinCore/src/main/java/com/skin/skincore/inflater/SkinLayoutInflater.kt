@@ -4,9 +4,13 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
-import com.skin.skincore.tag.Logger
+import com.skin.log.Logger
 import com.skin.skincore.tag.TAG_CREATE_VIEW
 
+/**
+ * 通过反射，添加自己的Factory（仅仅是一层包装）, 自己的factory内部会调用对应的真实factory
+ * 拦截通过xml创建view对象
+ */
 class SkinLayoutInflater(original: LayoutInflater?, newContext: Context?) :
     LayoutInflater(original, newContext), IOnViewCreated {
     private val TAG = "SkinLayoutInflater"
@@ -17,7 +21,8 @@ class SkinLayoutInflater(original: LayoutInflater?, newContext: Context?) :
     private val factory2Filed = LayoutInflater::class.java.getDeclaredField("mFactory2").apply {
         isAccessible = true
     }
-    private val privateFactoryFiled = LayoutInflater::class.java.getDeclaredField("mPrivateFactory").apply { isAccessible = true }
+    private val privateFactoryFiled =
+        LayoutInflater::class.java.getDeclaredField("mPrivateFactory").apply { isAccessible = true }
     private val createViewMethod = LayoutInflater::class.java.getDeclaredMethod(
         "createViewFromTag",
         View::class.java,
@@ -32,11 +37,20 @@ class SkinLayoutInflater(original: LayoutInflater?, newContext: Context?) :
      */
     var onViewCreatedListener: IOnViewCreated? = null
 
+    /**
+     * 优先级：
+     * factory2->factory->privateFactory
+     */
     private lateinit var factory: SkinInflaterFactory
     private lateinit var factory2: SkinInflaterFactory2
-    private lateinit var privateFactory2: PrivateInflaterFactory
+
+    // 内部默认inflater
+    private lateinit var privateFactory: PrivateInflaterFactory
 
     init {
+        /**
+         * 这一步是将真实的inflater复制到SkinLayoutInflater，使其等价
+         */
         if (getFactory() != null) {
             addFactory(getFactory())
         }
@@ -67,19 +81,17 @@ class SkinLayoutInflater(original: LayoutInflater?, newContext: Context?) :
     }
 
     private fun addPrivateFactory2(factory2: Factory2) {
-        if (!this::privateFactory2.isInitialized) {
-            this.privateFactory2 = PrivateInflaterFactory(this, factory2)
-            privateFactoryFiled.set(this, this.privateFactory2)
+        if (!this::privateFactory.isInitialized) {
+            this.privateFactory = PrivateInflaterFactory(this, factory2)
+            privateFactoryFiled.set(this, this.privateFactory)
         } else {
-            this.privateFactory2.addFactory(factory2)
+            this.privateFactory.addFactory(factory2)
         }
     }
 
-    fun setPrivateFactory(factory: Factory2) {
-        addPrivateFactory2(factory)
-    }
-
     override fun setFactory(factory: Factory) {
+        // 不调用supper
+        // todo 这里也应该限制只调用一次
         // super.setFactory(factory)
         addFactory(factory)
     }
@@ -94,12 +106,12 @@ class SkinLayoutInflater(original: LayoutInflater?, newContext: Context?) :
         if (v != null) {
             onViewCreated(v, name, attrs)
         }
-        Logger.logI(TAG_CREATE_VIEW, "1 onCreateView $name $v")
+        Logger.i(TAG_CREATE_VIEW, "1 onCreateView $name $v")
         return v
     }
 
     override fun onCreateView(parent: View?, name: String, attrs: AttributeSet): View? {
-        Logger.logI(TAG_CREATE_VIEW, "2 onCreateView $name")
+        Logger.i(TAG_CREATE_VIEW, "2 onCreateView $name")
         return super.onCreateView(parent, name, attrs).apply {
             if (this != null) {
                 onViewCreated(this, name, attrs)
@@ -114,7 +126,10 @@ class SkinLayoutInflater(original: LayoutInflater?, newContext: Context?) :
         attrs: AttributeSet?
     ): View? {
         val v = super.onCreateView(viewContext, parent, name, attrs)
-        Logger.logI(TAG_CREATE_VIEW, "3 onCreateView $name")
+        Logger.i(TAG_CREATE_VIEW, "3 onCreateView $name")
+        if (v != null && attrs != null) {
+            onViewCreatedListener?.onViewCreated(v, name, attrs)
+        }
         return v
     }
 

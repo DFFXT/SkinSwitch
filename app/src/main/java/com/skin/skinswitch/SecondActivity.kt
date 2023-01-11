@@ -13,7 +13,7 @@ import com.skin.skincore.provider.TestResourceProvider
 
 class SecondActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        SkinManager.init(
+        /*SkinManager.init(
             this,
             object : DefaultProviderFactory() {
                 override fun getPathProvider(theme: Int): ISkinPathProvider? {
@@ -25,7 +25,7 @@ class SecondActivity : AppCompatActivity() {
                     return null
                 }
             }
-        )
+        )*/
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         // map[findViewById<TextView>(R.id.tv_click)] = 1

@@ -5,7 +5,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
-import com.skin.skincore.tag.Logger
+import com.skin.log.Logger
 import com.skin.skincore.tag.TAG_CREATE_VIEW
 
 class PrivateInflaterFactory(
@@ -23,7 +23,7 @@ class PrivateInflaterFactory(
         context: Context,
         attrs: AttributeSet
     ): View? {
-        Logger.logI(TAG_CREATE_VIEW, "create private $name")
+        Logger.i(TAG_CREATE_VIEW, "create private $name")
         var v = super.onCreateView(parent, name, context, attrs)
         if (v == null) {
             if (name.indexOf('.') != -1) {
@@ -36,7 +36,7 @@ class PrivateInflaterFactory(
                 inflater.onViewCreated(v, name, attrs)
             }
         }
-        Logger.logI(TAG_CREATE_VIEW, "create private ${v != null}")
+        Logger.i(TAG_CREATE_VIEW, "create private ${v != null}")
         return v
     }
 }

@@ -1,6 +1,7 @@
 package com.skin.skincore.loader
 
 import android.content.Context
+import com.skin.skincore.provider.ISkinPathProvider
 
 class ContextLoaderServer : Iterable<ContextLoader> {
     private val loaderContainer = LinkedHashSet<ContextLoader>()
@@ -17,6 +18,12 @@ class ContextLoaderServer : Iterable<ContextLoader> {
         }
         if (loaderContainer.find { it.ctxRef.get() == contextLoader.ctxRef.get() } == null) {
             loaderContainer.add(contextLoader)
+        }
+    }
+
+    fun switchTheme(iSkinPathProvider: ISkinPathProvider?) {
+        loaderContainer.forEach {
+            it.switchTheme(iSkinPathProvider)
         }
     }
 

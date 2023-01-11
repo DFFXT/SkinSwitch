@@ -49,7 +49,7 @@ class ThemeResourceProvider(
     private fun getResourceName(id: Int?): String? {
         id ?: return null
         return try {
-            default.getResourceName(id)
+            default.getResourceEntryName(id)
         } catch (notFoundException: NotFoundException) {
             null
         }

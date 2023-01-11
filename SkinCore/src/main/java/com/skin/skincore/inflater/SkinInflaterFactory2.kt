@@ -5,7 +5,7 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import com.skin.skincore.tag.Logger
+import com.skin.log.Logger
 import com.skin.skincore.tag.TAG_CREATE_VIEW
 
 open class SkinInflaterFactory2(private val viewCreated: IOnViewCreated?, factory2: LayoutInflater.Factory2?) :
@@ -29,11 +29,11 @@ open class SkinInflaterFactory2(private val viewCreated: IOnViewCreated?, factor
             val v = it.onCreateView(parent, name, context, attrs)
             if (v != null) {
                 viewCreated?.onViewCreated(v, name, attrs)
-                Logger.logI(TAG_CREATE_VIEW, "onCreateView4 Ok")
+                Logger.i(TAG_CREATE_VIEW, "onCreateView4 Ok")
                 return v
             }
         }
-        Logger.logI(TAG_CREATE_VIEW, "onCreateView4 null")
+        Logger.i(TAG_CREATE_VIEW, "onCreateView4 null")
         return null
     }
 
@@ -43,11 +43,11 @@ open class SkinInflaterFactory2(private val viewCreated: IOnViewCreated?, factor
             val v = it.onCreateView(name, context, attrs)
             if (v != null) {
                 viewCreated?.onViewCreated(v, name, attrs)
-                Logger.logI(TAG_CREATE_VIEW, "onCreateView3 Ok")
+                Logger.i(TAG_CREATE_VIEW, "onCreateView3 Ok")
                 return v
             }
         }
-        Logger.logI(TAG_CREATE_VIEW, "onCreateView3 null")
+        Logger.i(TAG_CREATE_VIEW, "onCreateView3 null")
         return null
     }
 

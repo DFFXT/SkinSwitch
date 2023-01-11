@@ -1,5 +1,6 @@
 package com.skin.skincore
 
+import android.app.Application
 import android.content.Context
 import android.view.View
 import com.skin.skincore.collector.DefaultCollector
@@ -16,6 +17,7 @@ import com.skin.skincore.provider.ResourceProviderFactory
  */
 object SkinManager {
     private val loaderServer = ContextLoaderServer()
+    // todo z这种写法不推荐
     val viewContainer = ViewContainer()
     val collectors: MutableList<IAttrCollector<*>> = mutableListOf(DefaultCollector())
     private lateinit var providerFactory: ResourceProviderFactory
@@ -23,15 +25,21 @@ object SkinManager {
     private val defaultProvider by lazy {
         DefaultResourceProvider(application)
     }
+    private var theme: Int = 0
 
     /**
      * 对当前context进行初始化，凡是通过该context进行inflate的对象均进行view拦截
      */
-    fun init(ctx: Context, providerFactory: ResourceProviderFactory) {
+    fun init(ctx: Application, providerFactory: ResourceProviderFactory) {
         this.application = ctx.applicationContext
         this.providerFactory = providerFactory
-        loaderServer.addLoader(ContextLoader(ctx))
+        loaderServer.addLoader(ContextLoader(ctx, providerFactory.getPathProvider(theme = theme)))
+        ContextInterceptor(ctx)
         // AssetLoader().createContext(ctx, ctx.externalCacheDir!!.absolutePath +"/app-debug.apk")
+    }
+    fun addContext(context: Context) {
+
+        loaderServer.addLoader(ContextLoader(context, providerFactory.getPathProvider(theme)))
     }
 
     fun destroy(ctx: Context) {
@@ -43,10 +51,13 @@ object SkinManager {
     }
 
     fun switchTheme(theme: Int, ctx: Context? = null) {
+        this.theme = theme
         if (ctx == null) {
+            loaderServer.switchTheme(providerFactory.getPathProvider(theme))
             loaderServer.forEach {
                 val context = it.ctxRef.get()
                 if (context != null) {
+
                     InflaterInterceptor.switchTheme(
                         providerFactory.getResourceProvider(
                             context,

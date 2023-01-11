@@ -1,6 +1,8 @@
 package com.skin.skincore.provider
 
 import android.content.Context
+import androidx.appcompat.app.AppCompatActivity
+import com.skin.log.Logger
 import com.skin.skincore.asset.AssetLoader
 import java.io.File
 
@@ -9,6 +11,7 @@ import java.io.File
  */
 abstract class DefaultProviderFactory : ResourceProviderFactory {
     private lateinit var defProvider: IResourceProvider
+    private val logTag = "DefaultProviderFactory"
     override fun getResourceProvider(ctx: Context, theme: Int): IResourceProvider {
 
         if (!this::defProvider.isInitialized) {
@@ -23,8 +26,11 @@ abstract class DefaultProviderFactory : ResourceProviderFactory {
         if (file.isFile && file.exists()) {
             val asset = AssetLoader.createResource(ctx, path)
             if (asset != null) {
+
                 return ThemeResourceProvider(asset.res, asset.pkgName, ctx.resources, defProvider)
             }
+        } else {
+            Logger.d(logTag, "there is no resource provider for theme: $theme")
         }
         return defProvider
     }
