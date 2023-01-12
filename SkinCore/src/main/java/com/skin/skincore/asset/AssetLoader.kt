@@ -4,12 +4,28 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.AssetManager
 import android.content.res.Resources
+import com.skin.log.Logger
 import com.skin.skincore.reflex.addAssetPathMethod
+import java.util.*
 
 object AssetLoader {
+    private var asset: Asset? = null
+    private var map = WeakHashMap<String, Asset>()
+    // 当前皮肤资源
+   /* fun getCurrentThemeAsset(): Asset? {
+        return asset
+    }*/
+    fun getAsset(context: Context, path: String?): Asset? {
+        var asset = map[path]
+        if (asset == null) {
+            asset = createResource(context, path)
+            map[path] = asset
+        }
+        return asset
+    }
 
-    fun createResource(context: Context, path: String): Asset? {
-
+    private fun createResource(context: Context, path: String?): Asset? {
+        path ?: return null
         val pm = context.packageManager
         val pkgInfo = pm.getPackageArchiveInfo(path, PackageManager.GET_SERVICES)
         val pkgName = pkgInfo?.packageName
@@ -23,8 +39,10 @@ object AssetLoader {
                 context.resources.displayMetrics,
                 context.resources.configuration
             )
-            return Asset(pkgName, res)
+            asset = Asset(pkgName, res)
+            return asset
         } catch (e: Exception) {
+            Logger.d("AssetLoader", "create asset failed")
             e.printStackTrace()
         }
         return null

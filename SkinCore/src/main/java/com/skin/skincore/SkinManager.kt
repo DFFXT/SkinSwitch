@@ -2,74 +2,91 @@ package com.skin.skincore
 
 import android.app.Application
 import android.content.Context
-import android.view.View
+import com.skin.skincore.asset.AssetLoader
 import com.skin.skincore.collector.DefaultCollector
-import com.skin.skincore.collector.IAttrCollector
-import com.skin.skincore.collector.ViewContainer
-import com.skin.skincore.inflater.InflaterInterceptor
 import com.skin.skincore.loader.ContextLoader
 import com.skin.skincore.loader.ContextLoaderServer
-import com.skin.skincore.provider.DefaultResourceProvider
 import com.skin.skincore.provider.ResourceProviderFactory
+import com.skin.skincore.provider.ResourcesProviderManager
 
 /**
  * 皮肤管理器
  */
 object SkinManager {
+    const val DEFAULT_THEME = 0
     private val loaderServer = ContextLoaderServer()
-    // todo z这种写法不推荐
-    val viewContainer = ViewContainer()
-    val collectors: MutableList<IAttrCollector<*>> = mutableListOf(DefaultCollector())
+    private val collectors = DefaultCollector()
     private lateinit var providerFactory: ResourceProviderFactory
-    private lateinit var application: Context
-    private val defaultProvider by lazy {
-        DefaultResourceProvider(application)
-    }
-    private var theme: Int = 0
+    private lateinit var application: Application
+    private var theme: Int = DEFAULT_THEME
 
     /**
      * 对当前context进行初始化，凡是通过该context进行inflate的对象均进行view拦截
      */
     fun init(ctx: Application, providerFactory: ResourceProviderFactory) {
-        this.application = ctx.applicationContext
+        this.application = ctx
         this.providerFactory = providerFactory
-        loaderServer.addLoader(ContextLoader(ctx, providerFactory.getPathProvider(theme = theme)))
+        ResourcesProviderManager.init(ctx, providerFactory)
+        makeContextSkinAble(ctx)
         ContextInterceptor(ctx)
-        // AssetLoader().createContext(ctx, ctx.externalCacheDir!!.absolutePath +"/app-debug.apk")
     }
-    fun addContext(context: Context) {
 
-        loaderServer.addLoader(ContextLoader(context, providerFactory.getPathProvider(theme)))
+    /**
+     * 使对应context支持换肤
+     */
+    fun makeContextSkinAble(context: Context) {
+        if (!loaderServer.containsContext(context)) {
+            val asset = AssetLoader.getAsset(
+                application,
+                ResourcesProviderManager.getPathProvider(theme)?.getSkinPath()
+            )
+            loaderServer.addLoader(
+                ContextLoader(
+                    context,
+                    asset,
+                    ResourcesProviderManager.getResourceProvider(context, theme),
+                    collectors
+                )
+            )
+        }
     }
 
     fun destroy(ctx: Context) {
         loaderServer.removeLoader(ctx)
     }
 
-    fun registerCollector(collector: IAttrCollector<View>) {
-        collectors.add(collector)
+    /**
+     * 新增支持的属性
+     * @param id 举例：android.R.attr.textColor
+     * @param name 举例：“textColor”
+     */
+    fun addAttributeCollection(id: Int, name: String) {
+        collectors.addSupportAttr(id, name)
     }
 
+    /**
+     * 皮肤切换，将对应的context进行切换
+     * @param ctx 如果为null，单独切换，如果不null全局切换
+     * 强烈不推荐ctx不为null的情况
+     */
     fun switchTheme(theme: Int, ctx: Context? = null) {
-        this.theme = theme
         if (ctx == null) {
-            loaderServer.switchTheme(providerFactory.getPathProvider(theme))
-            loaderServer.forEach {
-                val context = it.ctxRef.get()
-                if (context != null) {
-
-                    InflaterInterceptor.switchTheme(
-                        providerFactory.getResourceProvider(
-                            context,
-                            theme
-                        ) ?: defaultProvider
-                    )
-                }
-            }
-        } else {
-            InflaterInterceptor.switchTheme(
-                providerFactory.getResourceProvider(ctx, theme) ?: defaultProvider
-            )
+            this.theme = theme
         }
+        val asset = AssetLoader.getAsset(
+            application,
+            ResourcesProviderManager.getPathProvider(theme)?.getSkinPath()
+        )
+        loaderServer.switchTheme(
+            asset,
+            ResourcesProviderManager.getResourceProvider(application, theme), ctx
+        )
+    }
+
+    /**
+     * 强制刷新，比如白天黑夜变化时可以调用
+     */
+    fun forceRefreshView(context: Context?) {
+        loaderServer.forceRefreshView()
     }
 }

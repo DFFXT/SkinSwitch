@@ -30,3 +30,14 @@ android换肤
 额外：
 皮肤生成方式：
 添加android模块，对模块进行build
+
+//----------------
+原理：
+通过PackageManager加载皮肤apk
+获取资源都是用的Resource来获取资源（所以需要构造皮肤Resource）
+获取Resource对象的方式：
+    1. app Context
+    2. activity
+    3. createConfigurationContext 构造，目前不支持这种方式换肤
+
+

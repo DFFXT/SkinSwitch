@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
             SkinManager.switchTheme(AppConst.THEME_DEFAULT)
         }
         findViewById<View>(R.id.tv_click2).setOnClickListener {
-           DialogFragment(R.layout.activity_main).show(supportFragmentManager, "1")
+           //DialogFragment(R.layout.activity_main).show(supportFragmentManager, "1")
         }
         supportFragmentManager.beginTransaction()
             .add(R.id.container, MainFragment())

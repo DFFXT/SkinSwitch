@@ -1,9 +1,10 @@
 package com.skin.skincore.reflex
 
-import android.content.Context
 import android.content.ContextWrapper
 import android.content.res.AssetManager
 import android.view.ContextThemeWrapper
+import androidx.appcompat.app.AppCompatActivity
+import java.lang.reflect.Field
 import java.lang.reflect.Method
 
 val contextBaseFiled by lazy {
@@ -22,6 +23,22 @@ val addAssetPathMethod: Method by lazy {
     method.isAccessible = true
     method
 }
+
+// 普通context（ContextImpl）的resource字段
+val contextResourcesField: Field by lazy {
+    val cls = Class.forName("android.app.ContextImpl")
+    val filed = cls.getDeclaredField("mResources")
+    filed.isAccessible = true
+    filed
+}
+
+// AppCompatActivity的resource字段
+val avtivityResourcesFiled by lazy {
+    val filed = AppCompatActivity::class.java.getDeclaredField("mResources")
+    filed.isAccessible = true
+    filed
+}
+
 val setApkAssetMethod: Method by lazy {
     val method = AssetManager::class.java.getDeclaredMethod(
         "setApkAssets",
@@ -29,8 +46,4 @@ val setApkAssetMethod: Method by lazy {
     )
     method.isAccessible = true
     method
-}
-
-fun Context.switchBaseContext(base: Context) {
-    contextBaseFiled.set(this, base)
 }

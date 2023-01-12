@@ -12,16 +12,19 @@ import java.io.File
 abstract class DefaultProviderFactory : ResourceProviderFactory {
     private lateinit var defProvider: IResourceProvider
     private val logTag = "DefaultProviderFactory"
-    override fun getResourceProvider(ctx: Context, theme: Int): IResourceProvider {
 
-        if (!this::defProvider.isInitialized) {
+    /**
+     * 获取资源提供者，由于内部采用resource替换法，所以这里全部返回null
+     */
+    override fun getResourceProvider(ctx: Context, theme: Int): IResourceProvider? {
+
+        /*if (!this::defProvider.isInitialized) {
             defProvider = getDefaultProvider(ctx)
         }
         val path = getPathProvider(theme)?.getSkinPath() ?: ""
         if (path == TestResourceProvider::class.simpleName) {
             return TestResourceProvider()
         }
-        // todo 文件访问
         val file = File(path)
         if (file.isFile && file.exists()) {
             val asset = AssetLoader.createResource(ctx, path)
@@ -32,7 +35,8 @@ abstract class DefaultProviderFactory : ResourceProviderFactory {
         } else {
             Logger.d(logTag, "there is no resource provider for theme: $theme")
         }
-        return defProvider
+        return defProvider*/
+        return null
     }
 
     override fun getDefaultProvider(ctx: Context) = DefaultResourceProvider(ctx)

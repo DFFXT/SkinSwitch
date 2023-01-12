@@ -24,13 +24,16 @@ internal class DefaultParser(private val supportAttr: LinkedHashMap<Int, String>
             keys.forEachIndexed { index, _ ->
                 if (typedArray.hasValue(index)) {
                     val resId = typedArray.getResourceId(index, 0)
-                    val attr = Attrs(resId, values[index])
-                    attr.resType = view.context.resources.getResourceTypeName(resId)
-                    // color不能解析为drawable
-                    if (attr.name == DefaultCollector.ATTR_TEXT_COLOR && attr.resType == Attrs.Drawable) {
-                        attr.resType = Attrs.STATE_COLOR
+                    // 排除硬编码
+                    if (resId != 0) {
+                        val attr = Attrs(resId, values[index])
+                        attr.resType = view.context.resources.getResourceTypeName(resId)
+                        // color不能解析为drawable，如果是xml类型的color，则解析为state color
+                        if (attr.name == DefaultCollector.ATTR_TEXT_COLOR && attr.resType == Attrs.Drawable) {
+                            attr.resType = Attrs.STATE_COLOR
+                        }
+                        attrs.add(attr)
                     }
-                    attrs.add(attr)
                 }
             }
         }

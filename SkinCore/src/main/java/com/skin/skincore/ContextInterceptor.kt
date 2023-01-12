@@ -14,7 +14,7 @@ class ContextInterceptor(private val application: Application) :
     }
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-        SkinManager.addContext(activity)
+        SkinManager.makeContextSkinAble(activity)
     }
 
     override fun onActivityStarted(activity: Activity) {
@@ -33,6 +33,7 @@ class ContextInterceptor(private val application: Application) :
     }
 
     override fun onActivityDestroyed(activity: Activity) {
+        SkinManager.destroy(activity)
     }
 
     fun destroy() {

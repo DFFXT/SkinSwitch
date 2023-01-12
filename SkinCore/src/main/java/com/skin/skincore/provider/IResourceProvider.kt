@@ -10,5 +10,4 @@ interface IResourceProvider {
     fun getColor(resId: Int?): Int?
     fun getStateColor(resId: Int?): ColorStateList?
     fun getDrawable(resId: Int?): Drawable?
-    fun getMipmap(resId: Int?): Drawable?
 }

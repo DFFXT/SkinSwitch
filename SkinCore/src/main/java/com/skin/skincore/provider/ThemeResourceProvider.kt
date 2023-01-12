@@ -36,12 +36,6 @@ class ThemeResourceProvider(
         return res.getDrawable(id)
     }
 
-    override fun getMipmap(resId: Int?): Drawable? {
-        val name = getResourceName(resId) ?: return defaultProvider.getMipmap(resId)
-        val id = getDelegateResourceId(name, "mipmap")
-        return res.getDrawable(id)
-    }
-
     private fun getDelegateResourceId(name: String, type: String): Int {
         return res.getIdentifier(name, type, pkgName)
     }
