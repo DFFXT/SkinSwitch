@@ -73,6 +73,14 @@ class ContextLoader(
         }
     }
 
+    fun removeView(view: View) {
+        viewContainer.remove(view)
+    }
+
+    fun getResourceProvider(): IResourceProvider {
+        return iResourceProvider
+    }
+
     /**
      * 是否是同一个context
      */

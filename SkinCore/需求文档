@@ -5,6 +5,10 @@ android换肤
 
 使用需求：
 开发方便，开发中不用额外生成皮肤包，通过配置直接run就能查看各个皮肤
+    实现方式：
+        assembleDebug添加doFirst代码块，其中通过Runtime执行gradle命令（对皮肤包进行打包，并拷贝到apk的assets目录）
+        可配置皮肤包名称
+        app运行后，再解压到特定目录
 
 实现对策：
 主工程需要实现一套默认皮肤资源
@@ -32,9 +36,9 @@ android换肤
 添加android模块，对模块进行build
 
 //----------------
-原理：
-通过PackageManager加载皮肤apk
-获取资源都是用的Resource来获取资源（所以需要构造皮肤Resource）
+换肤原理：
+通过PackageManager加载皮肤apk，构造asset对象
+获取资源都是用的Resource来获取资源（所以需要asset来构造皮肤Resource）
 获取Resource对象的方式：
     1. app Context
     2. activity

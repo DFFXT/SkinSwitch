@@ -5,7 +5,6 @@ plugins {
     id 'org.jetbrains.kotlin.android' version '1.5.30' apply false
     //id 'java-gradle-plugin'
 }
-
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
@@ -28,4 +27,15 @@ class A implements Plugin<Project> {
         System.out.println("start-->")
         System.out.println(project.name)
     }
+}
+task f{
+    afterEvaluate {
+        System.out.println(project("skinPack-cartoon").tasks.size())
+        project("skinPack-cartoon").tasks.forEach(f-> {
+            System.out.println(f.name)
+        })
+    }
+}
+tasks.create("newTask") {
+    System.out.println("newRA")
 }

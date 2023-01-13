@@ -35,8 +35,4 @@ class NightProvider(private val application: Application) : IResourceProvider {
         resId ?: return null
         return application.getDrawable(resId)
     }
-
-    override fun getMipmap(resId: Int?): Drawable? {
-        return getDrawable(resId)
-    }
 }

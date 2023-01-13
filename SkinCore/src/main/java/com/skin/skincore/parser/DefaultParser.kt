@@ -27,10 +27,10 @@ internal class DefaultParser(private val supportAttr: LinkedHashMap<Int, String>
                     // 排除硬编码
                     if (resId != 0) {
                         val attr = Attrs(resId, values[index])
-                        attr.resType = view.context.resources.getResourceTypeName(resId)
+                        attr.resourceType = view.context.resources.getResourceTypeName(resId)
                         // color不能解析为drawable，如果是xml类型的color，则解析为state color
-                        if (attr.name == DefaultCollector.ATTR_TEXT_COLOR && attr.resType == Attrs.Drawable) {
-                            attr.resType = Attrs.STATE_COLOR
+                        if (attr.attributeName == DefaultCollector.ATTR_TEXT_COLOR && attr.resourceType == Attrs.DRAWABLE) {
+                            attr.resourceType = Attrs.STATE_COLOR
                         }
                         attrs.add(attr)
                     }

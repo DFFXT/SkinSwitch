@@ -1,0 +1,8 @@
+
+task gg {
+    System.out.println("test task")
+    doFirst {
+        var is = Runtime.runtime.exec(new String[]{"cmd", "/c", "gradlew skinPack-cartoon:assembleDebug"})
+        is.waitFor()
+    }
+}

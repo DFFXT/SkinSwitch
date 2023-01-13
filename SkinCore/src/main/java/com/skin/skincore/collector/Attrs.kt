@@ -2,18 +2,23 @@ package com.skin.skincore.collector
 
 import androidx.annotation.StringDef
 
-class Attrs(val resId: Int?, val name: String) {
+/**
+ * @param resId 资源id，皮肤包中获取时需转换为name再通过name获取资源
+ * @param attributeName 属性名称（textColor、src、background等）
+ * @param resourceType 资源类型，颜色，图片等
+ */
+class Attrs(val resId: Int?, val attributeName: String, @ResType var resourceType: String = UNDEFINE) {
     companion object {
         const val COLOR = "color"
-        const val Drawable = "drawable"
+        const val DRAWABLE = "drawable"
         const val STATE_COLOR = "stateColor"
         const val UNDEFINE = "undefine"
     }
 
-    @set:ResType
-    var resType: String = UNDEFINE
-
-    @Target(AnnotationTarget.PROPERTY_SETTER)
-    @StringDef(COLOR, Drawable, STATE_COLOR, UNDEFINE)
+    @Target(
+        AnnotationTarget.PROPERTY,
+        AnnotationTarget.VALUE_PARAMETER
+    )
+    @StringDef(COLOR, DRAWABLE, STATE_COLOR, UNDEFINE)
     annotation class ResType
 }

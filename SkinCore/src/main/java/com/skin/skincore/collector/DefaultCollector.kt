@@ -28,6 +28,10 @@ class DefaultCollector : IAttrCollector<View> {
         }
     }
 
+    fun removeSupportAttr(id: Int) {
+        attrMap.remove(id)
+    }
+
     override val supportAttr: LinkedHashMap<Int, String> = attrMap
     override val parser: IParser = DefaultParser(attrMap)
 }

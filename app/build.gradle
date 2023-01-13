@@ -2,6 +2,9 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
 }
+afterEvaluate {
+    apply from:"D:\\Android\\Project\\SkinSwitch\\skinPack-cartoon\\test.gradle"
+}
 
 android {
     compileSdk 32
@@ -33,7 +36,6 @@ android {
 }
 
 dependencies {
-
     implementation project(":SkinCore")
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.3.0'
@@ -47,4 +49,33 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:2.5.1"
     implementation "androidx.navigation:navigation-ui-ktx:2.5.1"
 }
+/*task gg {
+    System.out.println(222)
+    doFirst {
+        var is = Runtime.runtime.exec(new String[]{"cmd", "/c", "gradlew skinPack-cartoon:assembleDebug"})
+        is.waitFor()
+    }
+}*/
+task runfirst {
+    //System.out.println("0----->"+getParent().project("skinPack-cartoon").getAllTasks(false))
+    //getParent().project("skinPack-cartoon").tasks.getByName("assemble").execute()
+    /*getParent().project("SkinCore").getAllTasks(true).forEach(f-> {
+        System.out.println(f.name)
+    })*/
+    //commandLine "echo 2222"
+//    System.out.println("gradlew skinPack-cartoon:assemble".execute())
+    doFirst {
+        //finalizedBy(gg)
+        //task getParent().project("skinPack-cartoon").tasks.getByName("assemble")
+    }
+
+    afterEvaluate {
+        //dependsOn(getParent().project("skinPack-cartoon").tasks.getByName("assemble"))
+    }
+    afterEvaluate {
+        assembleDebug.dependsOn(gg)
+    }
+
+}
+
 

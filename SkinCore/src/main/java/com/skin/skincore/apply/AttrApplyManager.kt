@@ -17,15 +17,15 @@ object AttrApplyManager {
     fun apply(view: View, attrs: Attrs, provider: IResourceProvider) {
         applySet.forEach {
             if (it.apply(view)) {
-                when (attrs.resType) {
-                    Attrs.Drawable -> {
-                        it.applyDrawable(view, attrs.name, provider.getDrawable(attrs.resId))
+                when (attrs.resourceType) {
+                    Attrs.DRAWABLE -> {
+                        it.applyDrawable(view, attrs.attributeName, provider.getDrawable(attrs.resId))
                     }
                     Attrs.COLOR -> {
-                        it.applyColor(view, attrs.name, provider.getColor(attrs.resId))
+                        it.applyColor(view, attrs.attributeName, provider.getColor(attrs.resId))
                     }
                     Attrs.STATE_COLOR -> {
-                        it.applyStateColor(view, attrs.name, provider.getStateColor(attrs.resId))
+                        it.applyStateColor(view, attrs.attributeName, provider.getStateColor(attrs.resId))
                     }
                 }
             }

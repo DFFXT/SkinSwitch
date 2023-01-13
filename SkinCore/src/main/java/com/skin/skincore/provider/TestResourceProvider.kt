@@ -20,8 +20,4 @@ class TestResourceProvider : IResourceProvider {
     override fun getDrawable(resId: Int?): Drawable {
         return ColorDrawable(Color.RED)
     }
-
-    override fun getMipmap(resId: Int?): Drawable? {
-        return getDrawable(resId)
-    }
 }

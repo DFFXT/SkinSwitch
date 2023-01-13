@@ -2,10 +2,13 @@ package com.skin.skincore
 
 import android.app.Application
 import android.content.Context
+import android.view.View
 import com.skin.skincore.asset.AssetLoader
 import com.skin.skincore.collector.DefaultCollector
+import com.skin.skincore.collector.clearSkinAttr
 import com.skin.skincore.loader.ContextLoader
 import com.skin.skincore.loader.ContextLoaderServer
+import com.skin.skincore.provider.IResourceProvider
 import com.skin.skincore.provider.ResourceProviderFactory
 import com.skin.skincore.provider.ResourcesProviderManager
 
@@ -88,5 +91,19 @@ object SkinManager {
      */
     fun forceRefreshView(context: Context?) {
         loaderServer.forceRefreshView()
+    }
+
+    /**
+     * 获取当前context的资源提供器，如果context不是可换肤context，则返回默认资源提供器
+     */
+    fun getResourceProvider(context: Context): IResourceProvider {
+        return loaderServer.getContextLoader(context)?.getResourceProvider() ?: ResourcesProviderManager.getResourceProvider(context, DEFAULT_THEME)
+    }
+
+    /**
+     * 从换肤中移除
+     */
+    fun removeView(view: View) {
+        loaderServer.getContextLoader(view.context)?.removeView(view)
     }
 }

@@ -1,6 +1,7 @@
 package com.skin.skincore.loader
 
 import android.content.Context
+import android.view.View
 import com.skin.skincore.asset.Asset
 import com.skin.skincore.provider.IResourceProvider
 
@@ -67,6 +68,9 @@ class ContextLoaderServer {
         loaderContainer.removeAll {
             it.equalContext(context)
         }
+    }
+    fun removeView(view: View) {
+        getContextLoader(view.context)?.refreshView()
     }
 
     /**
