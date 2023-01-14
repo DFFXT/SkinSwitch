@@ -2,15 +2,13 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
 }
-afterEvaluate {
-    apply from:"D:\\Android\\Project\\SkinSwitch\\skinPack-cartoon\\test.gradle"
-}
+apply from:"D:\\Android\\Project\\SkinSwitch\\skinPack-cartoon\\test.gradle"
 
 android {
     compileSdk 32
 
     defaultConfig {
-        applicationId "com.example.skinswitch"
+
         minSdk 23
         targetSdk 32
         versionCode 1
@@ -20,7 +18,9 @@ android {
     }
 
     buildTypes {
+
         release {
+            buildConfigField("int", "age", "1")
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -65,17 +65,15 @@ task runfirst {
     //commandLine "echo 2222"
 //    System.out.println("gradlew skinPack-cartoon:assemble".execute())
     doFirst {
-        //finalizedBy(gg)
-        //task getParent().project("skinPack-cartoon").tasks.getByName("assemble")
+        var f = 0
     }
 
-    afterEvaluate {
-        //dependsOn(getParent().project("skinPack-cartoon").tasks.getByName("assemble"))
-    }
-    afterEvaluate {
-        assembleDebug.dependsOn(gg)
-    }
-
+}
+//buildSkinModule("1", "2", "3")
+buildSkinModule("skinPack-cartoon", "7", "")
+// 优先于主工程执行
+afterEvaluate {
+    assembleDebug.dependsOn(skinBuild)
 }
 
 

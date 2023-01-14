@@ -40,10 +40,14 @@ object ResourcesProviderManager {
         } else {
             var provider = pathMap[theme]
             if (provider == null) {
-                provider = resourceProviderFactory.getPathProvider(theme)
+                provider = resourceProviderFactory.getSkinPathProvider(theme)
                 pathMap[theme] = provider
             }
             provider
         }
+    }
+
+    fun getSkinFolder(): String {
+        return resourceProviderFactory.getSkinFolder()
     }
 }

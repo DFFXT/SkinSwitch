@@ -1,7 +1,11 @@
 package com.skin.skincore.provider
 
-class CustomSkinPathProvider(private val path: String) : ISkinPathProvider {
+class CustomSkinPathProvider(
+    private val folder: String,
+    private val skinName: String,
+
+) : ISkinPathProvider {
     override fun getSkinPath(): String {
-        return path
+        return "$folder/$skinName"
     }
 }

@@ -1,10 +1,6 @@
 package com.skin.skincore.provider
 
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
-import com.skin.log.Logger
-import com.skin.skincore.asset.AssetLoader
-import java.io.File
 
 /**
  * 默认的资源构造提供者
@@ -37,6 +33,10 @@ abstract class DefaultProviderFactory : ResourceProviderFactory {
         }
         return defProvider*/
         return null
+    }
+
+    override fun getSkinPathProvider(theme: Int): ISkinPathProvider? {
+        return CustomSkinPathProvider(getSkinFolder(), getSkinName(theme))
     }
 
     override fun getDefaultProvider(ctx: Context) = DefaultResourceProvider(ctx)

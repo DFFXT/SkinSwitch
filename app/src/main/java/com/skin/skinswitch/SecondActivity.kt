@@ -7,9 +7,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.skinswitch.R
 import com.skin.skincore.SkinManager
-import com.skin.skincore.provider.DefaultProviderFactory
-import com.skin.skincore.provider.ISkinPathProvider
-import com.skin.skincore.provider.TestResourceProvider
 
 class SecondActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

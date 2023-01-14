@@ -1,22 +1,16 @@
 package com.skin.skinswitch
 
 import android.app.Application
-import android.content.Context
-import android.content.res.Configuration
 import android.content.res.Resources
-import android.os.Environment
-import com.example.skinswitch.R
 import com.skin.skincore.SkinManager
-import com.skin.skincore.provider.CustomSkinPathProvider
 import com.skin.skincore.provider.DefaultProviderFactory
-import com.skin.skincore.provider.IResourceProvider
-import com.skin.skincore.provider.ISkinPathProvider
 import com.skin.skinswitch.const.AppConst
 
 class App : Application() {
     override fun getResources(): Resources {
         return super.getResources()
     }
+
     override fun onCreate() {
         super.onCreate()
 
@@ -25,11 +19,16 @@ class App : Application() {
             object : DefaultProviderFactory() {
                 // private val nightProvider = NightProvider(application)
 
-                override fun getPathProvider(theme: Int): ISkinPathProvider? {
+                override fun getSkinName(theme: Int): String {
+                    return "7"
                     if (theme == AppConst.THEME_NIGHT) {
-                        return CustomSkinPathProvider(Environment.getExternalStorageDirectory().absolutePath + "/skinPack-cartoon-debug - 副本.rar")
+                        return "7"
+                        // return CustomSkinPathProvider(Environment.getExternalStorageDirectory().absolutePath + "/skinPack-cartoon-debug - 副本.rar")
                     }
-                    return null
+                }
+
+                override fun getSkinFolder(): String {
+                    return getExternalFilesDir(null)?.absolutePath ?: filesDir.absolutePath
                 }
 
                 /*override fun getResourceProvider(ctx: Context, theme: Int): IResourceProvider {
@@ -51,6 +50,6 @@ class App : Application() {
                 }*/
             }
         )
-        //SkinManager.switchTheme(1)
+        // SkinManager.switchTheme(1)
     }
 }

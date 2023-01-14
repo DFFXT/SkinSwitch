@@ -1,8 +1,77 @@
-
-task gg {
-    System.out.println("test task")
-    doFirst {
-        var is = Runtime.runtime.exec(new String[]{"cmd", "/c", "gradlew skinPack-cartoon:assembleDebug"})
-        is.waitFor()
+/**
+ * 配置皮肤包，用于开发测试，正式包不要调用
+ * @param moduleName 皮肤包模块名称
+ * @param skinName 生成的皮肤包名称
+ * @param skinInput 打包皮肤包的地址，如果没有改过配置就是outputs/apk/debug/[moduleName]-debug.apk
+ * @return
+ */
+def buildSkinModule(String moduleName, String skinName, String skinInput = "") {
+    if (moduleName == null || moduleName.length() == 0) {
+        throw new IllegalArgumentException("buildSkinModule: moduleName is empty")
+    } else if (skinName == null || skinName.length() == 0) {
+        throw new IllegalArgumentException("buildSkinModule: skinName is empty")
+    }
+    _module.add(moduleName)
+    _skinName.add(skinName)
+    _skinInput.add(skinInput)
+    System.out.println("config skin: " + moduleName + " " + skinName + " " + skinInput)
+    // 设置，表明需要快速换肤
+    android.buildTypes.all {
+        it.buildConfigField("boolean", "SKIN_DEVELOP", "true")
     }
 }
+
+ext {
+    // 变量存储在ext中
+    _module = new ArrayList<String>()
+    _skinName = new ArrayList<String>()
+    _skinInput = new ArrayList<String>()
+    // 函数存储在ext中
+    buildSkinModule = this.&buildSkinModule
+    // 临时皮肤目录, 对应QuickSkinPack里面的变量
+    _assetPath = project.projectDir.absolutePath + "/src/main/assets/developing_skin"
+}
+
+/**
+ * 皮肤包生成和拷贝
+ */
+task skinBuild {
+
+    doFirst {
+        System.out.println("--->")
+        // todo 并行
+        for (int i = 0; i < _module.size(); i++) {
+            var moduleName = _module.get(i)
+            var output = _skinInput.get(i)
+            if (output == null || output.length() == 0) {
+                output = project(":"+moduleName).getBuildDir().absolutePath + "/outputs/apk/debug/"+moduleName+"-debug.apk"
+            } else {
+                output = project(":"+moduleName).getBuildDir().absolutePath + "/" + output
+            }
+            var is = Runtime.runtime.exec(new String[]{"cmd", "/c", "gradlew " + moduleName + ":assembleDebug"})
+            /*var reader = new BufferedReader(new InputStreamReader(is.getInputStream()))
+            var line = reader.readLine()
+            while (line != null) {
+                System.out.println(line)
+            }
+            reader.close()*/
+            is.waitFor()
+            var targetPath = new File(_assetPath)
+            if (!targetPath.exists()) {
+                targetPath.mkdirs()
+            }
+            copy {
+                from output
+                into _assetPath
+                // 重命名，添加前缀
+                rename(new File(output).name, _skinName.get(i))
+            }
+            //getParent().project(":"+moduleName).ext.enable
+        }
+    }
+}
+// 优先于主工程执行
+/*
+afterEvaluate {
+    assembleDebug.dependsOn(skinBuild)
+}*/
