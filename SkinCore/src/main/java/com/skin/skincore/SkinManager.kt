@@ -5,10 +5,9 @@ import android.content.Context
 import android.view.View
 import com.skin.skincore.asset.AssetLoader
 import com.skin.skincore.collector.DefaultCollector
-import com.skin.skincore.collector.clearSkinAttr
 import com.skin.skincore.loader.ContextLoader
 import com.skin.skincore.loader.ContextLoaderServer
-import com.skin.skincore.plug.QuickSkinPack
+import com.skin.skincore.plug.SkinPackDeveloping
 import com.skin.skincore.provider.IResourceProvider
 import com.skin.skincore.provider.ResourceProviderFactory
 import com.skin.skincore.provider.ResourcesProviderManager
@@ -31,7 +30,7 @@ object SkinManager {
         this.application = ctx
         this.providerFactory = providerFactory
         ResourcesProviderManager.init(ctx, providerFactory)
-        QuickSkinPack.sinkPackInstall(ctx)
+        SkinPackDeveloping.sinkPackInstall(ctx)
         makeContextSkinAble(ctx)
         ContextInterceptor(ctx)
     }

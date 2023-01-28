@@ -20,4 +20,8 @@ object Logger : ILogger {
     override fun i(tag: String, msg: String?) {
         logger.i(tag, msg)
     }
+
+    override fun e(tag: String, msg: String?) {
+        logger.e(tag, msg)
+    }
 }

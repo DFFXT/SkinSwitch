@@ -2,7 +2,8 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
 }
-apply from:"D:\\Android\\Project\\SkinSwitch\\skinPack-cartoon\\test.gradle"
+// 添加自动打包脚本
+apply from: "${project.projectDir}/auto-skin-pack.gradle"
 
 android {
     compileSdk 32
@@ -49,31 +50,8 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:2.5.1"
     implementation "androidx.navigation:navigation-ui-ktx:2.5.1"
 }
-/*task gg {
-    System.out.println(222)
-    doFirst {
-        var is = Runtime.runtime.exec(new String[]{"cmd", "/c", "gradlew skinPack-cartoon:assembleDebug"})
-        is.waitFor()
-    }
-}*/
-task runfirst {
-    //System.out.println("0----->"+getParent().project("skinPack-cartoon").getAllTasks(false))
-    //getParent().project("skinPack-cartoon").tasks.getByName("assemble").execute()
-    /*getParent().project("SkinCore").getAllTasks(true).forEach(f-> {
-        System.out.println(f.name)
-    })*/
-    //commandLine "echo 2222"
-//    System.out.println("gradlew skinPack-cartoon:assemble".execute())
-    doFirst {
-        var f = 0
-    }
 
-}
-//buildSkinModule("1", "2", "3")
-buildSkinModule("skinPack-cartoon", "7", "")
-// 优先于主工程执行
-afterEvaluate {
-    assembleDebug.dependsOn(skinBuild)
-}
+var skinPack = buildSkinModule("skinPack-cartoon", "7")
+skinPack.skinInput = "intermediates/apk/debug/skinPack-cartoon-debug.apk"
 
 

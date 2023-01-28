@@ -1,0 +1,125 @@
+/**
+ * 皮肤包构建脚本
+ * 适用于同项目，但皮肤包在不同module
+ * 内部采用task依赖来执行构建任务
+ *
+ * 早期采用执行gradle命令的方式来打包皮肤包，无法重用gradle实例，进度缓慢，舍弃
+ */
+
+
+
+
+ext {
+    // 变量存储在ext中
+    _module = new ArrayList<SkinPack>()
+    //_skinName = new ArrayList<String>()
+    //_skinInput = new ArrayList<String>()
+    // 函数存储在ext中
+    buildSkinModule = this.&buildSkinModule
+    // 临时皮肤目录, 对应QuickSkinPack里面的变量
+    _assetPath = project.projectDir.absolutePath + "/src/main/assets/developing_skin"
+    currentBuildTask = null
+}
+/**
+ * 配置皮肤包，用于开发测试，正式包不要调用
+ * @param moduleName 皮肤包模块名称
+ * @param skinName 生成的皮肤包名称
+ * @return
+ */
+def buildSkinModule(String moduleName, String skinName) {
+    if (moduleName == null || moduleName.length() == 0) {
+        throw new IllegalArgumentException("buildSkinModule: moduleName is empty")
+    } else if (skinName == null || skinName.length() == 0) {
+        throw new IllegalArgumentException("buildSkinModule: skinName is empty")
+    }
+    var skinPack = new SkinPack(moduleName, skinName)
+    _module.add(skinPack)
+    //_skinName.add(skinName)
+    //_skinInput.add(skinInput)
+    System.out.println("config skin: " + moduleName + "->" + skinName)
+    // 设置，表明需要快速换肤
+    if (_module.size() == 1) {
+        // 换肤插件中会读取SKIN_DEVELOP字段看是否将assets目录的皮肤包拷贝到设置的皮肤目录下
+        android.buildTypes.all {
+            it.buildConfigField("boolean", "SKIN_DEVELOP", "true")
+        }
+    }
+    return skinPack
+}
+
+/**
+ * 皮肤包生成和拷贝
+ */
+task buildSkinPack {
+
+
+    doFirst {
+        for (int i = 0; i < _module.size(); i++) {
+            SkinPack module = _module.get(i)
+            var moduleName = module.moduleName
+            var output = module.skinInput
+            if (output == null || output.length() == 0) {
+                // 没有设置输出路径，使用默认路径
+                output = project(":" + moduleName).getBuildDir().absolutePath + "/outputs/apk/debug/" + moduleName + "-debug.apk"
+            } else {
+                // 设置了相对路劲
+                output = project(":" + moduleName).getBuildDir().absolutePath + "/" + output
+            }
+            System.out.println("start copy skin pack: $moduleName")
+            var targetPath = new File(_assetPath)
+            if (!targetPath.exists()) {
+                targetPath.mkdirs()
+            }
+            // 将生产的皮肤包拷贝到主工程asset/developing_skin目录
+            copy {
+                System.out.println(output)
+                from output
+                into _assetPath
+                // 重命名为需要的名称
+                rename(new File(output).name, module.skinName)
+            }
+        }
+    }
+}
+//ext.tt = assembleDebug
+// 优先于主工程执行
+afterEvaluate {
+    if (currentBuildTask == null) {
+        currentBuildTask = assembleDebug
+    }
+    for (int i = 0; i < _module.size(); i++) {
+        SkinPack module = _module.get(i)
+        var moduleName = module.moduleName
+        TreeSet<Task> allTasks = parent.project(":$moduleName").getAllTasks(true).get(parent.project(":$moduleName"))
+        var hasBuildTask = false
+        allTasks.forEach(task -> {
+            if (task.getName() == module.buildTask) {
+                // buildSkinPack 构造皮肤包依赖皮肤工程的构建
+                buildSkinPack.dependsOn(task)
+                hasBuildTask = true
+            }
+        })
+        if (!hasBuildTask) {
+            throw new UnknownTaskException("unkown build task: ${module.buildTask} in $moduleName")
+        }
+    }
+    // 主工程构建依赖皮肤包任务
+    currentBuildTask.dependsOn(buildSkinPack)
+}
+
+/**
+ * 皮肤包配置
+ */
+public class SkinPack {
+    String moduleName
+    String skinName
+    // 皮肤包生成路径，默认build/output/apk/debug/[模块名称]-debug.apk
+    String skinInput = ""
+    String buildTask = "assembleDebug"
+    public SkinPack(String moduleName, String skinName) {
+        this.moduleName = moduleName
+        this.skinName = skinName
+    }
+}
+
+

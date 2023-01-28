@@ -13,4 +13,8 @@ internal class DefaultLogger : ILogger {
     override fun i(tag: String, msg: String?) {
         Log.i(tag, msg ?: "")
     }
+
+    override fun e(tag: String, msg: String?) {
+        Log.i(tag, msg ?: "")
+    }
 }
