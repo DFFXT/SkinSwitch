@@ -18,6 +18,7 @@ import java.lang.ref.WeakReference
 /**
  * Context处理器
  * 将context的resource进行替换
+ * @param asset 当为null时为默认资源
  */
 class ContextLoader(
     context: Context,
@@ -25,6 +26,11 @@ class ContextLoader(
     private var iResourceProvider: IResourceProvider,
     private val collectors: IAttrCollector<*>
 ) {
+    companion object {
+        // 当view创建后立即进行换肤操作
+        var applyWhenCreate = true
+    }
+
     val viewContainer = ViewContainer()
     private val ctxRef = WeakReference(context)
 
@@ -35,10 +41,12 @@ class ContextLoader(
                 override fun onViewCreated(view: View, name: String, attributeSet: AttributeSet) {
                     val attrs = collectors.parser.parse(view, attributeSet)
                     viewContainer.add(view, attrs)
-                    // view生成，但是没有必要进行apply
-                    /*attrs.forEach { attr ->
-                        ApplyManger.getApplyDispatcher().apply(view, attr, iResourceProvider)
-                    }*/
+                    // view生成，如果是其它皮肤，则立即应用，因为background等属性是通过TypedArray来获取的
+                    if (asset != null && applyWhenCreate) {
+                        attrs.forEach { attr ->
+                            AttrApplyManager.apply(view, attr, iResourceProvider)
+                        }
+                    }
                 }
             }
         )

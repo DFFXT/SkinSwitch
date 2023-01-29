@@ -12,6 +12,7 @@ import java.util.*
 object AssetLoader {
     private var asset: Asset? = null
     private var map = WeakHashMap<String, Asset>()
+
     // 当前皮肤资源
    /* fun getCurrentThemeAsset(): Asset? {
         return asset
