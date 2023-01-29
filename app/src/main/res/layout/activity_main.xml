@@ -7,6 +7,10 @@
     tools:context="com.skin.skinswitch.MainActivity">
     <tag android:id="@+id/sss" android:value="@string/app_name"/>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/container"
         android:layout_width="match_parent"

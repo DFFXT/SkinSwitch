@@ -50,6 +50,6 @@ class App : Application() {
                 }*/
             }
         )
-        // SkinManager.switchTheme(1)
+        SkinManager.switchTheme(1)
     }
 }

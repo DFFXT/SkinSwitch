@@ -15,6 +15,15 @@ class SkinLayoutInflater(original: LayoutInflater?, newContext: Context?) :
     LayoutInflater(original, newContext), IOnViewCreated {
     private val TAG = "SkinLayoutInflater"
 
+    /**
+     * 系统组件的前缀，复制于[com.android.internal.policy.PhoneLayoutInflater]
+     */
+    private val sClassPrefixList = arrayOf(
+        "android.widget.",
+        "android.webkit.",
+        "android.app."
+    )
+
     private val factoryFiled = LayoutInflater::class.java.getDeclaredField("mFactory").apply {
         isAccessible = true
     }
@@ -102,7 +111,22 @@ class SkinLayoutInflater(original: LayoutInflater?, newContext: Context?) :
     }
 
     override fun onCreateView(name: String, attrs: AttributeSet): View? {
-        val v = super.onCreateView(name, attrs)
+        var v: View? = null
+        // 遍历前缀，不停地尝试创建view
+        for (prefix in sClassPrefixList) {
+            try {
+                // 尝试创建view
+                v = createView(name, prefix, attrs)
+                if (v != null) {
+                    break
+                }
+            } catch (_: Exception) {
+            }
+        }
+        if (v == null) {
+            // 创建失败，走super
+            v = super.onCreateView(name, attrs)
+        }
         if (v != null) {
             onViewCreated(v, name, attrs)
         }
