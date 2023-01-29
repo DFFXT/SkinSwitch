@@ -6,6 +6,7 @@ import android.content.res.AssetManager
 import android.content.res.Resources
 import com.skin.log.Logger
 import com.skin.skincore.reflex.addAssetPathMethod
+import java.io.File
 import java.util.*
 
 object AssetLoader {
@@ -26,8 +27,14 @@ object AssetLoader {
 
     private fun createResource(context: Context, path: String?): Asset? {
         path ?: return null
+        if (!File(path).exists()) {
+            Logger.e("AssetLoader", "skin pack:$path not exists")
+        }
         val pm = context.packageManager
         val pkgInfo = pm.getPackageArchiveInfo(path, PackageManager.GET_SERVICES)
+        if (pkgInfo == null) {
+            Logger.e("AssetLoader", "invalid skin pack")
+        }
         val pkgName = pkgInfo?.packageName
         if (pkgName.isNullOrEmpty()) return null
         try {

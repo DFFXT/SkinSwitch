@@ -27,13 +27,13 @@ class MergeResource(
     override fun getDrawable(id: Int, theme: Theme?): Drawable? {
         try {
             if (useDefault) {
-                return ResourcesCompat.getDrawable(currentRes, id, theme)
+                return ResourcesCompat.getDrawable(default, id, theme)
             }
             val name = this.getResourceEntryName(id)
             val skinPackId = currentRes.getIdentifier(name, "drawable", pkg)
             return currentRes.getDrawable(skinPackId)
         } catch (e: Throwable) {
-            return currentRes.getDrawable(id, theme)
+            return default.getDrawable(id, theme)
         }
     }
 
@@ -53,26 +53,26 @@ class MergeResource(
     override fun getColor(id: Int, theme: Theme?): Int {
         try {
             if (useDefault) {
-                return currentRes.getColor(id, theme)
+                return default.getColor(id, theme)
             }
             val name = this.getResourceEntryName(id)
             val skinPackId = currentRes.getIdentifier(name, "color", pkg)
             return currentRes.getColor(skinPackId, null)
         } catch (e: Throwable) {
-            return currentRes.getColor(id, theme)
+            return default.getColor(id, theme)
         }
     }
 
     override fun getColorStateList(id: Int, theme: Theme?): ColorStateList {
         try {
             if (useDefault) {
-                return currentRes.getColorStateList(id, theme)
+                return default.getColorStateList(id, theme)
             }
             val name = this.getResourceEntryName(id)
             val skinPackId = currentRes.getIdentifier(name, "color", pkg)
             return currentRes.getColorStateList(skinPackId, null)
         } catch (e: Throwable) {
-            return currentRes.getColorStateList(id, theme)
+            return default.getColorStateList(id, theme)
         }
     }
     // endregion
