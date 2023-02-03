@@ -3,6 +3,7 @@ package com.skin.skincore.loader
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
+import com.skin.log.Logger
 import com.skin.skincore.apply.AttrApplyManager
 import com.skin.skincore.asset.Asset
 import com.skin.skincore.collector.IAttrCollector
@@ -13,6 +14,7 @@ import com.skin.skincore.inflater.InflaterInterceptor
 import com.skin.skincore.plug.updateResource
 import com.skin.skincore.provider.IResourceProvider
 import com.skin.skincore.provider.MergeResource
+import com.skin.skincore.tag.TAG_CREATE_VIEW
 import java.lang.ref.WeakReference
 
 /**
@@ -41,6 +43,7 @@ class ContextLoader(
                 override fun onViewCreated(view: View, name: String, attributeSet: AttributeSet) {
                     val attrs = collectors.parser.parse(view, attributeSet)
                     viewContainer.add(view, attrs)
+                    Logger.i(TAG_CREATE_VIEW, "listen view created ok:$view")
                     // view生成，如果是其它皮肤，则立即应用，因为background等属性是通过TypedArray来获取的
                     if (asset != null && applyWhenCreate) {
                         attrs.forEach { attr ->

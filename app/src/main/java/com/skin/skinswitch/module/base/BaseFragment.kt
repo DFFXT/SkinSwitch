@@ -5,8 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import com.skin.skincore.inflater.SkinLayoutInflater
 
 abstract class BaseFragment : Fragment() {
     private lateinit var mRootView: View
