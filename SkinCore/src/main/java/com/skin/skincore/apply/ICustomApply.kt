@@ -1,15 +1,14 @@
 package com.skin.skincore.apply
 
-import android.content.res.ColorStateList
-import android.graphics.drawable.Drawable
 import android.view.View
 import com.skin.skincore.collector.ResType
 import com.skin.skincore.provider.IResourceProvider
 
 /**
- * 属性应用
+ * 自定义资源类型接口
+ * 目前仅支持颜色资源、图片资源，如果要支持其他资源，如：dimes尺寸资源、string字符串资源等
  */
-interface IApply<in T : View> {
+interface ICustomApply<T : View> {
     /**
      * @param view 适配的view
      * @param resType 自定义类型

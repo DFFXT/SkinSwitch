@@ -17,17 +17,7 @@ object AttrApplyManager {
     fun apply(view: View, attrs: Attrs, provider: IResourceProvider) {
         applySet.forEach {
             if (it.apply(view)) {
-                when (attrs.resourceType) {
-                    Attrs.DRAWABLE -> {
-                        it.applyDrawable(view, attrs.attributeName, provider.getDrawable(attrs.resId))
-                    }
-                    Attrs.COLOR -> {
-                        it.applyColor(view, attrs.attributeName, provider.getColor(attrs.resId))
-                    }
-                    Attrs.STATE_COLOR -> {
-                        it.applyStateColor(view, attrs.attributeName, provider.getStateColor(attrs.resId))
-                    }
-                }
+                it.customApply(view, attrs.resourceType, attrs.attributeName, provider, attrs.resId)
             }
         }
     }

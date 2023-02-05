@@ -18,10 +18,17 @@ class MergeResource(
     private var pkg: String,
     private val default: Resources
 ) : Resources(
-    default.assets, default.displayMetrics, default.configuration
+    default.assets,
+    default.displayMetrics,
+    default.configuration
 ) {
     private var useDefault = false
     private var currentRes = res
+    // private var defaultProvider: IResourceProvider = DefaultResourceProvider()
+    // todo 优化MergeResource
+    init {
+
+    }
 
     // region drawable、color重写
     override fun getDrawable(id: Int, theme: Theme?): Drawable? {
@@ -30,11 +37,15 @@ class MergeResource(
                 return ResourcesCompat.getDrawable(default, id, theme)
             }
             val name = this.getResourceEntryName(id)
-            val skinPackId = currentRes.getIdentifier(name, "drawable", pkg)
+            val skinPackId = currentRes.getIdentifier(name, getResourceTypeName(id), pkg)
             return currentRes.getDrawable(skinPackId)
         } catch (e: Throwable) {
             return default.getDrawable(id, theme)
         }
+    }
+
+    override fun getDrawableForDensity(id: Int, density: Int): Drawable? {
+        return super.getDrawableForDensity(id, density)
     }
 
     override fun getDrawableForDensity(id: Int, density: Int, theme: Theme?): Drawable? {
@@ -43,7 +54,7 @@ class MergeResource(
                 return default.getDrawableForDensity(id, density, theme)
             }
             val name = this.getResourceEntryName(id)
-            val skinPackId = res.getIdentifier(name, "drawable", pkg)
+            val skinPackId = res.getIdentifier(name, getResourceTypeName(id), pkg)
             return res.getDrawableForDensity(skinPackId, density, null)
         } catch (e: Throwable) {
             return default.getDrawableForDensity(id, density, theme)
@@ -56,7 +67,7 @@ class MergeResource(
                 return default.getColor(id, theme)
             }
             val name = this.getResourceEntryName(id)
-            val skinPackId = currentRes.getIdentifier(name, "color", pkg)
+            val skinPackId = currentRes.getIdentifier(name, getResourceTypeName(id), pkg)
             return currentRes.getColor(skinPackId, null)
         } catch (e: Throwable) {
             return default.getColor(id, theme)
@@ -69,7 +80,7 @@ class MergeResource(
                 return default.getColorStateList(id, theme)
             }
             val name = this.getResourceEntryName(id)
-            val skinPackId = currentRes.getIdentifier(name, "color", pkg)
+            val skinPackId = currentRes.getIdentifier(name, getResourceTypeName(id), pkg)
             return currentRes.getColorStateList(skinPackId, null)
         } catch (e: Throwable) {
             return default.getColorStateList(id, theme)

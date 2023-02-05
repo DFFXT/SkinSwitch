@@ -3,7 +3,6 @@ package com.skin.skincore.parser
 import android.util.AttributeSet
 import android.view.View
 import com.skin.skincore.collector.Attrs
-import com.skin.skincore.collector.DefaultCollector
 import com.skin.skincore.collector.IAttrCollector
 
 internal class DefaultParser(private val supportAttr: LinkedHashMap<Int, String>) : IParser {
@@ -29,9 +28,9 @@ internal class DefaultParser(private val supportAttr: LinkedHashMap<Int, String>
                         val attr = Attrs(resId, values[index])
                         attr.resourceType = view.context.resources.getResourceTypeName(resId)
                         // color不能解析为drawable，如果是xml类型的color，则解析为state color
-                        if (attr.attributeName == DefaultCollector.ATTR_TEXT_COLOR && attr.resourceType == Attrs.DRAWABLE) {
+                        /*if (attr.attributeName == DefaultCollector.ATTR_TEXT_COLOR && attr.resourceType == Attrs.DRAWABLE) {
                             attr.resourceType = Attrs.STATE_COLOR
-                        }
+                        }*/
                         attrs.add(attr)
                     }
                 }

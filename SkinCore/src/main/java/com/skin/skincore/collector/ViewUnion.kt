@@ -77,7 +77,7 @@ fun View.addViewSkinAttrs(attrs: List<Attrs>) {
 
 /**
  * 移除view的某些换肤属性，移除后，皮肤切换、白天黑夜切换该属性不再变化
- * @param attributeName 属性名称，见[DefaultCollector.ATTR_BACKGROUND]或者其他自定义支持的属性
+ * @param attributeName 属性名称，见[DefaultAttrCollector.ATTR_BACKGROUND]或者其他自定义支持的属性
  */
 fun View.removeSkinAttr(attributeName: String) {
     this.getViewUnion()?.removeAttr(attributeName)
@@ -104,7 +104,7 @@ fun View.setBackgroundResourceSkinAble(@DrawableRes backgroundRes: Int) {
         this.addViewSkinAttrs(
             Attrs(
                 backgroundRes,
-                DefaultCollector.ATTR_BACKGROUND,
+                DefaultAttrCollector.ATTR_BACKGROUND,
                 context.resources.getResourceTypeName(backgroundRes)
             )
         )
@@ -122,7 +122,7 @@ fun ImageView.setImageResourceSkinAble(@DrawableRes resId: Int) {
         this.addViewSkinAttrs(
             Attrs(
                 resId,
-                DefaultCollector.ATTR_SRC,
+                DefaultAttrCollector.ATTR_SRC,
                 context.resources.getResourceTypeName(resId)
             )
         )
@@ -135,21 +135,16 @@ fun ImageView.setImageResourceSkinAble(@DrawableRes resId: Int) {
  * TextView文本颜色换肤支持
  */
 fun TextView.setTextColorSkinAble(@ColorRes resId: Int) {
-    var resourceType = context.resources.getResourceTypeName(resId)
+    val resourceType = context.resources.getResourceTypeName(resId)
     // 文本颜色如果是drawable类型，那么一定是stateColor，不可能是图片
-    if (resourceType == Attrs.DRAWABLE) {
-        resourceType = Attrs.STATE_COLOR
+    if (resourceType == ResType.DRAWABLE) {
         val stateColor = SkinManager.getResourceProvider(this.context).getStateColor(resId)
         this.setTextColor(stateColor)
     } else {
         val color = SkinManager.getResourceProvider(this.context).getColor(resId)
-        if (color != null) {
-            this.setTextColor(color)
-        } else {
-            Logger.d("setTextColorSkinAble", "get text color for id: $resId failed")
-        }
+        this.setTextColor(color)
     }
-    this.addViewSkinAttrs(Attrs(resId, DefaultCollector.ATTR_TEXT_COLOR, resourceType))
+    this.addViewSkinAttrs(Attrs(resId, DefaultAttrCollector.ATTR_TEXT_COLOR, resourceType))
 }
 
 // endregion

@@ -35,10 +35,10 @@ internal object InflaterInterceptor {
      */
     @SuppressLint("BlockedPrivateApi")
     fun addInterceptor(context: Context, iOnViewCreated: IOnViewCreated) {
+        val origin = LayoutInflater.from(context)
         if (!plan1) {
             // 方案2
-            val origin = LayoutInflater.from(context)
-            LayoutInflaterDelegate.copyFactoryTo(origin, origin, iOnViewCreated)
+            LayoutInflaterDelegate.delegate(origin, origin, iOnViewCreated)
             return
         }
 
@@ -52,21 +52,20 @@ internal object InflaterInterceptor {
                 val field = phoneWindowClass.getDeclaredField("mLayoutInflater")
                 field.isAccessible = true
                 val layoutInflaterDelegate =
-                    LayoutInflaterDelegate(LayoutInflater.from(context), context)
+                    LayoutInflaterDelegate(origin, context)
                 field.set(context.window, layoutInflaterDelegate)
                 layoutInflaterDelegate.onViewCreatedListener = iOnViewCreated
             }
             // 替换ContextThemeWrapper中的局部变量
             if (LayoutInflater.from(context) !is LayoutInflaterDelegate) {
                 val layoutInflaterDelegate =
-                    LayoutInflaterDelegate(LayoutInflater.from(context), context)
+                    LayoutInflaterDelegate(origin, context)
                 inflater.set(context, layoutInflaterDelegate)
                 layoutInflaterDelegate.onViewCreatedListener = iOnViewCreated
             }
         } else if (context is Application) {
             // application中的inflater，暂时代理Factory（看后面是否反射SystemServiceRegister里面的layout_inflater）
-            val origin = LayoutInflater.from(context)
-            LayoutInflaterDelegate.copyFactoryTo(origin, origin, iOnViewCreated)
+            LayoutInflaterDelegate.delegate(origin, origin, iOnViewCreated)
             Logger.d("InflaterInterceptor", "not support context: ${context::class.java.name}")
         }
     }

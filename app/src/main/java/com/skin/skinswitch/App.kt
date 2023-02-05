@@ -14,6 +14,10 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
 
+        initSkin()
+    }
+
+    private fun initSkin() {
         SkinManager.init(
             this,
             object : DefaultProviderFactory() {
@@ -30,26 +34,8 @@ class App : Application() {
                 override fun getSkinFolder(): String {
                     return getExternalFilesDir(null)?.absolutePath ?: filesDir.absolutePath
                 }
-
-                /*override fun getResourceProvider(ctx: Context, theme: Int): IResourceProvider {
-                    val mode = if (theme == AppConst.THEME_NIGHT) {
-                        Configuration.UI_MODE_NIGHT_YES
-                    } else {
-                        Configuration.UI_MODE_NIGHT_NO
-                    }
-                    val configuration = resources.configuration
-                    configuration.uiMode = mode
-                    resources.updateConfiguration(
-                        configuration,
-                        resources.displayMetrics
-                    )
-                    val color = getColor(R.color.main_background)
-                    val night = color == 0xff000000.toInt()
-                    val day = color == 0xffffffff.toInt()
-                    return super.getResourceProvider(ctx, theme)
-                }*/
             }
         )
-        SkinManager.switchTheme(1)
+        SkinManager.switchTheme(0)
     }
 }

@@ -1,31 +1,42 @@
 package com.skin.skincore.apply
 
-import android.content.res.ColorStateList
 import android.view.View
 import android.widget.TextView
-import com.skin.skincore.collector.DefaultCollector
+import com.skin.skincore.collector.DefaultAttrCollector
+import com.skin.skincore.collector.ResType
+import com.skin.skincore.provider.IResourceProvider
 
 class TextViewApply : ViewApply<TextView>() {
     override fun apply(view: View) = view is TextView
-    override fun applyColor(view: TextView, attrName: String, color: Int?) {
-        when (attrName) {
-            DefaultCollector.ATTR_TEXT_COLOR -> {
-                color ?: return
-                view.setTextColor(color)
+    private fun applyColor(
+        view: TextView,
+        resType: String,
+        provider: IResourceProvider,
+        resId: Int
+    ) {
+        when (resType) {
+            ResType.COLOR -> {
+                view.setTextColor(provider.getColor(resId))
             }
-            else -> {
-                super.applyColor(view, attrName, color)
+            ResType.DRAWABLE -> {
+                view.setTextColor(provider.getStateColor(resId))
             }
         }
     }
 
-    override fun applyStateColor(view: TextView, attrName: String, color: ColorStateList?) {
+    override fun customApply(
+        view: TextView,
+        resType: String,
+        attrName: String,
+        provider: IResourceProvider,
+        resId: Int
+    ) {
         when (attrName) {
-            DefaultCollector.ATTR_TEXT_COLOR -> {
-                view.setTextColor(color)
+            DefaultAttrCollector.ATTR_TEXT_COLOR -> {
+                applyColor(view, resType, provider, resId)
             }
             else -> {
-                super.applyStateColor(view, attrName, color)
+                super.customApply(view, resType, attrName, provider, resId)
             }
         }
     }

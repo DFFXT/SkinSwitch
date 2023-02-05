@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import com.skin.log.Logger
+import com.skin.skincore.reflex.constructorArgsFiled
 import com.skin.skincore.tag.TAG_CREATE_VIEW
 
 /**
@@ -40,6 +41,7 @@ class PrivateFactoryDelegate(
                 for (prefix in sClassPrefixList) {
                     try {
                         // 尝试创建view
+                        checkConstructorArgs()
                         v = inflater.createView(name, prefix, attrs)
                         if (v != null) {
                             break
@@ -49,6 +51,7 @@ class PrivateFactoryDelegate(
                 }
             } else {
                 // 非简写模式
+                checkConstructorArgs()
                 v = inflater.createView(name, null, attrs)
             }
             if (v != null) {
@@ -58,5 +61,16 @@ class PrivateFactoryDelegate(
         }
         Logger.i(TAG_CREATE_VIEW, "create private ${v != null}")
         return v
+    }
+
+    /**
+     * 检测构造方法的context参数是否存在，因为在factory中调用了inflater中的方法，导致参数异常，需要纠正
+     * 实测在夜神模拟器7.1.2上参数会异常（只对args[1]赋值）, 之后不知道在哪个版本修复了这个问题，反正API32是不会异常（args[0]、args[1]均赋值了）
+     */
+    private fun checkConstructorArgs() {
+        val args = constructorArgsFiled.get(inflater) as Array<Any?>
+        if (args[0] == null) {
+            args[0] = inflater.context
+        }
     }
 }

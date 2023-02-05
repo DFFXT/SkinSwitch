@@ -3,6 +3,7 @@ package com.skin.skincore.reflex
 import android.content.ContextWrapper
 import android.content.res.AssetManager
 import android.view.ContextThemeWrapper
+import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
 import java.lang.reflect.Field
 import java.lang.reflect.Method
@@ -18,6 +19,21 @@ val inflater by lazy {
         isAccessible = true
     }
 }
+
+val factoryFiled = LayoutInflater::class.java.getDeclaredField("mFactory").apply {
+    isAccessible = true
+}
+val factory2Filed = LayoutInflater::class.java.getDeclaredField("mFactory2").apply {
+    isAccessible = true
+}
+val privateFactoryFiled =
+    LayoutInflater::class.java.getDeclaredField("mPrivateFactory")
+        .apply { isAccessible = true }
+
+val constructorArgsFiled =
+    LayoutInflater::class.java.getDeclaredField("mConstructorArgs")
+        .apply { isAccessible = true }
+
 val addAssetPathMethod: Method by lazy {
     val method = AssetManager::class.java.getDeclaredMethod("addAssetPath", String::class.java)
     method.isAccessible = true
@@ -42,7 +58,8 @@ val avtivityResourcesFiled by lazy {
 val setApkAssetMethod: Method by lazy {
     val method = AssetManager::class.java.getDeclaredMethod(
         "setApkAssets",
-        Array<String>::class.java, Boolean::class.java
+        Array<String>::class.java,
+        Boolean::class.java
     )
     method.isAccessible = true
     method

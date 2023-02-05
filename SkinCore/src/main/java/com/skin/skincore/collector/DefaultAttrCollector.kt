@@ -7,7 +7,7 @@ import com.skin.skincore.parser.IParser
 /**
  * 属性收集器
  */
-class DefaultCollector : IAttrCollector<View> {
+class DefaultAttrCollector : IAttrCollector<View> {
     private val attrMap = LinkedHashMap<Int, String>()
 
     companion object {
@@ -22,6 +22,10 @@ class DefaultCollector : IAttrCollector<View> {
         attrMap[android.R.attr.src] = ATTR_SRC
     }
 
+    /**
+     * @param id 属性id, 例如[android.R.attr.background]
+     * @param name 名称，这个随意，只要不重复，一般取属性的名称，如：”background“、”app:tint“等
+     */
     fun addSupportAttr(id: Int, name: String) {
         if (!attrMap.containsKey(id)) {
             attrMap[id] = name

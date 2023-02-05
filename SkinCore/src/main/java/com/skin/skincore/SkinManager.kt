@@ -4,7 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.view.View
 import com.skin.skincore.asset.AssetLoader
-import com.skin.skincore.collector.DefaultCollector
+import com.skin.skincore.collector.DefaultAttrCollector
 import com.skin.skincore.loader.ContextLoader
 import com.skin.skincore.loader.ContextLoaderServer
 import com.skin.skincore.plug.SkinPackDeveloping
@@ -18,7 +18,7 @@ import com.skin.skincore.provider.ResourcesProviderManager
 object SkinManager {
     const val DEFAULT_THEME = 0
     private val loaderServer = ContextLoaderServer()
-    private val collectors = DefaultCollector()
+    private val collectors = DefaultAttrCollector()
     private lateinit var providerFactory: ResourceProviderFactory
     private lateinit var application: Application
     private var theme: Int = DEFAULT_THEME
@@ -83,7 +83,8 @@ object SkinManager {
         )
         loaderServer.switchTheme(
             asset,
-            ResourcesProviderManager.getResourceProvider(application, theme), ctx
+            ResourcesProviderManager.getResourceProvider(application, theme),
+            ctx
         )
     }
 
@@ -98,7 +99,8 @@ object SkinManager {
      * 获取当前context的资源提供器，如果context不是可换肤context，则返回默认资源提供器
      */
     fun getResourceProvider(context: Context): IResourceProvider {
-        return loaderServer.getContextLoader(context)?.getResourceProvider() ?: ResourcesProviderManager.getResourceProvider(context, DEFAULT_THEME)
+        return loaderServer.getContextLoader(context)?.getResourceProvider()
+            ?: ResourcesProviderManager.getResourceProvider(context, DEFAULT_THEME)
     }
 
     /**

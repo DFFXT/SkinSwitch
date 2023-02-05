@@ -2,6 +2,7 @@ package com.skin.skincore.provider
 
 import android.content.Context
 import com.skin.skincore.SkinManager
+import com.skin.skincore.asset.AssetLoader
 import java.util.*
 
 /**
@@ -26,8 +27,9 @@ object ResourcesProviderManager {
         } else {
             var provider = map[theme]
             if (provider == null) {
-                provider = resourceProviderFactory.getResourceProvider(context, theme)
-                    ?: defaultResourceProvider
+                val asset = AssetLoader.getAsset(context, getPathProvider(theme)?.getSkinPath())
+                    ?: throw IllegalArgumentException("no path for theme: $theme")
+                provider = resourceProviderFactory.getResourceProvider(context, theme, asset, defaultResourceProvider)
                 map[theme] = provider
             }
             provider

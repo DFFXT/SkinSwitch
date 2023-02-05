@@ -6,6 +6,9 @@ import android.view.LayoutInflater
 import android.view.LayoutInflater.Factory2
 import android.view.View
 import com.skin.log.Logger
+import com.skin.skincore.reflex.factory2Filed
+import com.skin.skincore.reflex.factoryFiled
+import com.skin.skincore.reflex.privateFactoryFiled
 import com.skin.skincore.tag.TAG_CREATE_VIEW
 
 /**
@@ -17,20 +20,14 @@ class LayoutInflaterDelegate(original: LayoutInflater, newContext: Context) :
     private val TAG = "SkinLayoutInflater"
 
     companion object {
-        val factoryFiled = LayoutInflater::class.java.getDeclaredField("mFactory").apply {
-            isAccessible = true
-        }
-        val factory2Filed = LayoutInflater::class.java.getDeclaredField("mFactory2").apply {
-            isAccessible = true
-        }
-        val privateFactoryFiled =
-            LayoutInflater::class.java.getDeclaredField("mPrivateFactory")
-                .apply { isAccessible = true }
 
         /**
          * 将original的Factory复制到target，并用SkinInflaterFactory代理
+         * @param original 原始对象
+         * @param target 新对象，也可以是原始对象
+         * @param onViewCreatedListener 监听创建
          */
-        fun copyFactoryTo(
+        fun delegate(
             original: LayoutInflater,
             target: LayoutInflater,
             onViewCreatedListener: IOnViewCreated
@@ -63,14 +60,14 @@ class LayoutInflaterDelegate(original: LayoutInflater, newContext: Context) :
         /**
          * 代理origin的Factory
          */
-        copyFactoryTo(original, this, this)
+        delegate(original, this, this)
     }
 
     override fun setFactory(factory: Factory) {
         // 不调用supper
         // todo 这里也应该限制只调用一次
         // super.setFactory(factory)
-        //this.factory.addFactory(factory)
+        // this.factory.addFactory(factory)
         (getFactory() as FactoryDelegate).addFactory(factory)
     }
 
@@ -109,5 +106,5 @@ class LayoutInflaterDelegate(original: LayoutInflater, newContext: Context) :
  * 反射获取privateFactory
  */
 fun LayoutInflater.privateFactory(): Factory2? {
-    return LayoutInflaterDelegate.privateFactoryFiled.get(this) as? Factory2
+    return privateFactoryFiled.get(this) as? Factory2
 }
