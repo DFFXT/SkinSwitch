@@ -7,4 +7,8 @@ import com.skin.skincore.collector.ResType.UNDEFINE
  * @param attributeName 属性名称（textColor、src、background等）
  * @param resourceType 资源类型，颜色，图片等
  */
-class Attrs(val resId: Int, val attributeName: String, @ResType.ResType var resourceType: String = UNDEFINE)
+class Attrs(
+    val resId: Int,
+    val attributeName: String,
+    @ResType.ResType val resourceType: String = UNDEFINE
+)

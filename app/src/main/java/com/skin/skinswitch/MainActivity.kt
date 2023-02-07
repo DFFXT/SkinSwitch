@@ -5,6 +5,7 @@ import android.content.res.Resources
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -83,6 +84,7 @@ class MainActivity : AppCompatActivity() {
         }
         findViewById<View>(R.id.tv_click2).setOnClickListener {
            //DialogFragment(R.layout.activity_main).show(supportFragmentManager, "1")
+            it.background = getDrawable(R.drawable.theme_drawable)
         }
         supportFragmentManager.beginTransaction()
             .add(R.id.container, MainFragment())

@@ -4,6 +4,7 @@ import android.view.View
 import android.widget.ImageView
 import com.skin.skincore.collector.DefaultAttrCollector
 import com.skin.skincore.provider.IResourceProvider
+import com.skin.skincore.reflex.getSkinTheme
 
 class ImageViewApply : ViewApply<ImageView>() {
     override fun apply(view: View) = view is ImageView
@@ -14,7 +15,7 @@ class ImageViewApply : ViewApply<ImageView>() {
         resId: Int
     ) {
         // 颜色、图片都可以转化为drawable
-        view.setImageDrawable(provider.getDrawable(resId))
+        view.setImageDrawable(provider.getDrawable(resId, view.context.getSkinTheme()))
     }
 
     override fun customApply(

@@ -6,6 +6,7 @@ import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.util.DisplayMetrics
 import androidx.core.content.res.ResourcesCompat
+import com.skin.skincore.asset.Asset
 
 /**
  * 换肤resource，通过当前主题加载对应皮肤包里面的资源
@@ -14,20 +15,37 @@ import androidx.core.content.res.ResourcesCompat
  * todo 目前未实现theme的换肤
  */
 class MergeResource(
-    private var res: Resources,
-    private var pkg: String,
-    private val default: Resources
+    private var asset: Asset,
+    private val default: Resources,
+    private var themeId: Int
 ) : Resources(
     default.assets,
     default.displayMetrics,
     default.configuration
 ) {
-    private var useDefault = false
+    private var res: Resources = asset.res
+    private var pkg: String = asset.pkgName
+    var useDefault = false
+        private set
     private var currentRes = res
-    // private var defaultProvider: IResourceProvider = DefaultResourceProvider()
-    // todo 优化MergeResource
-    init {
 
+    // todo 优化MergeResource
+    var theme: Theme? = null
+        private set
+
+    init {
+        // theme 同步
+        applyThemeStyle(themeId)
+    }
+
+    /**
+     * 设置主题样式
+     */
+    fun applyThemeStyle(themeId: Int) {
+        this.themeId = themeId
+        val themeName = default.getResourceEntryName(themeId)
+        val skinThemeId = res.getIdentifier(themeName, default.getResourceTypeName(themeId), pkg)
+        theme = asset.applyTheme(skinThemeId)
     }
 
     // region drawable、color重写
@@ -38,7 +56,7 @@ class MergeResource(
             }
             val name = this.getResourceEntryName(id)
             val skinPackId = currentRes.getIdentifier(name, getResourceTypeName(id), pkg)
-            return currentRes.getDrawable(skinPackId)
+            return currentRes.getDrawable(skinPackId, this.theme)
         } catch (e: Throwable) {
             return default.getDrawable(id, theme)
         }
@@ -55,7 +73,7 @@ class MergeResource(
             }
             val name = this.getResourceEntryName(id)
             val skinPackId = res.getIdentifier(name, getResourceTypeName(id), pkg)
-            return res.getDrawableForDensity(skinPackId, density, null)
+            return res.getDrawableForDensity(skinPackId, density, this.theme)
         } catch (e: Throwable) {
             return default.getDrawableForDensity(id, density, theme)
         }
@@ -68,7 +86,7 @@ class MergeResource(
             }
             val name = this.getResourceEntryName(id)
             val skinPackId = currentRes.getIdentifier(name, getResourceTypeName(id), pkg)
-            return currentRes.getColor(skinPackId, null)
+            return currentRes.getColor(skinPackId, this.theme)
         } catch (e: Throwable) {
             return default.getColor(id, theme)
         }
@@ -115,10 +133,12 @@ class MergeResource(
     /**
      * 设置皮肤包
      */
-    fun setSkinTheme(res: Resources, pkg: String) {
-        this.res = res
-        this.pkg = pkg
+    fun setSkinTheme(asset: Asset) {
+        this.asset = asset
+        this.res = asset.res
+        this.pkg = asset.pkgName
         useDefault = false
         currentRes = res
+        applyThemeStyle(themeId)
     }
 }

@@ -1,12 +1,12 @@
 主要需求：
 android换肤
 可以通过皮肤包来达到加载不同皮肤
-根据白天黑夜模式加载皮肤包中的对应资源
+皮肤包可区分白天黑夜
 
 使用需求：
 开发方便，开发中不用额外生成皮肤包，通过配置直接run就能查看各个皮肤
     实现方式：
-        assembleDebug添加doFirst代码块，其中通过Runtime执行gradle命令（对皮肤包进行打包，并拷贝到apk的assets目录）
+        assembleDebug添加dependsOn任务（对皮肤包进行打包，并拷贝到apk的assets目录）
         可配置皮肤包名称
         app运行后，再解压到特定目录
 
@@ -16,29 +16,29 @@ android换肤
 通过资源id转换成资源名称，再通过资源名称获取皮肤包里面的资源
 
 其他功能：
-可以通过配置对某些view不进行换肤
+可以通过配置对某些view不进行换肤； 部分实现
 通过代码调用，能够使直接new的view换肤
 开放换肤监听
 能够通过代码动态移除换肤
 能够通过代码对某个属性不进行换肤
 
 进阶：
-是否支持theme
-是否能够只对特定fragment换肤
-是否能够在很短的时间内换肤
+是否支持theme--------------部分支持
+是否能够只对特定fragment换肤-----理论支持，但不想实现
+是否能够在很短的时间内换肤-----？？？？
 
 兼容：
-确定支持哪些android版本
+确定支持哪些android版本----目前是[?...25, 32)
 
 
 额外：
 皮肤生成方式：
-添加android模块，对模块进行build
+添加android模块，对模块进行build-----添加快速部署脚本后不用单独对皮肤包构建
 
 //----------------
 换肤原理：
-通过PackageManager加载皮肤apk，构造asset对象
-获取资源都是用的Resource来获取资源（所以需要asset来构造皮肤Resource）
+通过PackageManager加载皮肤apk，获取包名
+获取资源都是用的Resource来获取资源（需要AssetManager来构造皮肤Resource）
 获取Resource对象的方式：
     1. app Context
     2. activity

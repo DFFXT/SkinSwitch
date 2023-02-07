@@ -4,35 +4,13 @@ import android.view.View
 import com.skin.skincore.collector.DefaultAttrCollector
 import com.skin.skincore.collector.ResType
 import com.skin.skincore.provider.IResourceProvider
+import com.skin.skincore.reflex.getSkinTheme
 
 /**
  * View 控件样式apply
  */
 open class ViewApply<T : View> : IApply<T> {
     override fun apply(view: View): Boolean = true
-    /*override fun applyColor(view: T, attrName: String, color: Int?) {
-        when (attrName) {
-            DefaultCollector.ATTR_BACKGROUND -> {
-                view.background = ColorDrawable(color ?: Color.TRANSPARENT)
-            }
-        }
-    }
-
-    override fun applyStateColor(view: T, attrName: String, color: ColorStateList?) {
-        *//*when(attrName) {
-            DefaultCollector.ATTR_BACKGROUND -> {
-                view.setBackgroundDrawable()
-            }
-        }*//*
-    }
-
-    override fun applyDrawable(view: T, attrName: String, drawable: Drawable?) {
-        when (attrName) {
-            DefaultCollector.ATTR_BACKGROUND -> {
-                view.background = drawable
-            }
-        }
-    }*/
 
     protected fun applyBackground(
         view: T,
@@ -42,10 +20,10 @@ open class ViewApply<T : View> : IApply<T> {
     ) {
         when (customResType) {
             ResType.DRAWABLE -> {
-                view.background = provider.getDrawable(resId)
+                view.background = provider.getDrawable(resId, view.context.getSkinTheme())
             }
             ResType.COLOR -> {
-                view.setBackgroundColor(provider.getColor(resId))
+                view.setBackgroundColor(provider.getColor(resId, view.context.getSkinTheme()))
             }
         }
     }

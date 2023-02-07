@@ -1,7 +1,8 @@
 package com.skin.skincore.collector
 
 import android.view.View
-import java.util.WeakHashMap
+import com.skin.skincore.parser.ParseOutValue
+import java.util.*
 
 /**
  * 视图收集器
@@ -11,9 +12,11 @@ class ViewContainer : MutableIterable<MutableMap.MutableEntry<View, Unit>> {
     // private val viewRef: HashMap<Int, ViewUnion> = hashMapOf()
     private val viewRef = WeakHashMap<View, Unit>()
 
-    fun add(view: View, union: List<Attrs>) {
-        view.addViewSkinAttrs(union)
+    fun add(view: View, outValue: ParseOutValue): ViewUnion {
+        val union = view.addViewSkinAttrs(outValue.attrs)
+        view.getViewUnion()?.setSkinAttrValue(outValue.skinAttrValue)
         viewRef[view] = Unit
+        return union
     }
 
     fun remove(view: View) {

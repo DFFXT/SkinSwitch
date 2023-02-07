@@ -5,6 +5,7 @@ import android.widget.TextView
 import com.skin.skincore.collector.DefaultAttrCollector
 import com.skin.skincore.collector.ResType
 import com.skin.skincore.provider.IResourceProvider
+import com.skin.skincore.reflex.getSkinTheme
 
 class TextViewApply : ViewApply<TextView>() {
     override fun apply(view: View) = view is TextView
@@ -16,10 +17,10 @@ class TextViewApply : ViewApply<TextView>() {
     ) {
         when (resType) {
             ResType.COLOR -> {
-                view.setTextColor(provider.getColor(resId))
+                view.setTextColor(provider.getColor(resId, view.context.getSkinTheme()))
             }
             ResType.DRAWABLE -> {
-                view.setTextColor(provider.getStateColor(resId))
+                view.setTextColor(provider.getStateColor(resId, view.context.getSkinTheme()))
             }
         }
     }

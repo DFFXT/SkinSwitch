@@ -1,6 +1,7 @@
 package com.skin.skincore.provider
 
 import android.content.res.ColorStateList
+import android.content.res.Resources.Theme
 import android.graphics.drawable.Drawable
 
 /**
@@ -8,9 +9,9 @@ import android.graphics.drawable.Drawable
  */
 interface IResourceProvider {
     fun getDefaultResourceProvider(): IResourceProvider
-    fun getColor(resId: Int): Int
-    fun getStateColor(resId: Int): ColorStateList
-    fun getDrawable(resId: Int): Drawable
+    fun getColor(resId: Int, theme: Theme?): Int
+    fun getStateColor(resId: Int, theme: Theme?): ColorStateList
+    fun getDrawable(resId: Int, theme: Theme?): Drawable
 
     fun getResourceEntryName(resId: Int): String
 }

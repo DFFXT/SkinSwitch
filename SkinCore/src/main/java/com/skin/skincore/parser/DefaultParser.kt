@@ -2,6 +2,8 @@ package com.skin.skincore.parser
 
 import android.util.AttributeSet
 import android.view.View
+import android.widget.TextView
+import com.example.skincore.R
 import com.skin.skincore.collector.Attrs
 import com.skin.skincore.collector.IAttrCollector
 
@@ -13,30 +15,47 @@ internal class DefaultParser(private val supportAttr: LinkedHashMap<Int, String>
         this.collectors = collectors
     }
 
-    override fun parse(view: View, attributeSet: AttributeSet): List<Attrs> {
+    override fun parse(view: View, attributeSet: AttributeSet, outValue: ParseOutValue) {
         val attrs = mutableListOf<Attrs>()
         val typedArray = view.context.obtainStyledAttributes(
             attributeSet,
             keys
         )
+
         typedArray.let {
             keys.forEachIndexed { index, _ ->
                 if (typedArray.hasValue(index)) {
                     val resId = typedArray.getResourceId(index, 0)
                     // 排除硬编码
                     if (resId != 0) {
-                        val attr = Attrs(resId, values[index])
-                        attr.resourceType = view.context.resources.getResourceTypeName(resId)
-                        // color不能解析为drawable，如果是xml类型的color，则解析为state color
-                        /*if (attr.attributeName == DefaultCollector.ATTR_TEXT_COLOR && attr.resourceType == Attrs.DRAWABLE) {
-                            attr.resourceType = Attrs.STATE_COLOR
-                        }*/
+                        val attr = Attrs(resId,
+                            values[index],
+                            view.context.resources.getResourceTypeName(resId))
                         attrs.add(attr)
                     }
                 }
             }
         }
         typedArray.recycle()
-        return attrs
+        outValue.attrs = attrs
+        outValue.skinAttrValue = getSkinAttrValue(view, attributeSet)
+    }
+
+    private val skinAttr = intArrayOf(R.attr.skin)
+
+    /**
+     * 判断当前View是否设置app:skin=”“属性
+     */
+    private fun getSkinAttrValue(view: View, attributeSet: AttributeSet): Int {
+        val ta = view.context.obtainStyledAttributes(attributeSet, skinAttr)
+        if (ta.hasValue(0)) {
+            return if (ta.getBoolean(0, false)) {
+                ParseOutValue.SKIN_ATTR_TRUE
+            } else {
+                ParseOutValue.SKIN_ATTR_FALSE
+            }
+        }
+        ta.recycle()
+        return ParseOutValue.SKIN_ATTR_UNDEFINE
     }
 }
