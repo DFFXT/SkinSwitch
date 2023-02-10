@@ -8,18 +8,22 @@ import com.skin.log.Logger
 import com.skin.skincore.reflex.addAssetPathMethod
 import java.io.File
 import java.util.*
+import kotlin.collections.HashMap
 
-object AssetLoader {
+internal object AssetLoader {
     private var asset: Asset? = null
-    private var map = WeakHashMap<String, Asset>()
+    private var map = HashMap<String, Asset?>()
 
     // 当前皮肤资源
-   /* fun getCurrentThemeAsset(): Asset? {
-        return asset
-    }*/
+    /* fun getCurrentThemeAsset(): Asset? {
+         return asset
+     }*/
     fun getAsset(context: Context, path: String?): Asset? {
+        path ?: return null
         var asset = map[path]
-        if (asset == null) {
+        if (map.containsKey(path)) {
+            return asset
+        } else {
             asset = createResource(context, path)
             map[path] = asset
         }
@@ -55,4 +59,6 @@ object AssetLoader {
         }
         return null
     }
+
+    fun getAll(): HashMap<String, Asset?> = map
 }

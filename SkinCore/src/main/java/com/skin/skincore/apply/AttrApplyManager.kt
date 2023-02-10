@@ -27,6 +27,11 @@ object AttrApplyManager {
         addSkinAttrApply(AttrDrawableTopApply())
         addSkinAttrApply(AttrDrawableStartApply())
         addSkinAttrApply(AttrDrawableEndApply())
+        addSkinAttrApply(AttrButtonApply())
+        addSkinAttrApply(AttrBackgroundTintApply())
+        addSkinAttrApply(AttrProgressDrawableApply())
+        addSkinAttrApply(AttrTextColorHintApply())
+        addSkinAttrApply(AttrThumbApply())
         // app:skin="false" 则不换肤
         SkinManager.setSkinAttrStrategy(ParseOutValue.SKIN_ATTR_FALSE, false)
         // app:skin="true" 或者没有设置 则换肤

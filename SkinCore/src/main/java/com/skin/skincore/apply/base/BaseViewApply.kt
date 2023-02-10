@@ -17,5 +17,5 @@ abstract class BaseViewApply<T : View>(val supportAttribute: Int, private val cl
      * @param provider 资源提供者
      * @param theme 主题
      */
-    abstract fun apply(view: T, resId: Int, @ResType.ResType resType: String, provider: IResourceProvider, theme: Theme?)
+    abstract fun apply(view: T, resId: Int, @ResType resType: String, provider: IResourceProvider, theme: Theme?)
 }

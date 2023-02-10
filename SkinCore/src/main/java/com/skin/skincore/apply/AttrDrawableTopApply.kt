@@ -5,7 +5,7 @@ import android.widget.TextView
 import com.skin.skincore.apply.base.BaseViewApply
 import com.skin.skincore.provider.IResourceProvider
 
-class AttrDrawableTopApply : BaseViewApply<TextView>(android.R.attr.drawableTop, TextView::class.java) {
+internal class AttrDrawableTopApply : BaseViewApply<TextView>(android.R.attr.drawableTop, TextView::class.java) {
     override fun apply(view: TextView, resId: Int, resType: String, provider: IResourceProvider, theme: Theme?) {
         val drawable = provider.getDrawable(resId, theme)
         val drawables = view.compoundDrawablesRelative
