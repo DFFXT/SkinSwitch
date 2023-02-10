@@ -7,6 +7,7 @@ import com.skin.skincore.asset.Asset
 import com.skin.skincore.provider.MergeResource
 import com.skin.skincore.reflex.avtivityResourcesFiled
 import com.skin.skincore.reflex.contextResourcesField
+import com.skin.skincore.reflex.getCurrentThemeId
 
 /**
  * 将Context的resource替换为MergeResource，如果已经是了，则切换为皮肤包资源
@@ -26,12 +27,12 @@ internal fun Context.updateResource(asset: Asset) {
     }
     if (this.resources is MergeResource) {
         // 资源切换
-        (this.resources as MergeResource).setSkinTheme(asset.res, asset.pkgName)
+        (this.resources as MergeResource).setSkinTheme(asset)
     } else {
         // 资源设置
         filed.set(
             target,
-            MergeResource(asset.res, asset.pkgName, this.resources)
+            MergeResource(asset, this.resources, getCurrentThemeId())
         )
     }
 }

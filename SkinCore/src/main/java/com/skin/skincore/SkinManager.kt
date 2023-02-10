@@ -3,10 +3,12 @@ package com.skin.skincore
 import android.app.Application
 import android.content.Context
 import android.view.View
+import com.skin.skincore.apply.AttrApplyManager
 import com.skin.skincore.asset.AssetLoader
 import com.skin.skincore.collector.DefaultAttrCollector
 import com.skin.skincore.loader.ContextLoader
 import com.skin.skincore.loader.ContextLoaderServer
+import com.skin.skincore.parser.ParseOutValue
 import com.skin.skincore.plug.SkinPackDeveloping
 import com.skin.skincore.provider.IResourceProvider
 import com.skin.skincore.provider.ResourceProviderFactory
@@ -32,7 +34,7 @@ object SkinManager {
         ResourcesProviderManager.init(ctx, providerFactory)
         SkinPackDeveloping.sinkPackInstall(ctx)
         makeContextSkinAble(ctx)
-        ContextInterceptor(ctx)
+        ActivitiesCallback.register(ctx)
     }
 
     /**
@@ -108,5 +110,17 @@ object SkinManager {
      */
     fun removeView(view: View) {
         loaderServer.getContextLoader(view.context)?.removeView(view)
+    }
+
+    /**
+     * 设置app:skin对应值的策略
+     * @param skinAttrValue app:skin 设置状态
+     * [ParseOutValue.SKIN_ATTR_FALSE]
+     * [ParseOutValue.SKIN_ATTR_TRUE]
+     * [ParseOutValue.SKIN_ATTR_UNDEFINE]
+     * @param apply true 进行换肤、false不进行换肤
+     */
+    fun setSkinAttrStrategy(skinAttrValue: Int, apply: Boolean) {
+        AttrApplyManager.setSkinAttrStrategy(skinAttrValue, apply)
     }
 }

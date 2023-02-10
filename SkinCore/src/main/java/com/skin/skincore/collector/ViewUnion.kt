@@ -1,20 +1,25 @@
 package com.skin.skincore.collector
 
+import android.util.SparseArray
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
+import androidx.core.util.valueIterator
 import com.example.skincore.R
-import com.skin.log.Logger
 import com.skin.skincore.SkinManager
+import com.skin.skincore.parser.ParseOutValue
 
 /**
  * view可换肤属性容器
  */
-class ViewUnion(attrs: List<Attrs>? = null) : Iterable<Map.Entry<String, Attrs>> {
+class ViewUnion(attrs: List<Attrs>? = null) : Iterable<Attrs> {
     // key 属性名称；value 属性值
-    private val attrsMap = HashMap<String, Attrs>()
+    private val attrsMap = SparseArray<Attrs>()
+
+    // 当前view的 app:skin 属性是什么
+    private var skinAttrValue: Int = ParseOutValue.SKIN_ATTR_UNDEFINE
 
     init {
         attrs?.forEach {
@@ -23,7 +28,7 @@ class ViewUnion(attrs: List<Attrs>? = null) : Iterable<Map.Entry<String, Attrs>>
     }
 
     fun addAttr(attr: Attrs) {
-        attrsMap[attr.attributeName] = attr
+        attrsMap[attr.attributeId] = attr
     }
 
     fun addAttr(attrs: List<Attrs>) {
@@ -32,11 +37,17 @@ class ViewUnion(attrs: List<Attrs>? = null) : Iterable<Map.Entry<String, Attrs>>
         }
     }
 
-    fun removeAttr(attributeName: String) {
-        attrsMap.remove(attributeName)
+    fun removeAttr(attributeId: Int) {
+        attrsMap.remove(attributeId)
     }
 
-    override fun iterator(): Iterator<Map.Entry<String, Attrs>> = attrsMap.iterator()
+    internal fun setSkinAttrValue(value: Int) {
+        skinAttrValue = value
+    }
+
+    internal fun getSkinAtrValue(): Int = skinAttrValue
+
+    override fun iterator(): Iterator<Attrs> = attrsMap.valueIterator()
 }
 
 // region view换肤快捷方法
@@ -65,7 +76,7 @@ fun View.addViewSkinAttrs(attr: Attrs) {
 /**
  * 给View添加可换肤的属性
  */
-fun View.addViewSkinAttrs(attrs: List<Attrs>) {
+fun View.addViewSkinAttrs(attrs: List<Attrs>): ViewUnion {
     var union = this.getViewUnion()
     if (union == null) {
         union = ViewUnion(attrs)
@@ -73,14 +84,14 @@ fun View.addViewSkinAttrs(attrs: List<Attrs>) {
     } else {
         union.addAttr(attrs)
     }
+    return union
 }
 
 /**
  * 移除view的某些换肤属性，移除后，皮肤切换、白天黑夜切换该属性不再变化
- * @param attributeName 属性名称，见[DefaultAttrCollector.ATTR_BACKGROUND]或者其他自定义支持的属性
  */
-fun View.removeSkinAttr(attributeName: String) {
-    this.getViewUnion()?.removeAttr(attributeName)
+fun View.removeSkinAttr(attributeId: Int) {
+    this.getViewUnion()?.removeAttr(attributeId)
 }
 
 /**
@@ -104,7 +115,7 @@ fun View.setBackgroundResourceSkinAble(@DrawableRes backgroundRes: Int) {
         this.addViewSkinAttrs(
             Attrs(
                 backgroundRes,
-                DefaultAttrCollector.ATTR_BACKGROUND,
+                android.R.attr.background,
                 context.resources.getResourceTypeName(backgroundRes)
             )
         )
@@ -122,11 +133,11 @@ fun ImageView.setImageResourceSkinAble(@DrawableRes resId: Int) {
         this.addViewSkinAttrs(
             Attrs(
                 resId,
-                DefaultAttrCollector.ATTR_SRC,
+                android.R.attr.src,
                 context.resources.getResourceTypeName(resId)
             )
         )
-        val providedBitmap = SkinManager.getResourceProvider(this.context).getDrawable(resId)
+        val providedBitmap = SkinManager.getResourceProvider(this.context).getDrawable(resId, context.theme)
         this.setImageDrawable(providedBitmap)
     }
 }
@@ -138,13 +149,13 @@ fun TextView.setTextColorSkinAble(@ColorRes resId: Int) {
     val resourceType = context.resources.getResourceTypeName(resId)
     // 文本颜色如果是drawable类型，那么一定是stateColor，不可能是图片
     if (resourceType == ResType.DRAWABLE) {
-        val stateColor = SkinManager.getResourceProvider(this.context).getStateColor(resId)
+        val stateColor = SkinManager.getResourceProvider(this.context).getStateColor(resId, context.theme)
         this.setTextColor(stateColor)
     } else {
-        val color = SkinManager.getResourceProvider(this.context).getColor(resId)
+        val color = SkinManager.getResourceProvider(this.context).getColor(resId, context.theme)
         this.setTextColor(color)
     }
-    this.addViewSkinAttrs(Attrs(resId, DefaultAttrCollector.ATTR_TEXT_COLOR, resourceType))
+    this.addViewSkinAttrs(Attrs(resId, android.R.attr.textColor, resourceType))
 }
 
 // endregion

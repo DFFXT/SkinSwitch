@@ -11,6 +11,7 @@ import com.skin.skincore.collector.ViewContainer
 import com.skin.skincore.collector.getViewUnion
 import com.skin.skincore.inflater.IOnViewCreated
 import com.skin.skincore.inflater.InflaterInterceptor
+import com.skin.skincore.parser.ParseOutValue
 import com.skin.skincore.plug.updateResource
 import com.skin.skincore.provider.IResourceProvider
 import com.skin.skincore.provider.MergeResource
@@ -40,15 +41,14 @@ class ContextLoader(
         InflaterInterceptor.addInterceptor(
             context,
             object : IOnViewCreated {
+                val outValue = ParseOutValue()
                 override fun onViewCreated(view: View, name: String, attributeSet: AttributeSet) {
-                    val attrs = collectors.parser.parse(view, attributeSet)
-                    viewContainer.add(view, attrs)
+                    collectors.parser.parse(view, attributeSet, outValue)
+                    val union = viewContainer.add(view, outValue)
                     Logger.i(TAG_CREATE_VIEW, "listen view created ok:$view")
                     // view生成，如果是其它皮肤，则立即应用，因为background等属性是通过TypedArray来获取的
                     if (asset != null && applyWhenCreate) {
-                        attrs.forEach { attr ->
-                            AttrApplyManager.apply(view, attr, iResourceProvider)
-                        }
+                        AttrApplyManager.apply(view, union, iResourceProvider)
                     }
                 }
             }
@@ -78,8 +78,9 @@ class ContextLoader(
     fun refreshView() {
         viewContainer.forEach { viewRef ->
             val v = viewRef.key
-            v.getViewUnion()?.forEach {
-                AttrApplyManager.apply(v, it.value, iResourceProvider)
+            val union = v.getViewUnion()
+            if (union != null) {
+                AttrApplyManager.apply(v, union, iResourceProvider)
             }
         }
     }

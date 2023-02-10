@@ -16,16 +16,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
     <ImageView
+        app:skin="true"
         android:background="@drawable/theme_drawable"
         android:layout_width="40dp"
         android:layout_height="40dp"/>
 
     <TextView
+
         android:id="@+id/tv_click"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Switch To Night"
         android:textColor="@color/mainColor"
+        android:drawableStart="@drawable/icon_default_head"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -38,7 +41,7 @@
         android:text="Switch To Day"
         android:textColor="@color/main_color"
         android:layout_marginTop="20dp"
-        android:background="@drawable/icon_default_head"
+        android:background="?attr/colorPrimary"
         app:layout_constraintTop_toBottomOf="@id/tv_click"
         app:layout_constraintStart_toStartOf="@id/tv_click"
         app:layout_constraintEnd_toEndOf="@id/tv_click"

@@ -1,16 +1,32 @@
 <?xml2 version="1.0" encoding="utf-8"?>
 <resources>
+    <!--如果view有skin属性，且值为false，则默认不换肤-->
+    <attr name="skin" format="boolean"/>
+
     <declare-styleable name="SkinAttr">
         <attr name="android:background" />
         <attr name="android:foreground" />
+        <attr name="android:drawableStart" />
+        <attr name="android:drawableEnd" />
+        <attr name="android:drawableTop" />
+        <attr name="android:drawableBottom" />
         <attr name="android:textColor" />
+        <attr name="android:textCursorDrawable" />
         <attr name="android:textColorHint" />
-        <!--<attr name="android:textColorHighlight" />-->
+        <attr name="android:textColorHighlight" />
         <attr name="android:textColorLink" />
         <attr name="android:src" />
-        <!--<attr name="android:divider" />-->
+        <attr name="android:divider" />
         <attr name="android:button" />
+        <attr name="android:thumb" />
         <attr name="android:progressDrawable" />
+        <attr name="android:backgroundTint" />
+        <attr name="android:foregroundTint" />
+        <attr name="android:tint" />
+        <attr name="android:indeterminateDrawable" />
+        <!--<attr name="android:scrollbarThumbHorizontal" />
+        <attr name="android:scrollbarThumbVertical" />-->
+
     </declare-styleable>
 
     <color name="main_color">#0000FF</color>

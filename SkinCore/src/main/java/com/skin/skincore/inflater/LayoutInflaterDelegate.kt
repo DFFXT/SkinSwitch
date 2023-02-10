@@ -22,7 +22,7 @@ class LayoutInflaterDelegate(original: LayoutInflater, newContext: Context) :
     companion object {
 
         /**
-         * 将original的Factory复制到target，并用SkinInflaterFactory代理
+         * 将original的Factory复制到target，并用FactoryDelegate代理
          * @param original 原始对象
          * @param target 新对象，也可以是原始对象
          * @param onViewCreatedListener 监听创建
@@ -32,10 +32,8 @@ class LayoutInflaterDelegate(original: LayoutInflater, newContext: Context) :
             target: LayoutInflater,
             onViewCreatedListener: IOnViewCreated
         ) {
-            val factory = factoryFiled.get(original)
-            if (factory is FactoryDelegate) {
-                factoryFiled.set(target, FactoryDelegate(onViewCreatedListener, original.factory))
-            }
+            // 反射field并设置新的值
+            factoryFiled.set(target, FactoryDelegate(onViewCreatedListener, original.factory))
             factory2Filed.set(target, FactoryDelegate(onViewCreatedListener, original.factory2))
             privateFactoryFiled.set(
                 target,

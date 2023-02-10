@@ -6,7 +6,6 @@ import android.app.Application
 import android.content.Context
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
-import androidx.fragment.app.Fragment
 import com.skin.log.Logger
 import com.skin.skincore.reflex.inflater
 
@@ -15,7 +14,7 @@ import com.skin.skincore.reflex.inflater
  */
 internal object InflaterInterceptor {
 
-    private val plan1 = false
+    private val plan1 = true
 
     /**
      * 给context注入自己的LayoutInflater
@@ -41,6 +40,12 @@ internal object InflaterInterceptor {
             LayoutInflaterDelegate.delegate(origin, origin, iOnViewCreated)
             return
         }
+      /*  // 系统生成初始inflater的方式
+        val inflater1 = PhoneLayoutInflater(ctx.getOuterContext())
+        // 开发中使用获取inflater的方式
+        val inflater2 = LayoutInflater.from(context)
+        // inflater的拷贝
+        val inflater3 = LayoutInflater.from(context).cloneInContext(context)*/
 
         // 方案1
         if (context is ContextThemeWrapper) {
