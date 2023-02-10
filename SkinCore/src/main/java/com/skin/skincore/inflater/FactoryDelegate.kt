@@ -25,12 +25,7 @@ open class FactoryDelegate(
         }
     }
 
-    override fun onCreateView(
-        parent: View?,
-        name: String,
-        context: Context,
-        attrs: AttributeSet
-    ): View? {
+    override fun onCreateView(parent: View?, name: String, context: Context, attrs: AttributeSet): View? {
         Log.i(TAG_CREATE_VIEW, "onCreateView4 $name")
         otherFactory.forEach {
             if (it is Factory2) {

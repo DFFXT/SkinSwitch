@@ -34,12 +34,7 @@ object SkinManager {
         ResourcesProviderManager.init(ctx, providerFactory)
         SkinPackDeveloping.sinkPackInstall(ctx)
         makeContextSkinAble(ctx)
-        ContextInterceptor(ctx)
-        // app:skin="false" 则不换肤
-        setSkinAttrStrategy(ParseOutValue.SKIN_ATTR_FALSE, false)
-        // app:skin="true" 或者没有设置 则换肤
-        setSkinAttrStrategy(ParseOutValue.SKIN_ATTR_TRUE, true)
-        setSkinAttrStrategy(ParseOutValue.SKIN_ATTR_UNDEFINE, true)
+        ActivitiesCallback.register(ctx)
     }
 
     /**

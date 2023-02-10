@@ -7,12 +7,14 @@ import android.os.Bundle
 /**
  * activity 监听，将activity添加到换肤框架
  */
-class ContextInterceptor(private val application: Application) :
+class ActivitiesCallback private constructor() :
     Application.ActivityLifecycleCallbacks {
-    init {
-        application.registerActivityLifecycleCallbacks(this)
-    }
 
+    companion object {
+        fun register(application: Application) {
+            application.registerActivityLifecycleCallbacks(ActivitiesCallback())
+        }
+    }
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
         SkinManager.makeContextSkinAble(activity)
     }
@@ -29,9 +31,5 @@ class ContextInterceptor(private val application: Application) :
 
     override fun onActivityDestroyed(activity: Activity) {
         SkinManager.destroy(activity)
-    }
-
-    fun destroy() {
-        application.unregisterActivityLifecycleCallbacks(this)
     }
 }

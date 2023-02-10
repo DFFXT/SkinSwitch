@@ -28,6 +28,7 @@
         android:layout_height="wrap_content"
         android:text="Switch To Night"
         android:textColor="@color/mainColor"
+        android:drawableStart="@drawable/icon_default_head"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

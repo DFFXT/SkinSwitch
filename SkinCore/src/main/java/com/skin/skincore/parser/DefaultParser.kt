@@ -2,14 +2,14 @@ package com.skin.skincore.parser
 
 import android.util.AttributeSet
 import android.view.View
-import android.widget.TextView
 import com.example.skincore.R
 import com.skin.skincore.collector.Attrs
 import com.skin.skincore.collector.IAttrCollector
 
-internal class DefaultParser(private val supportAttr: LinkedHashMap<Int, String>) : IParser {
-    private var keys = supportAttr.keys.toIntArray()
-    private var values = supportAttr.values.toTypedArray()
+internal class DefaultParser(private val supportAttr: IntArray) : IParser {
+    private var keys = supportAttr
+
+    // private var values = supportAttr.values.toTypedArray()
     private lateinit var collectors: List<IAttrCollector<View>>
     override fun onCollectorLoaded(collectors: List<IAttrCollector<View>>) {
         this.collectors = collectors
@@ -23,14 +23,16 @@ internal class DefaultParser(private val supportAttr: LinkedHashMap<Int, String>
         )
 
         typedArray.let {
-            keys.forEachIndexed { index, _ ->
+            keys.forEachIndexed { index, value ->
                 if (typedArray.hasValue(index)) {
                     val resId = typedArray.getResourceId(index, 0)
                     // 排除硬编码
                     if (resId != 0) {
-                        val attr = Attrs(resId,
-                            values[index],
-                            view.context.resources.getResourceTypeName(resId))
+                        val attr = Attrs(
+                            resId,
+                            value,
+                            view.context.resources.getResourceTypeName(resId)
+                        )
                         attrs.add(attr)
                     }
                 }

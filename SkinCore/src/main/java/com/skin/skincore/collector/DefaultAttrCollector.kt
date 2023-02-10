@@ -1,6 +1,7 @@
 package com.skin.skincore.collector
 
 import android.view.View
+import com.skin.skincore.apply.AttrApplyManager
 import com.skin.skincore.parser.DefaultParser
 import com.skin.skincore.parser.IParser
 
@@ -37,5 +38,5 @@ class DefaultAttrCollector : IAttrCollector<View> {
     }
 
     override val supportAttr: LinkedHashMap<Int, String> = attrMap
-    override val parser: IParser = DefaultParser(attrMap)
+    override val parser: IParser = DefaultParser(AttrApplyManager.getSupportAttributeId().toIntArray())
 }

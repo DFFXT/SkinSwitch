@@ -9,6 +9,6 @@ import com.skin.skincore.collector.ResType.UNDEFINE
  */
 class Attrs(
     val resId: Int,
-    val attributeName: String,
+    val attributeId: Int,
     @ResType.ResType val resourceType: String = UNDEFINE
 )
