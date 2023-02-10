@@ -20,6 +20,7 @@ object AttrApplyManager {
 
     init {
         addSkinAttrApply(AttrBackgroundApply())
+        addSkinAttrApply(AttrBackgroundTintApply())
         addSkinAttrApply(AttrSrcApply())
         addSkinAttrApply(AttrTextColorApply())
         addSkinAttrApply(AttrDrawableBottomApply())
@@ -38,7 +39,6 @@ object AttrApplyManager {
         if (!skinAttrStrategy.get(union.getSkinAtrValue())) return
 
         union.forEach {
-            // todo 使用hash，降低时间复杂度
             applySet[it.attributeId]?.apply(view, it.resId, it.resourceType, provider, view.context.getSkinTheme())
         }
     }
