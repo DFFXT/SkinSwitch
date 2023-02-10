@@ -27,8 +27,6 @@
         <!--<attr name="android:scrollbarThumbHorizontal" />
         <attr name="android:scrollbarThumbVertical" />-->
 
-        <attr name="ss"/>
-
     </declare-styleable>
 
     <color name="main_color">#0000FF</color>

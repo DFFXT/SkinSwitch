@@ -6,7 +6,6 @@ import android.app.Application
 import android.content.Context
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
-import androidx.fragment.app.Fragment
 import com.skin.log.Logger
 import com.skin.skincore.reflex.inflater
 
@@ -47,9 +46,6 @@ internal object InflaterInterceptor {
         val inflater2 = LayoutInflater.from(context)
         // inflater的拷贝
         val inflater3 = LayoutInflater.from(context).cloneInContext(context)*/
-
-
-
 
         // 方案1
         if (context is ContextThemeWrapper) {
