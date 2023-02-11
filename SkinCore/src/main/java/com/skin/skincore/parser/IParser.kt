@@ -6,6 +6,5 @@ import com.skin.skincore.collector.Attrs
 import com.skin.skincore.collector.IAttrCollector
 
 interface IParser {
-    fun onCollectorLoaded(collectors: List<IAttrCollector<View>>)
     fun parse(view: View, attributeSet: AttributeSet, outValue: ParseOutValue)
 }

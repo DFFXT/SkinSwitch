@@ -7,11 +7,14 @@ import android.os.Environment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.RadioButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import com.example.skinswitch.R
 import com.skin.skincore.SkinManager
+import com.skin.skincore.apply.AttrApplyManager
+import com.skin.skincore.collector.isNight
 import com.skin.skincore.provider.*
 import com.skin.skinswitch.const.AppConst
 import com.skin.skinswitch.module.MainFragment
@@ -28,66 +31,42 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        //addAssetPathMethod.invoke(this.resources.assets, path)
-        val d = getDrawable(R.drawable.icon_default_head)
-        intent.extras?.keySet()?.forEach {
-            Log.i("--->", "$it:${intent.extras!![it]}")
-        }
-        val e = getDrawable(R.drawable.icon_default_head)
-      /*  val cls = Class.forName("android.content.res.ApkAssets")
-        val mtd: Method = cls.getDeclaredMethod("loadFromPath", String::class.java)
-        mtd.isAccessible = true
-        val apkAsset = mtd.invoke(null, path)
-        setApkAssetMethod.invoke(resources.assets, apkAsset, true)
-        val e = getDrawable(R.drawable.icon_default_head)*/
-        /*SkinManager.init(
-            this,
-            object : DefaultProviderFactory() {
-                // private val nightProvider = NightProvider(application)
 
-                override fun getPathProvider(theme: Int): ISkinPathProvider? {
-                    *//*if (theme == AppConst.THEME_NIGHT) {
-                        return DefaultSkinPathProvider(Environment.getExternalStorageDirectory().absolutePath + "/skinPack-cartoon-debug - 副本.rar")
-                    }*//*
-                    return null
-                }
-
-                override fun getResourceProvider(ctx: Context, theme: Int): IResourceProvider {
-                    val mode = if (theme == AppConst.THEME_NIGHT) {
-                        Configuration.UI_MODE_NIGHT_YES
-                    } else {
-                        Configuration.UI_MODE_NIGHT_NO
-                    }
-                    val configuration = resources.configuration
-                    configuration.uiMode = mode
-                    resources.updateConfiguration(
-                        configuration,
-                        resources.displayMetrics
-                    )
-                    val color = getColor(R.color.main_background)
-                    val night = color == 0xff000000.toInt()
-                    val day = color == 0xffffffff.toInt()
-                    return super.getResourceProvider(ctx, theme)
-                }
-            }
-        )*/
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        // map[findViewById<TextView>(R.id.tv_click)] = 0
-
-        findViewById<TextView>(R.id.tv_click).setOnClickListener {
-            SkinManager.switchTheme(AppConst.THEME_NIGHT)
+        val nightMode = findViewById<RadioButton>(R.id.radio_nightMode)
+        val dayMode = findViewById<RadioButton>(R.id.radio_dayMode)
+        val defaultSkin = findViewById<RadioButton>(R.id.radio_defaultSkin)
+        val customSkin = findViewById<RadioButton>(R.id.radio_customSkin)
+        if (resources.isNight()) {
+            nightMode.isChecked = true
+        } else {
+            dayMode.isChecked = true
         }
-        findViewById<View>(R.id.tv_click1).setOnClickListener {
-            // SecondActivity.startActivity(this)
-            SkinManager.switchTheme(AppConst.THEME_DEFAULT)
+        if (SkinManager.DEFAULT_THEME == SkinManager.getCurrentTheme()) {
+            defaultSkin.isChecked = true
+        } else {
+            customSkin.isChecked = true
         }
-        findViewById<View>(R.id.tv_click2).setOnClickListener {
-           //DialogFragment(R.layout.activity_main).show(supportFragmentManager, "1")
-            it.background = getDrawable(R.drawable.theme_drawable)
+        nightMode.setOnClickListener {
+            SkinManager.applyThemeNight(true, refresh = true)
+        }
+        dayMode.setOnClickListener {
+            SkinManager.applyThemeNight(false, refresh = true)
+        }
+        defaultSkin.setOnClickListener {
+            SkinManager.switchTheme(SkinManager.DEFAULT_THEME)
+        }
+        customSkin.setOnClickListener {
+            SkinManager.switchTheme(AppConst.THEME_CARTOON)
         }
         supportFragmentManager.beginTransaction()
             .add(R.id.container, MainFragment())
             .commit()
+
+
+        findViewById<View>(R.id.view).setOnClickListener {
+            SecondActivity.startActivity(this)
+        }
     }
 }

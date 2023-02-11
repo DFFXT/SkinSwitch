@@ -7,6 +7,8 @@ import android.graphics.drawable.Drawable
 import android.util.DisplayMetrics
 import androidx.core.content.res.ResourcesCompat
 import com.skin.skincore.asset.Asset
+import com.skin.skincore.collector.applyNight
+import com.skin.skincore.collector.isNight
 
 /**
  * 换肤resource，通过当前主题加载对应皮肤包里面的资源
@@ -16,7 +18,7 @@ import com.skin.skincore.asset.Asset
  */
 class MergeResource(
     private var asset: Asset,
-    private val default: Resources,
+    val default: Resources,
     private var themeId: Int
 ) : Resources(
     default.assets,

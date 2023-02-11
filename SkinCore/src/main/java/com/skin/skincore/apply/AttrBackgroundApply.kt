@@ -6,7 +6,7 @@ import com.skin.skincore.apply.base.BaseViewApply
 import com.skin.skincore.collector.ResType
 import com.skin.skincore.provider.IResourceProvider
 
-internal class AttrBackgroundApply : BaseViewApply<View>(android.R.attr.background, View::class.java) {
+internal class AttrBackgroundApply : BaseViewApply<View>(android.R.attr.background) {
     override fun apply(view: View, resId: Int, resType: String, provider: IResourceProvider, theme: Theme?) {
         when (resType) {
             ResType.DRAWABLE -> {

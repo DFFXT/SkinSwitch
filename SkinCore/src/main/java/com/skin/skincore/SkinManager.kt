@@ -4,8 +4,9 @@ import android.app.Application
 import android.content.Context
 import android.view.View
 import com.skin.skincore.apply.AttrApplyManager
+import com.skin.skincore.apply.base.BaseViewApply
 import com.skin.skincore.asset.AssetLoader
-import com.skin.skincore.collector.DefaultAttrCollector
+import com.skin.skincore.collector.isNight
 import com.skin.skincore.loader.ContextLoader
 import com.skin.skincore.loader.ContextLoaderServer
 import com.skin.skincore.parser.ParseOutValue
@@ -20,10 +21,10 @@ import com.skin.skincore.provider.ResourcesProviderManager
 object SkinManager {
     const val DEFAULT_THEME = 0
     private val loaderServer = ContextLoaderServer()
-    private val collectors = DefaultAttrCollector()
     private lateinit var providerFactory: ResourceProviderFactory
     private lateinit var application: Application
     private var theme: Int = DEFAULT_THEME
+    private var isNight: Boolean = false
 
     /**
      * 对当前context进行初始化，凡是通过该context进行inflate的对象均进行view拦截
@@ -31,6 +32,7 @@ object SkinManager {
     fun init(ctx: Application, providerFactory: ResourceProviderFactory) {
         this.application = ctx
         this.providerFactory = providerFactory
+        isNight = ctx.resources.isNight()
         ResourcesProviderManager.init(ctx, providerFactory)
         SkinPackDeveloping.sinkPackInstall(ctx)
         makeContextSkinAble(ctx)
@@ -51,10 +53,11 @@ object SkinManager {
                     context,
                     asset,
                     ResourcesProviderManager.getResourceProvider(context, theme),
-                    collectors
+                    AttrApplyManager.parser
                 )
             )
         }
+        applyThemeNight(isNight, false, context)
     }
 
     fun destroy(ctx: Context) {
@@ -63,22 +66,18 @@ object SkinManager {
 
     /**
      * 新增支持的属性
-     * @param id 举例：android.R.attr.textColor
-     * @param name 举例：“textColor”
      */
-    fun addAttributeCollection(id: Int, name: String) {
-        collectors.addSupportAttr(id, name)
+    fun <T: View> addAttributeCollection(apply: BaseViewApply<T>) {
+        AttrApplyManager.addViewApply(apply)
     }
 
     /**
      * 皮肤切换，将对应的context进行切换
      * @param ctx 如果为null，单独切换，如果不null全局切换
-     * 强烈不推荐ctx不为null的情况
+     * 如果页面比较多建议分批次调用
      */
     fun switchTheme(theme: Int, ctx: Context? = null) {
-        if (ctx == null) {
-            this.theme = theme
-        }
+        this.theme = theme
         val asset = AssetLoader.getAsset(
             application,
             ResourcesProviderManager.getPathProvider(theme)?.getSkinPath()
@@ -89,11 +88,23 @@ object SkinManager {
             ctx
         )
     }
+    fun applyThemeNight(isNight: Boolean, refresh: Boolean, context: Context? = null) {
+        this.isNight = isNight
+        // 更新当前MergeResource中的Resource
+        loaderServer.applyNight(isNight, context)
+        // 更新AssetLoader中已经加载的Resource
+        ResourcesProviderManager.applyNight(isNight)
+        if (refresh) {
+            forceRefreshView()
+        }
+    }
+
+    fun getCurrentTheme() = theme
 
     /**
      * 强制刷新，比如白天黑夜变化时可以调用
      */
-    fun forceRefreshView(context: Context?) {
+    fun forceRefreshView(context: Context? = null) {
         loaderServer.forceRefreshView()
     }
 

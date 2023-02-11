@@ -6,11 +6,10 @@ import android.view.View
 import com.skin.log.Logger
 import com.skin.skincore.apply.AttrApplyManager
 import com.skin.skincore.asset.Asset
-import com.skin.skincore.collector.IAttrCollector
-import com.skin.skincore.collector.ViewContainer
-import com.skin.skincore.collector.getViewUnion
+import com.skin.skincore.collector.*
 import com.skin.skincore.inflater.IOnViewCreated
 import com.skin.skincore.inflater.InflaterInterceptor
+import com.skin.skincore.parser.IParser
 import com.skin.skincore.parser.ParseOutValue
 import com.skin.skincore.plug.updateResource
 import com.skin.skincore.provider.IResourceProvider
@@ -27,7 +26,7 @@ class ContextLoader(
     context: Context,
     asset: Asset?,
     private var iResourceProvider: IResourceProvider,
-    private val collectors: IAttrCollector<*>
+    private val parser: IParser
 ) {
     companion object {
         // 当view创建后立即进行换肤操作
@@ -43,7 +42,7 @@ class ContextLoader(
             object : IOnViewCreated {
                 val outValue = ParseOutValue()
                 override fun onViewCreated(view: View, name: String, attributeSet: AttributeSet) {
-                    collectors.parser.parse(view, attributeSet, outValue)
+                    parser.parse(view, attributeSet, outValue)
                     val union = viewContainer.add(view, outValue)
                     Logger.i(TAG_CREATE_VIEW, "listen view created ok:$view")
                     // view生成，如果是其它皮肤，则立即应用，因为background等属性是通过TypedArray来获取的
@@ -71,6 +70,13 @@ class ContextLoader(
         }
         refreshView()
     }
+
+    fun applyNight(isNight: Boolean) {
+        val res = ctxRef.get()?.resources ?: return
+        res.applyNight(isNight)
+    }
+
+    fun getContextReference(): WeakReference<Context> = ctxRef
 
     /**
      * 强制刷新View

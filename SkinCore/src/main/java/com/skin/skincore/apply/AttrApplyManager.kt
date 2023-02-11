@@ -4,9 +4,11 @@ import android.util.SparseArray
 import android.util.SparseBooleanArray
 import android.view.View
 import androidx.core.util.keyIterator
+import com.skin.log.Logger
 import com.skin.skincore.SkinManager
 import com.skin.skincore.apply.base.BaseViewApply
 import com.skin.skincore.collector.ViewUnion
+import com.skin.skincore.parser.DefaultParser
 import com.skin.skincore.parser.ParseOutValue
 import com.skin.skincore.provider.IResourceProvider
 import com.skin.skincore.reflex.getSkinTheme
@@ -18,20 +20,25 @@ object AttrApplyManager {
     private val skinAttrStrategy = SparseBooleanArray()
     private val applySet: SparseArray<BaseViewApply<View>> = SparseArray()
 
+    // 属性解析器
+    internal val parser by lazy { DefaultParser(applySet.keyIterator().asSequence().toHashSet()) }
+
     init {
-        addSkinAttrApply(AttrBackgroundApply())
-        addSkinAttrApply(AttrBackgroundTintApply())
-        addSkinAttrApply(AttrSrcApply())
-        addSkinAttrApply(AttrTextColorApply())
-        addSkinAttrApply(AttrDrawableBottomApply())
-        addSkinAttrApply(AttrDrawableTopApply())
-        addSkinAttrApply(AttrDrawableStartApply())
-        addSkinAttrApply(AttrDrawableEndApply())
-        addSkinAttrApply(AttrButtonApply())
-        addSkinAttrApply(AttrBackgroundTintApply())
-        addSkinAttrApply(AttrProgressDrawableApply())
-        addSkinAttrApply(AttrTextColorHintApply())
-        addSkinAttrApply(AttrThumbApply())
+        addViewApplyInternal(AttrBackgroundApply())
+        addViewApplyInternal(AttrBackgroundTintApply())
+        addViewApplyInternal(AttrSrcApply())
+        addViewApplyInternal(AttrTextColorApply())
+        addViewApplyInternal(AttrDrawableBottomApply())
+        addViewApplyInternal(AttrDrawableTopApply())
+        addViewApplyInternal(AttrDrawableStartApply())
+        addViewApplyInternal(AttrDrawableEndApply())
+        addViewApplyInternal(AttrButtonApply())
+        addViewApplyInternal(AttrForegroundTintApply())
+        addViewApplyInternal(AttrForegroundApply())
+        addViewApplyInternal(AttrProgressDrawableApply())
+        addViewApplyInternal(AttrTextColorHintApply())
+        addViewApplyInternal(AttrThumbApply())
+
         // app:skin="false" 则不换肤
         SkinManager.setSkinAttrStrategy(ParseOutValue.SKIN_ATTR_FALSE, false)
         // app:skin="true" 或者没有设置 则换肤
@@ -44,7 +51,18 @@ object AttrApplyManager {
         if (!skinAttrStrategy.get(union.getSkinAtrValue())) return
 
         union.forEach {
-            applySet[it.attributeId]?.apply(view, it.resId, it.resourceType, provider, view.context.getSkinTheme())
+            try {
+                applySet[it.attributeId]?.tryApply(
+                    view,
+                    it.resId,
+                    it.resourceType,
+                    provider,
+                    view.context.getSkinTheme()
+                )
+            } catch (e: ClassCastException) {
+                Logger.e("AttrApplyManager", "not limit attribute range error")
+                e.printStackTrace()
+            }
         }
     }
 
@@ -53,18 +71,17 @@ object AttrApplyManager {
      */
     fun <T : View> addViewApply(apply: BaseViewApply<T>) {
         applySet.put(apply.supportAttribute, apply as BaseViewApply<View>)
+        parser.addSupportAttr(apply.supportAttribute)
     }
 
     /**
      * 设置app:skin对应值的策略
      */
-    fun setSkinAttrStrategy(skinAttrValue: Int, apply: Boolean) {
+    internal fun setSkinAttrStrategy(skinAttrValue: Int, apply: Boolean) {
         skinAttrStrategy.put(skinAttrValue, apply)
     }
 
-    fun getSupportAttributeId(): List<Int> = applySet.keyIterator().asSequence().toList()
-
-    private fun <T : View> addSkinAttrApply(apply: BaseViewApply<T>) {
+    private fun <T : View> addViewApplyInternal(apply: BaseViewApply<T>) {
         applySet.put(apply.supportAttribute, apply as BaseViewApply<View>)
     }
 }

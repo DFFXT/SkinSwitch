@@ -3,6 +3,7 @@ package com.skin.skinswitch
 import android.app.Application
 import android.content.res.Resources
 import com.skin.skincore.SkinManager
+import com.skin.skincore.apply.AttrSrcApply
 import com.skin.skincore.provider.DefaultProviderFactory
 import com.skin.skinswitch.const.AppConst
 
@@ -24,11 +25,11 @@ class App : Application() {
                 // private val nightProvider = NightProvider(application)
 
                 override fun getSkinName(theme: Int): String {
-                    return "7"
-                    if (theme == AppConst.THEME_NIGHT) {
+                    if (theme == AppConst.THEME_CARTOON) {
                         return "7"
                         // return CustomSkinPathProvider(Environment.getExternalStorageDirectory().absolutePath + "/skinPack-cartoon-debug - 副本.rar")
                     }
+                    return ""
                 }
 
                 override fun getSkinFolder(): String {
@@ -36,6 +37,7 @@ class App : Application() {
                 }
             }
         )
-        SkinManager.switchTheme(0)
+
+        //SkinManager.switchTheme(AppConst.THEME_CARTOON)
     }
 }

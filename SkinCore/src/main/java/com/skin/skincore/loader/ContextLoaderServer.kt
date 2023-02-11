@@ -39,11 +39,29 @@ class ContextLoaderServer {
     }
 
     /**
+     * 切换白天黑夜模式
+     * 需要刷新才能生效
+     */
+    fun applyNight(isNight: Boolean, context: Context? = null) {
+        if (context == null) {
+            loaderContainer.forEach {
+                it.applyNight(isNight)
+            }
+        } else {
+            loaderContainer.find { it.equalContext(context) }?.applyNight(isNight)
+        }
+    }
+
+    /**
      * 强制刷新view
      */
-    fun forceRefreshView() {
-        loaderContainer.forEach {
-            it.refreshView()
+    fun forceRefreshView(context: Context? = null) {
+        if (context == null) {
+            loaderContainer.forEach {
+                it.refreshView()
+            }
+        } else {
+            loaderContainer.find { it.equalContext(context) }?.refreshView()
         }
     }
 
@@ -69,6 +87,7 @@ class ContextLoaderServer {
             it.equalContext(context)
         }
     }
+
     fun removeView(view: View) {
         getContextLoader(view.context)?.refreshView()
     }

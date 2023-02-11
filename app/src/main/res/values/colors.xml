@@ -11,4 +11,7 @@
     <color name="main_background">#ffffff</color>
     <color name="home_title_color_u">#222222</color>
     <color name="home_title_color_s">#000000</color>
+
+    <color name="test_text_color">#000000</color>
+
 </resources>

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="purple_500">#00f000</color>
+    <color name="test_text_color">#FF0000</color>
 </resources>

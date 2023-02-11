@@ -6,7 +6,7 @@ import com.skin.skincore.apply.base.BaseViewApply
 import com.skin.skincore.collector.ResType
 import com.skin.skincore.provider.IResourceProvider
 
-internal class AttrButtonApply : BaseViewApply<CompoundButton>(android.R.attr.button) {
+internal class AttrButtonApply : BaseViewApply<CompoundButton>(android.R.attr.button, CompoundButton::class.java) {
     override fun apply(
         view: CompoundButton,
         resId: Int,

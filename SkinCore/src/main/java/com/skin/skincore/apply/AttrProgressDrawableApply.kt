@@ -7,7 +7,7 @@ import com.skin.skincore.apply.base.BaseViewApply
 import com.skin.skincore.collector.ResType
 import com.skin.skincore.provider.IResourceProvider
 
-class AttrProgressDrawableApply : BaseViewApply<ProgressBar>(android.R.attr.button) {
+class AttrProgressDrawableApply : BaseViewApply<ProgressBar>(android.R.attr.progressDrawable, ProgressBar::class.java) {
     override fun apply(
         view: ProgressBar,
         resId: Int,

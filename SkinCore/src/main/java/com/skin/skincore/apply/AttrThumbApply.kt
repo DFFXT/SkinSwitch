@@ -6,7 +6,7 @@ import com.skin.skincore.apply.base.BaseViewApply
 import com.skin.skincore.collector.ResType
 import com.skin.skincore.provider.IResourceProvider
 
-internal class AttrThumbApply : BaseViewApply<SeekBar>(android.R.attr.thumb) {
+internal class AttrThumbApply : BaseViewApply<SeekBar>(android.R.attr.thumb, SeekBar::class.java) {
     override fun apply(
         view: SeekBar,
         resId: Int,

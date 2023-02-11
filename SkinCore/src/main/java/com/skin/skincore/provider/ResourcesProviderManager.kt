@@ -1,10 +1,9 @@
 package com.skin.skincore.provider
 
 import android.content.Context
-import android.content.res.Configuration
-import android.util.DisplayMetrics
 import com.skin.skincore.SkinManager
 import com.skin.skincore.asset.AssetLoader
+import com.skin.skincore.collector.applyNight
 import java.util.*
 
 /**
@@ -61,21 +60,11 @@ object ResourcesProviderManager {
     }
 
     /**
-     * 更新configuration配置
-     * @param theme 更新指定theme，否则全部更新
+     * 切换为黑夜模式
      */
-    fun updateConfiguration(
-        configuration: Configuration,
-        metrics: DisplayMetrics,
-        theme: Int? = null
-    ) {
-        if (theme == null) {
-            AssetLoader.getAll().values.forEach {
-                it?.res?.updateConfiguration(configuration, metrics)
-            }
-        } else {
-            val path = getPathProvider(theme)?.getSkinPath() ?: return
-            AssetLoader.getAll()[path]?.res?.updateConfiguration(configuration, metrics)
+    fun applyNight(isNight: Boolean) {
+        AssetLoader.getAll().values.forEach {
+            it?.res?.applyNight(isNight)
         }
     }
 }

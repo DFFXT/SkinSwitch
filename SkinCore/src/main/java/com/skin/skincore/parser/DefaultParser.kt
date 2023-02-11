@@ -4,19 +4,22 @@ import android.util.AttributeSet
 import android.view.View
 import com.example.skincore.R
 import com.skin.skincore.collector.Attrs
-import com.skin.skincore.collector.IAttrCollector
 
-internal class DefaultParser(private val supportAttr: IntArray) : IParser {
-    private var keys = supportAttr
+internal class DefaultParser(private val supportAttr: HashSet<Int>) : IParser {
+    // 升序数组
+    private var keys: IntArray = supportAttr.toIntArray().sortedArray()
 
-    // private var values = supportAttr.values.toTypedArray()
-    private lateinit var collectors: List<IAttrCollector<View>>
-    override fun onCollectorLoaded(collectors: List<IAttrCollector<View>>) {
-        this.collectors = collectors
+    /**
+     * 新增属性
+     */
+    fun addSupportAttr(attrId: Int) {
+        supportAttr.add(attrId)
+        keys = supportAttr.toIntArray().sortedArray()
     }
 
     override fun parse(view: View, attributeSet: AttributeSet, outValue: ParseOutValue) {
         val attrs = mutableListOf<Attrs>()
+        // obtainStyledAttributes 参数2必须是升序数组
         val typedArray = view.context.obtainStyledAttributes(
             attributeSet,
             keys
