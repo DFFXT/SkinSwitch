@@ -102,7 +102,7 @@ object SkinManager {
         loaderServer.applyNight(isNight, context)
         // 更新AssetLoader中已经加载的Resource
         ResourcesProviderManager.applyNight(isNight)
-        forceRefreshView()
+        forceRefreshView(context)
         dispatchSkinChange(theme, isNight)
     }
 
@@ -110,9 +110,10 @@ object SkinManager {
 
     /**
      * 强制刷新，比如白天黑夜变化时可以调用
+     * context 为null则全局刷新，不为null则只刷新该context生成的view
      */
     fun forceRefreshView(context: Context? = null) {
-        loaderServer.forceRefreshView()
+        loaderServer.forceRefreshView(context)
     }
 
     /**
