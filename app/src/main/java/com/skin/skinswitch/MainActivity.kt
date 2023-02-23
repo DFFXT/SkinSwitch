@@ -31,7 +31,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val nightMode = findViewById<RadioButton>(R.id.radio_nightMode)
@@ -49,10 +48,10 @@ class MainActivity : AppCompatActivity() {
             customSkin.isChecked = true
         }
         nightMode.setOnClickListener {
-            SkinManager.applyThemeNight(true, refresh = true)
+            SkinManager.applyThemeNight(true, null)
         }
         dayMode.setOnClickListener {
-            SkinManager.applyThemeNight(false, refresh = true)
+            SkinManager.applyThemeNight(false, null)
         }
         defaultSkin.setOnClickListener {
             SkinManager.switchTheme(SkinManager.DEFAULT_THEME)

@@ -30,10 +30,10 @@ class SecondActivity : AppCompatActivity() {
             defaultSkin.isChecked = true
         }
         nightMode.setOnClickListener {
-            SkinManager.applyThemeNight(true, refresh = true)
+            SkinManager.applyThemeNight(true, null)
         }
         dayMode.setOnClickListener {
-            SkinManager.applyThemeNight(false, refresh = true)
+            SkinManager.applyThemeNight(false, null)
         }
         defaultSkin.setOnClickListener {
             SkinManager.switchTheme(SkinManager.DEFAULT_THEME)

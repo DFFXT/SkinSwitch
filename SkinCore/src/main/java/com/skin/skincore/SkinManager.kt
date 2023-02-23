@@ -20,6 +20,7 @@ import com.skin.skincore.provider.ResourcesProviderManager
  */
 object SkinManager {
     const val DEFAULT_THEME = 0
+    private val skinChangeListenerSet = HashSet<OnThemeChangeListener>()
     private val loaderServer = ContextLoaderServer()
     private lateinit var providerFactory: ResourceProviderFactory
     private lateinit var application: Application
@@ -57,7 +58,7 @@ object SkinManager {
                 )
             )
         }
-        applyThemeNight(isNight, false, context)
+        applyThemeNight(isNight, context)
     }
 
     fun destroy(ctx: Context) {
@@ -66,6 +67,9 @@ object SkinManager {
 
     /**
      * 新增支持的属性
+     * 不仅支持换肤
+     * 还可以添加其他属性，比如layout_width 从而达到动态横竖屏切换
+     * 还可以添加 android:text 从而达到动态切换语言
      */
     fun <T: View> addAttributeCollection(apply: BaseViewApply<T>) {
         AttrApplyManager.addViewApply(apply)
@@ -76,8 +80,7 @@ object SkinManager {
      * @param ctx 如果为null，单独切换，如果不null全局切换
      * 如果页面比较多建议分批次调用
      */
-    fun switchTheme(theme: Int, ctx: Context? = null) {
-        this.theme = theme
+    fun switchTheme(theme: Int, ctx: Context? = null, isNight: Boolean? = null) {
         val asset = AssetLoader.getAsset(
             application,
             ResourcesProviderManager.getPathProvider(theme)?.getSkinPath()
@@ -87,16 +90,20 @@ object SkinManager {
             ResourcesProviderManager.getResourceProvider(application, theme),
             ctx
         )
+        if (this.theme != theme || this.isNight != isNight) {
+            dispatchSkinChange(theme, isNight ?: this.isNight)
+            this.isNight = isNight ?: this.isNight
+        }
+        this.theme = theme
     }
-    fun applyThemeNight(isNight: Boolean, refresh: Boolean, context: Context? = null) {
+    fun applyThemeNight(isNight: Boolean, context: Context? = null) {
         this.isNight = isNight
         // 更新当前MergeResource中的Resource
         loaderServer.applyNight(isNight, context)
         // 更新AssetLoader中已经加载的Resource
         ResourcesProviderManager.applyNight(isNight)
-        if (refresh) {
-            forceRefreshView()
-        }
+        forceRefreshView()
+        dispatchSkinChange(theme, isNight)
     }
 
     fun getCurrentTheme() = theme
@@ -121,6 +128,19 @@ object SkinManager {
      */
     fun removeView(view: View) {
         loaderServer.getContextLoader(view.context)?.removeView(view)
+    }
+
+    fun addSkinChangeListener(listener: OnThemeChangeListener) {
+        skinChangeListenerSet.add(listener)
+    }
+    fun removeSkinChangeListener(listener: OnThemeChangeListener) {
+        skinChangeListenerSet.remove(listener)
+    }
+
+    private fun dispatchSkinChange(theme: Int, isNight: Boolean) {
+        skinChangeListenerSet.forEach {
+            it.onThemeChanged(theme, isNight)
+        }
     }
 
     /**

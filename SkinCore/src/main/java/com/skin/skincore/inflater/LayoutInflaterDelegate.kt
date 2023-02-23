@@ -84,7 +84,7 @@ class LayoutInflaterDelegate(original: LayoutInflater, newContext: Context) :
         val v = super.onCreateView(viewContext, parent, name, attrs)
         Logger.i(TAG_CREATE_VIEW, "3 onCreateView $name")
         if (v != null && attrs != null) {
-            onViewCreatedListener?.onViewCreated(v, name, attrs)
+            onViewCreatedListener?.onViewCreated(parent, v, name, attrs)
         }
         return v
     }
@@ -95,8 +95,8 @@ class LayoutInflaterDelegate(original: LayoutInflater, newContext: Context) :
         }
     }
 
-    override fun onViewCreated(view: View, name: String, attributeSet: AttributeSet) {
-        onViewCreatedListener?.onViewCreated(view, name, attributeSet)
+    override fun onViewCreated(parent: View?, view: View, name: String, attributeSet: AttributeSet) {
+        onViewCreatedListener?.onViewCreated(parent, view, name, attributeSet)
     }
 }
 

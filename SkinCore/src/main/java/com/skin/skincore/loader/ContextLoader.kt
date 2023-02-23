@@ -22,7 +22,7 @@ import java.lang.ref.WeakReference
  * 将context的resource进行替换
  * @param asset 当为null时为默认资源
  */
-class ContextLoader(
+internal class ContextLoader(
     context: Context,
     asset: Asset?,
     private var iResourceProvider: IResourceProvider,
@@ -41,9 +41,9 @@ class ContextLoader(
             context,
             object : IOnViewCreated {
                 val outValue = ParseOutValue()
-                override fun onViewCreated(view: View, name: String, attributeSet: AttributeSet) {
-                    parser.parse(view, attributeSet, outValue)
-                    val union = viewContainer.add(view, outValue)
+                override fun onViewCreated(parent: View?, view: View, name: String, attributeSet: AttributeSet) {
+                    val union = parser.parse(parent, view, attributeSet)
+                    viewContainer.add(view, union)
                     Logger.i(TAG_CREATE_VIEW, "listen view created ok:$view")
                     // view生成，如果是其它皮肤，则立即应用，因为background等属性是通过TypedArray来获取的
                     if (asset != null && applyWhenCreate) {

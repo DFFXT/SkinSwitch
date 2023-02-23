@@ -14,4 +14,6 @@
 
     <color name="test_text_color">#000000</color>
 
+    <dimen name="test_d">80dp</dimen>
+
 </resources>

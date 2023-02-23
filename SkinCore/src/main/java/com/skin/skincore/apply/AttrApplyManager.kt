@@ -47,8 +47,13 @@ object AttrApplyManager {
     }
 
     fun apply(view: View, union: ViewUnion, provider: IResourceProvider) {
-        // 当前策略不支持换肤
-        if (!skinAttrStrategy.get(union.getSkinAtrValue())) return
+        // 如果有设置，则优先判断当前属性
+        if (union.skinAttrValue != ParseOutValue.SKIN_ATTR_UNDEFINE) {
+            if (!skinAttrStrategy.get(union.skinAttrValue)) return
+        } else {
+            // 如果没有设置，则使用继承属性，判断是否需要执行
+            if (!skinAttrStrategy.get(union.skinInheritedValue)) return
+        }
 
         union.forEach {
             try {

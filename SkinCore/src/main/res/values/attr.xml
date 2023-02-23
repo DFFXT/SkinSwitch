@@ -2,6 +2,8 @@
 <resources>
     <!--如果view有skin属性，且值为false，则默认不换肤-->
     <attr name="skin" format="boolean"/>
+    <!--skin属性是否能被继承子节点，默认false不继承-->
+    <attr name="skin_forDescendants" format="boolean"/>
 
     <declare-styleable name="SkinAttr">
         <attr name="android:background" />

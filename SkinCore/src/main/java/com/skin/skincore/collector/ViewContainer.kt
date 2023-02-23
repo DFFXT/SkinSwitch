@@ -8,13 +8,12 @@ import java.util.*
  * 视图收集器
  * 包含了通过该context创建的所有视图
  */
-class ViewContainer : MutableIterable<MutableMap.MutableEntry<View, Unit>> {
+internal class ViewContainer : MutableIterable<MutableMap.MutableEntry<View, Unit>> {
     // private val viewRef: HashMap<Int, ViewUnion> = hashMapOf()
     private val viewRef = WeakHashMap<View, Unit>()
 
-    fun add(view: View, outValue: ParseOutValue): ViewUnion {
-        val union = view.addViewSkinAttrs(outValue.attrs)
-        view.getViewUnion()?.setSkinAttrValue(outValue.skinAttrValue)
+    fun add(view: View, union: ViewUnion): ViewUnion {
+        view.setViewUnion(union)
         viewRef[view] = Unit
         return union
     }

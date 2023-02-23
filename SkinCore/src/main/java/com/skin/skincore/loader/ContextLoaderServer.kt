@@ -5,7 +5,7 @@ import android.view.View
 import com.skin.skincore.asset.Asset
 import com.skin.skincore.provider.IResourceProvider
 
-class ContextLoaderServer {
+internal class ContextLoaderServer {
     private val loaderContainer = LinkedHashSet<ContextLoader>()
 
     /**

@@ -3,7 +3,6 @@ package com.skin.skinswitch
 import android.app.Application
 import android.content.res.Resources
 import com.skin.skincore.SkinManager
-import com.skin.skincore.apply.AttrSrcApply
 import com.skin.skincore.provider.DefaultProviderFactory
 import com.skin.skinswitch.const.AppConst
 
@@ -14,6 +13,7 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
 
         initSkin()
     }

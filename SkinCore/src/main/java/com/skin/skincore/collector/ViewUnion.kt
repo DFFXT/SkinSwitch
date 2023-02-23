@@ -22,7 +22,13 @@ class ViewUnion(attrs: List<Attrs>? = null) : Iterable<Attrs> {
     private val attrsMap = SparseArray<Attrs>()
 
     // 当前view的 app:skin 属性是什么
-    private var skinAttrValue: Int = ParseOutValue.SKIN_ATTR_UNDEFINE
+    internal var skinAttrValue: Int = ParseOutValue.SKIN_ATTR_UNDEFINE
+
+    // 从父布局那里继承而来的值
+    internal var skinInheritedValue: Int = ParseOutValue.SKIN_ATTR_UNDEFINE
+
+    // 当前app:skin_inherited 属性是什么, 是否需要传递给后代
+    internal var skinForDescendants: Int = ParseOutValue.SKIN_ATTR_UNDEFINE
 
     init {
         attrs?.forEach {
@@ -44,12 +50,6 @@ class ViewUnion(attrs: List<Attrs>? = null) : Iterable<Attrs> {
         attrsMap.remove(attributeId)
     }
 
-    internal fun setSkinAttrValue(value: Int) {
-        skinAttrValue = value
-    }
-
-    internal fun getSkinAtrValue(): Int = skinAttrValue
-
     override fun iterator(): Iterator<Attrs> = attrsMap.valueIterator()
 }
 
@@ -59,6 +59,10 @@ class ViewUnion(attrs: List<Attrs>? = null) : Iterable<Attrs> {
  */
 fun View.getViewUnion(): ViewUnion? {
     return (this.getTag(R.id.view_sKinAttr) as? ViewUnion)
+}
+
+fun View.setViewUnion(union: ViewUnion) {
+    this.setTag(R.id.view_sKinAttr, union)
 }
 
 /**

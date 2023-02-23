@@ -58,4 +58,6 @@ class ThemeResourceProvider(
     override fun getResourceEntryName(resId: Int): String {
         return getDefaultResourceProvider().getResourceEntryName(resId)
     }
+
+    override fun getCurrentResource(): Resources = res
 }

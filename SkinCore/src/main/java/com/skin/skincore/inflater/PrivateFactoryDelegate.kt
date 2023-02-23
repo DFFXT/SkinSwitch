@@ -56,7 +56,7 @@ class PrivateFactoryDelegate(
             }
             if (v != null) {
                 // super返回null，故没有走回调，这里兜底成功，创建了view，需回调
-                viewCreated?.onViewCreated(v, name, attrs)
+                viewCreated?.onViewCreated(parent, v, name, attrs)
             }
         }
         Logger.i(TAG_CREATE_VIEW, "create private ${v != null}")

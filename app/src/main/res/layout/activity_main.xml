@@ -4,15 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    app:skin="false"
+    app:skin_forDescendants="true"
     tools:context="com.skin.skinswitch.MainActivity">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
     <TextView
         android:id="@+id/view"
-        android:layout_width="40dp"
+        android:layout_width="@dimen/test_d"
         android:layout_height="40dp"
         android:background="@drawable/theme_drawable"
         app:skin="true" />

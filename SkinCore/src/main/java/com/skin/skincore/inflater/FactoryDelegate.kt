@@ -31,7 +31,7 @@ open class FactoryDelegate(
             if (it is Factory2) {
                 val v = it.onCreateView(parent, name, context, attrs)
                 if (v != null) {
-                    viewCreated?.onViewCreated(v, name, attrs)
+                    viewCreated?.onViewCreated(parent, v, name, attrs)
                     Logger.i(TAG_CREATE_VIEW, "onCreateView4 Ok")
                     return v
                 }
@@ -46,7 +46,7 @@ open class FactoryDelegate(
         otherFactory.forEach {
             val v = it.onCreateView(name, context, attrs)
             if (v != null) {
-                viewCreated?.onViewCreated(v, name, attrs)
+                viewCreated?.onViewCreated(null, v, name, attrs)
                 Logger.i(TAG_CREATE_VIEW, "onCreateView3 Ok")
                 return v
             }

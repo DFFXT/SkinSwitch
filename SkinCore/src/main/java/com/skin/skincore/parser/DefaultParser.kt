@@ -1,66 +1,95 @@
 package com.skin.skincore.parser
 
+import android.content.res.TypedArray
 import android.util.AttributeSet
 import android.view.View
 import com.example.skincore.R
 import com.skin.skincore.collector.Attrs
+import com.skin.skincore.collector.ViewUnion
+import com.skin.skincore.collector.getViewUnion
 
-internal class DefaultParser(private val supportAttr: HashSet<Int>) : IParser {
+internal class DefaultParser(supportAttr: HashSet<Int>) : IParser {
+    private val supportedAttrInternal = supportAttr.toHashSet()
+
     // 升序数组
-    private var keys: IntArray = supportAttr.toIntArray().sortedArray()
+    private var keys: IntArray
+
+    init {
+        supportedAttrInternal.add(R.attr.skin)
+        supportedAttrInternal.add(R.attr.skin_forDescendants)
+        keys = supportedAttrInternal.toIntArray().sortedArray()
+    }
 
     /**
      * 新增属性
      */
     fun addSupportAttr(attrId: Int) {
-        supportAttr.add(attrId)
-        keys = supportAttr.toIntArray().sortedArray()
+        supportedAttrInternal.add(attrId)
+        keys = supportedAttrInternal.toIntArray().sortedArray()
     }
 
-    override fun parse(view: View, attributeSet: AttributeSet, outValue: ParseOutValue) {
-        val attrs = mutableListOf<Attrs>()
+    override fun parse(parent: View?, view: View, attributeSet: AttributeSet): ViewUnion {
         // obtainStyledAttributes 参数2必须是升序数组
         val typedArray = view.context.obtainStyledAttributes(
             attributeSet,
             keys
         )
-
+        val union = ViewUnion()
+        val parentUnion = parent?.getViewUnion()
         typedArray.let {
             keys.forEachIndexed { index, value ->
-                if (typedArray.hasValue(index)) {
+                if (value == R.attr.skin) {
+                    // 解析skin属性
+                    union.skinAttrValue = getBooleanState(typedArray, index)
+                } else if (value == R.attr.skin_forDescendants) {
+                    // 解析skin_inherited属性
+                    union.skinForDescendants = getBooleanState(typedArray, index)
+                } else if (typedArray.hasValue(index)) {
                     val resId = typedArray.getResourceId(index, 0)
-                    // 排除硬编码
                     if (resId != 0) {
                         val attr = Attrs(
                             resId,
                             value,
                             view.context.resources.getResourceTypeName(resId)
                         )
-                        attrs.add(attr)
+                        union.addAttr(attr)
                     }
                 }
             }
         }
         typedArray.recycle()
-        outValue.attrs = attrs
-        outValue.skinAttrValue = getSkinAttrValue(view, attributeSet)
+
+
+        if (union.skinForDescendants == ParseOutValue.SKIN_ATTR_TRUE) {
+            // 需要将当前值传递给后代
+            union.skinInheritedValue = union.skinAttrValue
+        } else if (parentUnion != null) {
+            // 不需要将当前值传递给后代，子代使用上代数据
+            union.skinInheritedValue = parentUnion.skinInheritedValue
+        }
+
+        // 如果自己设置了值，则使用自己的
+        /*if (union.skinAttrValue == ParseOutValue.SKIN_ATTR_UNDEFINE && parentUnion != null) {
+            union.skinInheritedValue = parentUnion.skinInheritedValue
+        }*/ /*else if (parentUnion != null) {
+            // 如果当前view需要继承上层skin
+            union.skinInheritedValue = parentUnion.skinInheritedValue
+        }*/
+        return union
     }
 
-    private val skinAttr = intArrayOf(R.attr.skin)
-
     /**
-     * 判断当前View是否设置app:skin=”“属性
+     * 获取boolean状态
      */
-    private fun getSkinAttrValue(view: View, attributeSet: AttributeSet): Int {
-        val ta = view.context.obtainStyledAttributes(attributeSet, skinAttr)
-        if (ta.hasValue(0)) {
-            return if (ta.getBoolean(0, false)) {
+    private fun getBooleanState(typedArray: TypedArray, index: Int): Int {
+        return if (typedArray.hasValue(index)) {
+            if (typedArray.getBoolean(index, false)) {
                 ParseOutValue.SKIN_ATTR_TRUE
             } else {
                 ParseOutValue.SKIN_ATTR_FALSE
             }
+        } else {
+            ParseOutValue.SKIN_ATTR_UNDEFINE
         }
-        ta.recycle()
-        return ParseOutValue.SKIN_ATTR_UNDEFINE
     }
 }

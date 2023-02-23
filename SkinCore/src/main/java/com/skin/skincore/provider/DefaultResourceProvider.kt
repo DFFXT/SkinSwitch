@@ -2,6 +2,7 @@ package com.skin.skincore.provider
 
 import android.content.Context
 import android.content.res.ColorStateList
+import android.content.res.Resources
 import android.content.res.Resources.Theme
 import android.graphics.drawable.Drawable
 import androidx.core.content.res.ResourcesCompat
@@ -28,4 +29,6 @@ class DefaultResourceProvider(private val ctx: Context) : IResourceProvider {
     override fun getResourceEntryName(resId: Int): String {
         return ctx.resources.getResourceEntryName(resId)
     }
+
+    override fun getCurrentResource(): Resources = ctx.resources
 }

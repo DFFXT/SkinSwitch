@@ -6,4 +6,6 @@
     <color name="home_title_color_s">#FFFFFF</color>
 
     <color name="test_text_color">#FFFFFF</color>
+
+    <dimen name="test_d">40dp</dimen>
 </resources>
