@@ -9,6 +9,7 @@ import com.skin.skincore.asset.AssetLoader
 import com.skin.skincore.collector.isNight
 import com.skin.skincore.loader.ContextLoader
 import com.skin.skincore.loader.ContextLoaderServer
+import com.skin.skincore.parser.AttrParseInterceptor
 import com.skin.skincore.parser.ParseOutValue
 import com.skin.skincore.plug.SkinPackDeveloping
 import com.skin.skincore.provider.IResourceProvider
@@ -158,5 +159,12 @@ object SkinManager {
      */
     fun setSkinAttrStrategy(skinAttrValue: Int, apply: Boolean) {
         AttrApplyManager.setSkinAttrStrategy(skinAttrValue, apply)
+    }
+
+    /**
+     * 设置视图解析拦截器
+     */
+    fun setViewAttrParseInterceptor(interceptor: AttrParseInterceptor) {
+        loaderServer.setAttrParseInterceptor(interceptor)
     }
 }

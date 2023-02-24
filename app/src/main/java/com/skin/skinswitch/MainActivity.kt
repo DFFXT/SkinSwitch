@@ -1,21 +1,14 @@
 package com.skin.skinswitch
 
-import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Bundle
 import android.os.Environment
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.RadioButton
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.DialogFragment
 import com.example.skinswitch.R
 import com.skin.skincore.SkinManager
-import com.skin.skincore.apply.AttrApplyManager
 import com.skin.skincore.collector.isNight
-import com.skin.skincore.provider.*
 import com.skin.skinswitch.const.AppConst
 import com.skin.skinswitch.module.MainFragment
 import java.util.*

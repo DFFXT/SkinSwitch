@@ -7,11 +7,13 @@ import com.skin.log.Logger
 import com.skin.skincore.apply.AttrApplyManager
 import com.skin.skincore.apply.base.BaseViewApply
 import com.skin.skincore.asset.Asset
-import com.skin.skincore.collector.*
+import com.skin.skincore.collector.ViewContainer
+import com.skin.skincore.collector.applyNight
+import com.skin.skincore.collector.getViewUnion
 import com.skin.skincore.inflater.IOnViewCreated
 import com.skin.skincore.inflater.InflaterInterceptor
+import com.skin.skincore.parser.AttrParseInterceptor
 import com.skin.skincore.parser.IParser
-import com.skin.skincore.parser.ParseOutValue
 import com.skin.skincore.plug.updateResource
 import com.skin.skincore.provider.IResourceProvider
 import com.skin.skincore.provider.MergeResource
@@ -20,7 +22,7 @@ import java.lang.ref.WeakReference
 
 /**
  * Context处理器
- * 将context的resource进行替换
+ * 将context的resource进行替换，记录inflater生成的view
  * @param asset 当为null时为默认资源
  */
 internal class ContextLoader(
@@ -34,7 +36,9 @@ internal class ContextLoader(
         var applyWhenCreate = true
     }
 
-    val viewContainer = ViewContainer()
+    // 视图解析拦截
+    internal var interceptor: AttrParseInterceptor? = null
+    private val viewContainer = ViewContainer()
     private val ctxRef = WeakReference(context)
 
     init {
@@ -43,12 +47,16 @@ internal class ContextLoader(
             context,
             object : IOnViewCreated {
                 override fun onViewCreated(parent: View?, view: View, name: String, attributeSet: AttributeSet) {
-                    val union = parser.parse(parent, view, attributeSet)
-                    viewContainer.add(view, union)
-                    Logger.i(TAG_CREATE_VIEW, "listen view created ok:$view")
-                    // view生成，如果是其它皮肤，则立即应用，因为background等属性是通过TypedArray来获取的
-                    if (asset != null && applyWhenCreate) {
-                        AttrApplyManager.apply(event, view, union, iResourceProvider)
+                    // 判断是否拦截
+                    if (interceptor?.beforeParse(parent, view, attributeSet) != true) {
+                        val union = parser.parse(parent, view, attributeSet)
+                        viewContainer.add(view, union)
+                        interceptor?.afterParse(parent, view, attributeSet, union)
+                        Logger.i(TAG_CREATE_VIEW, "listen view created ok:$view")
+                        // view生成，如果是其它皮肤，则立即应用，因为background等属性是通过TypedArray来获取的
+                        if (asset != null && applyWhenCreate) {
+                            AttrApplyManager.apply(event, view, union, iResourceProvider)
+                        }
                     }
                 }
             }

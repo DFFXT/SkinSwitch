@@ -3,10 +3,14 @@ package com.skin.skincore.loader
 import android.content.Context
 import android.view.View
 import com.skin.skincore.asset.Asset
+import com.skin.skincore.parser.AttrParseInterceptor
 import com.skin.skincore.provider.IResourceProvider
 
 internal class ContextLoaderServer {
+    // 全局context容器
     private val loaderContainer = LinkedHashSet<ContextLoader>()
+    // 视图解析拦截
+    private var interceptor: AttrParseInterceptor? = null
 
     /**
      * 将contextLoader添加到容器
@@ -17,6 +21,7 @@ internal class ContextLoaderServer {
             return
         }
         if (!loaderContainer.contains(contextLoader)) {
+            contextLoader.interceptor = interceptor
             loaderContainer.add(contextLoader)
         }
     }
@@ -89,6 +94,13 @@ internal class ContextLoaderServer {
 
     fun removeView(view: View) {
         getContextLoader(view.context)?.removeView(view)
+    }
+
+    fun setAttrParseInterceptor(interceptor: AttrParseInterceptor) {
+        this.interceptor = interceptor
+        loaderContainer.forEach {
+            it.interceptor = interceptor
+        }
     }
 
     /**

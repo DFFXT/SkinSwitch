@@ -16,7 +16,7 @@ import com.skin.skincore.reflex.getSkinTheme
 /**
  * 换肤执分发器
  */
-object AttrApplyManager {
+internal object AttrApplyManager {
     private val skinAttrStrategy = SparseBooleanArray()
     private val applySet: SparseArray<BaseViewApply<View>> = SparseArray()
 

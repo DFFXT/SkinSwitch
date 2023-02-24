@@ -27,7 +27,7 @@ class ViewUnion(attrs: List<Attrs>? = null) : Iterable<Attrs> {
     // 从父布局那里继承而来的值
     internal var skinInheritedValue: Int = ParseOutValue.SKIN_ATTR_UNDEFINE
 
-    // 当前app:skin_inherited 属性是什么, 是否需要传递给后代
+    // 当前app:skin_forDescendants 属性是什么, 是否需要传递给后代
     internal var skinForDescendants: Int = ParseOutValue.SKIN_ATTR_UNDEFINE
 
     init {
