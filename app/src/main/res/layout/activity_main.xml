@@ -17,6 +17,7 @@
         android:id="@+id/view"
         android:layout_width="@dimen/test_d"
         android:layout_height="40dp"
+        android:text="12"
         android:background="@drawable/theme_drawable"
         app:skin="true" />
 

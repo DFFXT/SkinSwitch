@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.View
 import com.skin.log.Logger
 import com.skin.skincore.apply.AttrApplyManager
+import com.skin.skincore.apply.base.BaseViewApply
 import com.skin.skincore.asset.Asset
 import com.skin.skincore.collector.*
 import com.skin.skincore.inflater.IOnViewCreated
@@ -37,25 +38,25 @@ internal class ContextLoader(
     private val ctxRef = WeakReference(context)
 
     init {
+        val event = intArrayOf(BaseViewApply.EVENT_TYPE_CREATE)
         InflaterInterceptor.addInterceptor(
             context,
             object : IOnViewCreated {
-                val outValue = ParseOutValue()
                 override fun onViewCreated(parent: View?, view: View, name: String, attributeSet: AttributeSet) {
                     val union = parser.parse(parent, view, attributeSet)
                     viewContainer.add(view, union)
                     Logger.i(TAG_CREATE_VIEW, "listen view created ok:$view")
                     // view生成，如果是其它皮肤，则立即应用，因为background等属性是通过TypedArray来获取的
                     if (asset != null && applyWhenCreate) {
-                        AttrApplyManager.apply(view, union, iResourceProvider)
+                        AttrApplyManager.apply(event, view, union, iResourceProvider)
                     }
                 }
             }
         )
-        switchTheme(asset, iResourceProvider)
+        switchTheme(asset, iResourceProvider, event)
     }
 
-    fun switchTheme(asset: Asset?, iResourceProvider: IResourceProvider) {
+    fun switchTheme(asset: Asset?, iResourceProvider: IResourceProvider, eventType: IntArray) {
         this.iResourceProvider = iResourceProvider
         val ctx = ctxRef.get()
         if (ctx != null) {
@@ -68,7 +69,7 @@ internal class ContextLoader(
                 ctx.updateResource(asset)
             }
         }
-        refreshView()
+        refreshView(eventType)
     }
 
     fun applyNight(isNight: Boolean) {
@@ -81,12 +82,12 @@ internal class ContextLoader(
     /**
      * 强制刷新View
      */
-    fun refreshView() {
+    fun refreshView(eventType: IntArray) {
         viewContainer.forEach { viewRef ->
             val v = viewRef.key
             val union = v.getViewUnion()
             if (union != null) {
-                AttrApplyManager.apply(v, union, iResourceProvider)
+                AttrApplyManager.apply(eventType, v, union, iResourceProvider)
             }
         }
     }

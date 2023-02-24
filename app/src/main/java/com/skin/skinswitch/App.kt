@@ -2,8 +2,13 @@ package com.skin.skinswitch
 
 import android.app.Application
 import android.content.res.Resources
+import android.view.View
+import android.view.ViewGroup
 import com.skin.skincore.SkinManager
+import com.skin.skincore.apply.AttrSrcApply
+import com.skin.skincore.apply.base.BaseViewApply
 import com.skin.skincore.provider.DefaultProviderFactory
+import com.skin.skincore.provider.IResourceProvider
 import com.skin.skinswitch.const.AppConst
 
 class App : Application() {
@@ -37,6 +42,14 @@ class App : Application() {
                 }
             }
         )
+        SkinManager.addAttributeCollection(object : BaseViewApply<View>(android.R.attr.layout_width, eventType = 898) {
+            override fun apply(view: View, resId: Int, resType: String, provider: IResourceProvider, theme: Resources.Theme?) {
+                (view.layoutParams as ViewGroup.LayoutParams).apply {
+                    width = provider.getCurrentResource().getDimension(resId).toInt()
+                    view.layoutParams = this
+                }
+            }
+        })
 
         //SkinManager.switchTheme(AppConst.THEME_CARTOON)
     }

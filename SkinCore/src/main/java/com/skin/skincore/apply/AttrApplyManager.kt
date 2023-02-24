@@ -46,7 +46,7 @@ object AttrApplyManager {
         SkinManager.setSkinAttrStrategy(ParseOutValue.SKIN_ATTR_UNDEFINE, true)
     }
 
-    fun apply(view: View, union: ViewUnion, provider: IResourceProvider) {
+    fun apply(eventType: IntArray, view: View, union: ViewUnion, provider: IResourceProvider) {
         // 如果有设置，则优先判断当前属性
         if (union.skinAttrValue != ParseOutValue.SKIN_ATTR_UNDEFINE) {
             if (!skinAttrStrategy.get(union.skinAttrValue)) return
@@ -58,6 +58,7 @@ object AttrApplyManager {
         union.forEach {
             try {
                 applySet[it.attributeId]?.tryApply(
+                    eventType,
                     view,
                     it.resId,
                     it.resourceType,

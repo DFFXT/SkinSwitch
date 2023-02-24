@@ -26,14 +26,13 @@ internal class ContextLoaderServer {
      * @param iResourceProvider 资源提供器
      * @param ctx 要切换的context，如果为null则应用整体切换
      */
-    fun switchTheme(asset: Asset?, iResourceProvider: IResourceProvider, ctx: Context?) {
+    fun switchTheme(asset: Asset?, iResourceProvider: IResourceProvider, ctx: Context?, eventType: IntArray) {
         checkContext()
         if (ctx != null) {
-            getContextLoader(ctx)?.switchTheme(asset, iResourceProvider)
+            getContextLoader(ctx)?.switchTheme(asset, iResourceProvider, eventType)
         } else {
-            // todo remove
             loaderContainer.forEach {
-                it.switchTheme(asset, iResourceProvider)
+                it.switchTheme(asset, iResourceProvider, eventType)
             }
         }
     }
@@ -55,13 +54,13 @@ internal class ContextLoaderServer {
     /**
      * 强制刷新view
      */
-    fun forceRefreshView(context: Context? = null) {
+    fun forceRefreshView(context: Context? = null, eventType: IntArray) {
         if (context == null) {
             loaderContainer.forEach {
-                it.refreshView()
+                it.refreshView(eventType)
             }
         } else {
-            loaderContainer.find { it.equalContext(context) }?.refreshView()
+            loaderContainer.find { it.equalContext(context) }?.refreshView(eventType)
         }
     }
 
@@ -89,7 +88,7 @@ internal class ContextLoaderServer {
     }
 
     fun removeView(view: View) {
-        getContextLoader(view.context)?.refreshView()
+        getContextLoader(view.context)?.removeView(view)
     }
 
     /**

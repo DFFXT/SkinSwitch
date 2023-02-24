@@ -26,7 +26,7 @@ class ThemeResourceProvider(
 
     override fun getColor(resId: Int, theme: Theme?): Int {
         val name = getResourceEntryName(resId)
-        val id = getDelegateResourceId(name, "color")
+        val id = getDelegateResourceId(name, default.getResourceTypeName(resId))
         if (id == 0) {
             return getDefaultResourceProvider().getColor(resId, theme)
         }
@@ -35,7 +35,7 @@ class ThemeResourceProvider(
 
     override fun getStateColor(resId: Int, theme: Theme?): ColorStateList {
         val name = getResourceEntryName(resId)
-        val id = getDelegateResourceId(name, "drawable")
+        val id = getDelegateResourceId(name, default.getResourceTypeName(resId))
         if (id == 0) {
             return getDefaultResourceProvider().getStateColor(resId, theme)
         }

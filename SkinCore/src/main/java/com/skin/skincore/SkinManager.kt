@@ -71,7 +71,7 @@ object SkinManager {
      * 还可以添加其他属性，比如layout_width 从而达到动态横竖屏切换
      * 还可以添加 android:text 从而达到动态切换语言
      */
-    fun <T: View> addAttributeCollection(apply: BaseViewApply<T>) {
+    fun <T : View> addAttributeCollection(apply: BaseViewApply<T>) {
         AttrApplyManager.addViewApply(apply)
     }
 
@@ -79,8 +79,11 @@ object SkinManager {
      * 皮肤切换，将对应的context进行切换
      * @param ctx 如果为null，单独切换，如果不null全局切换
      * 如果页面比较多建议分批次调用
+     * @param isNight 使用当前皮肤包的哪种模式
+     * @param eventType 事件类型，默认[BaseViewApply.EVENT_TYPE_THEME]换肤事件，可自定义，对应的
+     * 需要[BaseViewApply]里面的eventType与之对应
      */
-    fun switchTheme(theme: Int, ctx: Context? = null, isNight: Boolean? = null) {
+    fun switchTheme(theme: Int, ctx: Context? = null, isNight: Boolean? = this.isNight, eventType: IntArray = intArrayOf(BaseViewApply.EVENT_TYPE_THEME)) {
         val asset = AssetLoader.getAsset(
             application,
             ResourcesProviderManager.getPathProvider(theme)?.getSkinPath()
@@ -88,7 +91,8 @@ object SkinManager {
         loaderServer.switchTheme(
             asset,
             ResourcesProviderManager.getResourceProvider(application, theme),
-            ctx
+            ctx,
+            eventType
         )
         if (this.theme != theme || this.isNight != isNight) {
             dispatchSkinChange(theme, isNight ?: this.isNight)
@@ -112,8 +116,8 @@ object SkinManager {
      * 强制刷新，比如白天黑夜变化时可以调用
      * context 为null则全局刷新，不为null则只刷新该context生成的view
      */
-    fun forceRefreshView(context: Context? = null) {
-        loaderServer.forceRefreshView(context)
+    fun forceRefreshView(context: Context? = null, eventType: IntArray = intArrayOf(BaseViewApply.EVENT_TYPE_THEME)) {
+        loaderServer.forceRefreshView(context, eventType)
     }
 
     /**
