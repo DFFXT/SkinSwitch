@@ -11,7 +11,8 @@
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        tools:name="com.skin.skinswitch.module.HomeFragment" />
 
     <TextView
         android:id="@+id/view"
@@ -19,6 +20,8 @@
         android:layout_height="40dp"
         android:text="12"
         android:background="@drawable/theme_drawable"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:skin="true" />
 
     <RadioGroup

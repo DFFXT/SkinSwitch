@@ -7,7 +7,7 @@ import android.util.Log
  */
 internal class DefaultLogger : ILogger {
     override fun d(tag: String, msg: String?) {
-        Log.i(tag, msg ?: "")
+        Log.d(tag, msg ?: "")
     }
 
     override fun i(tag: String, msg: String?) {
@@ -15,6 +15,6 @@ internal class DefaultLogger : ILogger {
     }
 
     override fun e(tag: String, msg: String?) {
-        Log.i(tag, msg ?: "")
+        Log.e(tag, msg ?: "")
     }
 }
