@@ -37,7 +37,8 @@ class ViewUnion(attrs: List<Attrs>? = null) : Iterable<Attrs> {
     }
 
     fun addAttr(attr: Attrs) {
-        attrsMap[attr.attributeId] = attr
+        attrsMap.put(attr.attributeId, attr)
+        // attrsMap[attr.attributeId] = attr
     }
 
     fun addAttr(attrs: List<Attrs>) {
