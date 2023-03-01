@@ -15,6 +15,7 @@ internal class AttrForegroundApply : BaseViewApply<View>(android.R.attr.foregrou
         theme: Theme?
     ) {
         when (resType) {
+            ResType.MIPMAP,
             ResType.DRAWABLE,
             ResType.COLOR -> {
                 view.foreground = provider.getDrawable(resId, theme)

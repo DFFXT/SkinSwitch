@@ -5,6 +5,7 @@ import android.content.res.Resources
 import android.content.res.Resources.Theme
 import android.graphics.drawable.Drawable
 import androidx.core.content.res.ResourcesCompat
+import com.skin.skincore.asset.Asset
 
 /**
  * @param res 资源提供者
@@ -13,12 +14,14 @@ import androidx.core.content.res.ResourcesCompat
  * @param defaultProvider 当无法找到资源时，使用该提供器返回默认资源
  */
 class ThemeResourceProvider(
-    private val res: Resources,
-    private val pkgName: String,
+    private val asset: Asset,
     private val default: Resources,
     private val defaultProvider: IResourceProvider
 ) :
     IResourceProvider {
+
+    private val res: Resources
+        get() = asset.res
 
     override fun getDefaultResourceProvider(): IResourceProvider {
         return defaultProvider
@@ -52,7 +55,7 @@ class ThemeResourceProvider(
     }
 
     private fun getDelegateResourceId(name: String, type: String): Int {
-        return res.getIdentifier(name, type, pkgName)
+        return res.getIdentifier(name, type, asset.pkgName)
     }
 
     override fun getResourceEntryName(resId: Int): String {

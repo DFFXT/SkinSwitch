@@ -9,6 +9,7 @@ import com.skin.skincore.provider.IResourceProvider
 internal class AttrBackgroundApply : BaseViewApply<View>(android.R.attr.background) {
     override fun apply(view: View, resId: Int, resType: String, provider: IResourceProvider, theme: Theme?) {
         when (resType) {
+            ResType.MIPMAP,
             ResType.DRAWABLE -> {
                 view.background = provider.getDrawable(resId, theme)
             }

@@ -12,7 +12,6 @@ import androidx.core.util.valueIterator
 import com.example.skincore.R
 import com.skin.skincore.SkinManager
 import com.skin.skincore.parser.ParseOutValue
-import com.skin.skincore.provider.MergeResource
 
 /**
  * view可换肤属性容器
@@ -170,29 +169,36 @@ fun TextView.setTextColorSkinAble(@ColorRes resId: Int) {
  * 判断是否是夜间模式
  */
 fun Resources.isNight(): Boolean {
-    return configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+    return configuration.isNight()
+}
+
+fun Configuration.isNight(): Boolean {
+    return uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 }
 
 /**
  * 设置白天黑夜模式
  */
 fun Resources.applyNight(isNight: Boolean) {
-    if (this is MergeResource) {
-        // 如果是合并resource，需要对默认资源进行切换
-        this.default.applyNight(isNight)
-        return
-    }
-    if (isNight == isNight()) return
-    if (isNight) {
-        configuration.uiMode = (Configuration.UI_MODE_NIGHT_YES or
-                // 清空标志位
-                (configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()))
-    } else {
-        configuration.uiMode = (Configuration.UI_MODE_NIGHT_NO
-                or (configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()))
-    }
+    val config = Configuration(configuration)
+    config.applyNight(isNight)
     // 更新
-    updateConfiguration(configuration, displayMetrics)
+    updateConfiguration(config, displayMetrics)
+}
+
+fun Configuration.applyNight(isNight: Boolean) {
+    if (isNight) {
+        uiMode = (
+            Configuration.UI_MODE_NIGHT_YES or
+                // 清空标志位
+                (uiMode and Configuration.UI_MODE_NIGHT_MASK.inv())
+            )
+    } else {
+        uiMode = (
+            Configuration.UI_MODE_NIGHT_NO
+                or (uiMode and Configuration.UI_MODE_NIGHT_MASK.inv())
+            )
+    }
 }
 
 // endregion

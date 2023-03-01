@@ -15,6 +15,7 @@ internal class AttrThumbApply : BaseViewApply<SeekBar>(android.R.attr.thumb, See
         theme: Theme?
     ) {
         when (resType) {
+            ResType.MIPMAP,
             ResType.DRAWABLE,
             ResType.COLOR -> {
                 view.thumb = provider.getDrawable(resId, theme)

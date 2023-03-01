@@ -27,7 +27,7 @@ import java.lang.ref.WeakReference
  */
 internal class ContextLoader(
     context: Context,
-    asset: Asset?,
+    private var asset: Asset?,
     private var iResourceProvider: IResourceProvider,
     private val parser: IParser
 ) {
@@ -54,7 +54,7 @@ internal class ContextLoader(
                         interceptor?.afterParse(parent, view, attributeSet, union)
                         Logger.i(TAG_CREATE_VIEW, "listen view created ok:$view")
                         // view生成，如果是其它皮肤，则立即应用，因为background等属性是通过TypedArray来获取的
-                        if (asset != null && applyWhenCreate) {
+                        if (applyWhenCreate) {
                             AttrApplyManager.apply(event, view, union, iResourceProvider)
                         }
                     }
@@ -66,6 +66,7 @@ internal class ContextLoader(
 
     fun switchTheme(asset: Asset?, iResourceProvider: IResourceProvider, eventType: IntArray) {
         this.iResourceProvider = iResourceProvider
+        //this.asset = asset
         val ctx = ctxRef.get()
         if (ctx != null) {
             if (asset == null) {
@@ -76,13 +77,14 @@ internal class ContextLoader(
             } else {
                 ctx.updateResource(asset)
             }
+            // ctx.updateResource(asset)
         }
         refreshView(eventType)
     }
 
     fun applyNight(isNight: Boolean) {
-        val res = ctxRef.get()?.resources ?: return
-        res.applyNight(isNight)
+        val ctx = ctxRef.get()
+        ctx?.resources?.applyNight(isNight)
     }
 
     fun getContextReference(): WeakReference<Context> = ctxRef

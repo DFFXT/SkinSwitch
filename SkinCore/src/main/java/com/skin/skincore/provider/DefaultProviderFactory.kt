@@ -8,7 +8,7 @@ import com.skin.skincore.asset.Asset
  */
 abstract class DefaultProviderFactory : ResourceProviderFactory {
     override fun getResourceProvider(ctx: Context, theme: Int, asset: Asset, defaultProvider: IResourceProvider): IResourceProvider {
-        return ThemeResourceProvider(asset.res, asset.pkgName, ctx.resources, defaultProvider)
+        return ThemeResourceProvider(asset, ctx.resources, defaultProvider)
     }
 
     override fun getSkinPathProvider(theme: Int): ISkinPathProvider {

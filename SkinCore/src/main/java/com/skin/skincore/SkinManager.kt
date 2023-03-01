@@ -89,28 +89,39 @@ object SkinManager {
             application,
             ResourcesProviderManager.getPathProvider(theme)?.getSkinPath()
         )
+        if (this.theme != theme || this.isNight != isNight) {
+            this.isNight = isNight ?: this.isNight
+            // 应用资源的白天黑夜模式
+            applyNightMode(this.isNight, ctx)
+        }
         loaderServer.switchTheme(
             asset,
             ResourcesProviderManager.getResourceProvider(application, theme),
             ctx,
             eventType
         )
-        if (this.theme != theme || this.isNight != isNight) {
-            dispatchSkinChange(theme, isNight ?: this.isNight)
-            this.isNight = isNight ?: this.isNight
-        }
+
         this.theme = theme
     }
+
+    /**
+     * 切换白天黑夜
+     */
     fun applyThemeNight(isNight: Boolean, context: Context? = null) {
         this.isNight = isNight
-        // 更新当前MergeResource中的Resource
-        loaderServer.applyNight(isNight, context)
-        // 更新AssetLoader中已经加载的Resource
-        ResourcesProviderManager.applyNight(isNight)
+        applyNightMode(isNight, context)
         forceRefreshView(context)
-        dispatchSkinChange(theme, isNight)
+        dispatchSkinChange(theme, isNight, intArrayOf(BaseViewApply.EVENT_TYPE_THEME))
     }
 
+    /**
+     * 当前白天黑夜模式
+     */
+    fun isNightMode() = isNight
+
+    /**
+     * 当前主题
+     */
     fun getCurrentTheme() = theme
 
     /**
@@ -139,13 +150,21 @@ object SkinManager {
     fun addSkinChangeListener(listener: OnThemeChangeListener) {
         skinChangeListenerSet.add(listener)
     }
+
     fun removeSkinChangeListener(listener: OnThemeChangeListener) {
         skinChangeListenerSet.remove(listener)
     }
 
-    private fun dispatchSkinChange(theme: Int, isNight: Boolean) {
+    private fun applyNightMode(isNight: Boolean, context: Context?) {
+        // 更新当前MergeResource中的Resource
+        // loaderServer.applyNight(isNight, context)
+        // 更新AssetLoader中已经加载的Resource
+        ResourcesProviderManager.applyNight(isNight)
+    }
+
+    private fun dispatchSkinChange(theme: Int, isNight: Boolean, eventType: IntArray) {
         skinChangeListenerSet.forEach {
-            it.onThemeChanged(theme, isNight)
+            it.onThemeChanged(theme, isNight, eventType)
         }
     }
 

@@ -15,6 +15,7 @@ internal class AttrButtonApply : BaseViewApply<CompoundButton>(android.R.attr.bu
         theme: Theme?
     ) {
         when (resType) {
+            ResType.MIPMAP,
             ResType.DRAWABLE,
             ResType.COLOR -> {
                 view.buttonDrawable = provider.getDrawable(resId, theme)

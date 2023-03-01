@@ -44,10 +44,10 @@ class App : Application() {
         )
         SkinManager.addAttributeCollection(object : BaseViewApply<View>(android.R.attr.layout_width, eventType = 898) {
             override fun apply(view: View, resId: Int, resType: String, provider: IResourceProvider, theme: Resources.Theme?) {
-                (view.layoutParams as ViewGroup.LayoutParams).apply {
+                /*(view.layoutParams as ViewGroup.LayoutParams).apply {
                     width = provider.getCurrentResource().getDimension(resId).toInt()
                     view.layoutParams = this
-                }
+                }*/
             }
         })
 

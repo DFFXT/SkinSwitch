@@ -16,6 +16,7 @@ class AttrProgressDrawableApply : BaseViewApply<ProgressBar>(android.R.attr.prog
         theme: Theme?
     ) {
         when (resType) {
+            ResType.MIPMAP,
             ResType.DRAWABLE,
             ResType.COLOR -> {
                 view.progressDrawable = provider.getDrawable(resId, theme)

@@ -15,6 +15,7 @@ internal class AttrDividerApply : BaseViewApply<ListView>(android.R.attr.divider
         theme: Theme?
     ) {
         when (resType) {
+            ResType.MIPMAP,
             ResType.DRAWABLE,
             ResType.COLOR -> {
                 view.divider = provider.getDrawable(resId, theme)

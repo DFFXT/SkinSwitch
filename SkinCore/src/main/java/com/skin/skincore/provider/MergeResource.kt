@@ -7,8 +7,6 @@ import android.graphics.drawable.Drawable
 import android.util.DisplayMetrics
 import androidx.core.content.res.ResourcesCompat
 import com.skin.skincore.asset.Asset
-import com.skin.skincore.collector.applyNight
-import com.skin.skincore.collector.isNight
 
 /**
  * 换肤resource，通过当前主题加载对应皮肤包里面的资源
@@ -17,7 +15,7 @@ import com.skin.skincore.collector.isNight
  * todo 目前未实现theme的换肤
  */
 class MergeResource(
-    private var asset: Asset,
+    var asset: Asset,
     val default: Resources,
     private var themeId: Int
 ) : Resources(
@@ -25,11 +23,14 @@ class MergeResource(
     default.displayMetrics,
     default.configuration
 ) {
-    private var res: Resources = asset.res
-    private var pkg: String = asset.pkgName
+    private val res: Resources
+        get() = asset.res
+    private val pkg: String
+        get() = asset.pkgName
     var useDefault = false
         private set
-    private var currentRes = res
+    private val currentRes: Resources
+        get() = asset.res
 
     // todo 优化MergeResource
     var theme: Theme? = null
@@ -62,10 +63,6 @@ class MergeResource(
         } catch (e: Throwable) {
             return default.getDrawable(id, theme)
         }
-    }
-
-    override fun getDrawableForDensity(id: Int, density: Int): Drawable? {
-        return super.getDrawableForDensity(id, density)
     }
 
     override fun getDrawableForDensity(id: Int, density: Int, theme: Theme?): Drawable? {
@@ -114,9 +111,9 @@ class MergeResource(
 
     // region 同步Configuration，确保皮肤包和默认资源使用的是同一种配置
     override fun updateConfiguration(config: Configuration?, metrics: DisplayMetrics?) {
-        super.updateConfiguration(config, metrics)
-        default.updateConfiguration(config, metrics)
-        res.updateConfiguration(config, metrics)
+        super.updateConfiguration(Configuration(config), metrics)
+        default.updateConfiguration(Configuration(config), metrics)
+        res.updateConfiguration(Configuration(config), metrics)
     }
 
     override fun getConfiguration(): Configuration {
@@ -129,7 +126,7 @@ class MergeResource(
      */
     fun switchToDefault() {
         useDefault = true
-        currentRes = default
+        // currentRes = default
     }
 
     /**
@@ -137,10 +134,8 @@ class MergeResource(
      */
     fun setSkinTheme(asset: Asset) {
         this.asset = asset
-        this.res = asset.res
-        this.pkg = asset.pkgName
         useDefault = false
-        currentRes = res
+        // currentRes = res
         applyThemeStyle(themeId)
     }
 }

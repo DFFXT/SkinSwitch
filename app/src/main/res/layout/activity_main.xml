@@ -4,8 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:skin="false"
-    app:skin_forDescendants="true"
     tools:context="com.skin.skinswitch.MainActivity">
 
     <androidx.fragment.app.FragmentContainerView

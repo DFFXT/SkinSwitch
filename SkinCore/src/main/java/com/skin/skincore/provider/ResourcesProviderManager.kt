@@ -3,7 +3,6 @@ package com.skin.skincore.provider
 import android.content.Context
 import com.skin.skincore.SkinManager
 import com.skin.skincore.asset.AssetLoader
-import com.skin.skincore.collector.applyNight
 import java.util.*
 
 /**
@@ -64,7 +63,7 @@ object ResourcesProviderManager {
      */
     fun applyNight(isNight: Boolean) {
         AssetLoader.getAll().values.forEach {
-            it?.res?.applyNight(isNight)
+            it?.applyNight(isNight)
         }
     }
 }

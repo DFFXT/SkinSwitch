@@ -12,6 +12,7 @@ import com.skin.skincore.provider.IResourceProvider
 class AttrIndeterminateDrawableApply : BaseViewApply<ProgressBar>(android.R.attr.indeterminateDrawable, ProgressBar::class.java) {
     override fun apply(view: ProgressBar, resId: Int, resType: String, provider: IResourceProvider, theme: Resources.Theme?) {
         when (resType) {
+            ResType.MIPMAP,
             ResType.DRAWABLE -> {
                 val drawable = provider.getDrawable(resId, theme)
                 // 这里不支持更改图片bounds

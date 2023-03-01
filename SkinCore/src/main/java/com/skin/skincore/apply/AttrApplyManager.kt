@@ -5,6 +5,7 @@ import android.util.SparseBooleanArray
 import android.view.View
 import androidx.core.util.keyIterator
 import com.skin.log.Logger
+import com.skin.skincore.OnThemeChangeListener
 import com.skin.skincore.SkinManager
 import com.skin.skincore.apply.base.BaseViewApply
 import com.skin.skincore.collector.ViewUnion
@@ -54,7 +55,10 @@ internal object AttrApplyManager {
             // 如果没有设置，则使用继承属性，判断是否需要执行
             if (!skinAttrStrategy.get(union.skinInheritedValue)) return
         }
-
+        // 在应用属性变化时触发监听
+        if (view is OnThemeChangeListener) {
+            view.onThemeChanged(SkinManager.getCurrentTheme(), SkinManager.isNightMode(), eventType)
+        }
         union.forEach {
             try {
                 applySet[it.attributeId]?.tryApply(
