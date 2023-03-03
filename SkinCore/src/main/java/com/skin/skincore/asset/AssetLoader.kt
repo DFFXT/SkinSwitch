@@ -2,59 +2,31 @@ package com.skin.skincore.asset
 
 import android.app.Application
 import android.content.Context
-import android.content.pm.PackageManager
-import android.content.res.AssetManager
-import android.content.res.Resources
-import com.skin.log.Logger
+import com.skin.skincore.provider.ISkinPathProvider
 import com.skin.skincore.provider.MergeResource
-import com.skin.skincore.reflex.addAssetPathMethod
-import java.io.File
 
 internal object AssetLoader {
+    private val resourceLoader: IResourceLoader = DefaultResourceLoader()
     private var map = HashMap<String?, Asset?>()
 
     // 当前皮肤资源
     /* fun getCurrentThemeAsset(): Asset? {
          return asset
      }*/
-    fun getAsset(context: Context, path: String?): Asset? {
+    fun getAsset(context: Context, provider: ISkinPathProvider): Asset? {
+        val path = provider.getSkinPath()
         var asset = map[path]
         if (map.containsKey(path)) {
             return asset
         } else {
-            asset = createResource(context, path)
+            asset = createResource(context, provider)
             map[path] = asset
         }
         return asset
     }
 
-    private fun createResource(context: Context, path: String?): Asset? {
-        if (path == null || !File(path).exists()) {
-            Logger.e("AssetLoader", "skin pack:$path not exists")
-            return defaultAsset(context)
-        }
-        val pm = context.packageManager
-        val pkgInfo = pm.getPackageArchiveInfo(path, PackageManager.GET_SERVICES)
-        if (pkgInfo == null) {
-            Logger.e("AssetLoader", "invalid skin pack")
-        }
-        val pkgName = pkgInfo?.packageName
-        if (pkgName.isNullOrEmpty()) return defaultAsset(context)
-        try {
-            val manager1 = AssetManager::class.java.newInstance()
-            addAssetPathMethod.invoke(manager1, path)
-
-            val res = Resources(
-                manager1,
-                context.resources.displayMetrics,
-                context.resources.configuration
-            )
-            return Asset(context.applicationContext as Application, pkgName, res)
-        } catch (e: Exception) {
-            Logger.d("AssetLoader", "create asset failed")
-            e.printStackTrace()
-        }
-        return defaultAsset(context)
+    private fun createResource(context: Context, provider: ISkinPathProvider): Asset? {
+        return resourceLoader.createAsset(context, provider = provider)
     }
 
     /**

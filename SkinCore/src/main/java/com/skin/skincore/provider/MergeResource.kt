@@ -17,6 +17,7 @@ import com.skin.skincore.asset.Asset
 class MergeResource(
     var asset: Asset,
     val default: Resources,
+    val projectPkg: String,
     private var themeId: Int
 ) : Resources(
     default.assets,
@@ -46,9 +47,22 @@ class MergeResource(
      */
     fun applyThemeStyle(themeId: Int) {
         this.themeId = themeId
-        val themeName = default.getResourceEntryName(themeId)
+        // FIX 获取style必须要确定包名
+        // com.incall.navi.bl:style/ActivityTranslucent
+        // android:style/Theme.DeviceDefault.Light.DarkActionBar
+        if (themeId == 0) return
+        val themeName = if (default.getResourcePackageName(themeId) != pkg) {
+            // 一般是android包名
+            default.getResourceName(themeId)
+        } else {
+            // 项目包名，则不保留包名
+            default.getResourceEntryName(themeId)
+        }
         val skinThemeId = res.getIdentifier(themeName, default.getResourceTypeName(themeId), pkg)
         theme = asset.applyTheme(skinThemeId)
+
+        val theme = newTheme()
+        theme.applyStyle(themeId, true)
     }
 
     // region drawable、color重写
@@ -138,4 +152,5 @@ class MergeResource(
         // currentRes = res
         applyThemeStyle(themeId)
     }
+
 }

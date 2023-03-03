@@ -13,6 +13,7 @@ import com.skin.skincore.reflex.getCurrentThemeId
  * 将Context的resource替换为MergeResource，如果已经是了，则切换为皮肤包资源
  */
 internal fun Context.updateResource(asset: Asset) {
+
     // application 和其他context不一样
     val target = if (this is Application) {
         this.baseContext
@@ -32,7 +33,7 @@ internal fun Context.updateResource(asset: Asset) {
         // 资源设置
         filed.set(
             target,
-            MergeResource(asset, this.resources, getCurrentThemeId())
+            MergeResource(asset, this.resources, packageName, getCurrentThemeId())
         )
     }
 }

@@ -1,6 +1,7 @@
 package com.skin.skincore.inflater
 
 import android.content.Context
+import android.os.Build
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -68,9 +69,11 @@ class PrivateFactoryDelegate(
      * 实测在夜神模拟器7.1.2上参数会异常（只对args[1]赋值）, 之后不知道在哪个版本修复了这个问题，反正API32是不会异常（args[0]、args[1]均赋值了）
      */
     private fun checkConstructorArgs() {
-        val args = constructorArgsFiled.get(inflater) as Array<Any?>
-        if (args[0] == null) {
-            args[0] = inflater.context
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            val args = constructorArgsFiled.get(inflater) as Array<Any?>
+            if (args[0] == null) {
+                args[0] = inflater.context
+            }
         }
     }
 }

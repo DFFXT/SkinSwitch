@@ -35,9 +35,10 @@ internal val privateFactoryFiled =
     LayoutInflater::class.java.getDeclaredField("mPrivateFactory")
         .apply { isAccessible = true }
 
-internal val constructorArgsFiled =
-    LayoutInflater::class.java.getDeclaredField("mConstructorArgs")
-        .apply { isAccessible = true }
+
+internal val constructorArgsFiled by lazy { Class.forName("android.view.LayoutInflater").getDeclaredField("mConstructorArgs")
+    .apply { isAccessible = true } }
+
 
 internal val addAssetPathMethod: Method by lazy {
     val method = AssetManager::class.java.getDeclaredMethod("addAssetPath", String::class.java)
@@ -60,6 +61,18 @@ internal val avtivityResourcesFiled by lazy {
     filed
 }
 
+
+internal val themeWrapperResourcesFiled by lazy {
+    val filed = ContextThemeWrapper::class.java.getDeclaredField("mResources")
+    filed.isAccessible = true
+    filed
+}
+internal val customThemeWrapperResourcesFiled by lazy {
+    val filed = androidx.appcompat.view.ContextThemeWrapper::class.java.getDeclaredField("mResources")
+    filed.isAccessible = true
+    filed
+}
+
 internal val setApkAssetMethod: Method by lazy {
     val method = AssetManager::class.java.getDeclaredMethod(
         "setApkAssets",
@@ -75,27 +88,20 @@ internal val setApkAssetMethod: Method by lazy {
  */
 @SuppressLint("SoonBlockedPrivateApi")
 internal fun Context.getCurrentThemeId(): Int {
-    // 获取theme
-    // 获取themeImpl
-    val themeImpl = Resources.Theme::class.java.getDeclaredField("mThemeImpl").let {
+    val appliedStyleId = Resources.Theme::class.java.getDeclaredMethod("getAppliedStyleResId").let {
         it.isAccessible = true
-        it.get(theme)
+        it.invoke(theme) as Int
     }
-    // 反射 id
-    val id = Class.forName("android.content.res.ResourcesImpl${'$'}ThemeImpl").getDeclaredField("mThemeResId").let {
-        it.isAccessible = true
-        it.get(themeImpl)
-    }
-    return id as Int
+    return appliedStyleId
 }
 
 /**
  * 获取当前Context的Theme，如果是切换了皮肤，就返回皮肤中的Theme
  */
-fun Context.getSkinTheme(): Theme {
+fun Context.getSkinTheme(): Theme? {
     val res = resources
     if (res is MergeResource && !res.useDefault) {
-        return res.theme!!
+        return res.theme
     }
     return theme
 }

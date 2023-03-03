@@ -13,6 +13,8 @@ object ResourcesProviderManager {
     private val pathMap = WeakHashMap<Int, ISkinPathProvider>()
     private lateinit var defaultResourceProvider: IResourceProvider
     private lateinit var resourceProviderFactory: ResourceProviderFactory
+    // 默认资源路径提供器
+    private val defaultSkinPathProvider = CustomSkinPathProvider("", "", SkinManager.DEFAULT_THEME)
     fun init(context: Context, resourceProviderFactory: ResourceProviderFactory) {
         defaultResourceProvider = resourceProviderFactory.getDefaultProvider(context)
         this.resourceProviderFactory = resourceProviderFactory
@@ -27,7 +29,7 @@ object ResourcesProviderManager {
         } else {
             var provider = map[theme]
             if (provider == null) {
-                val asset = AssetLoader.getAsset(context, getPathProvider(theme)?.getSkinPath())
+                val asset = AssetLoader.getAsset(context, getPathProvider(theme))
                     ?: throw IllegalArgumentException("no path for theme: $theme")
                 provider = resourceProviderFactory.getResourceProvider(
                     context,
@@ -41,9 +43,9 @@ object ResourcesProviderManager {
         }
     }
 
-    fun getPathProvider(theme: Int): ISkinPathProvider? {
+    fun getPathProvider(theme: Int): ISkinPathProvider {
         return if (theme == SkinManager.DEFAULT_THEME) {
-            null
+            defaultSkinPathProvider
         } else {
             var provider = pathMap[theme]
             if (provider == null) {

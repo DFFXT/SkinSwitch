@@ -12,7 +12,7 @@ abstract class DefaultProviderFactory : ResourceProviderFactory {
     }
 
     override fun getSkinPathProvider(theme: Int): ISkinPathProvider {
-        return CustomSkinPathProvider(getSkinFolder(), getSkinName(theme))
+        return CustomSkinPathProvider(getSkinFolder(), getSkinName(theme), theme)
     }
 
     override fun getDefaultProvider(ctx: Context) = DefaultResourceProvider(ctx)

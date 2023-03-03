@@ -14,7 +14,7 @@ import com.skin.skincore.reflex.inflater
  */
 internal object InflaterInterceptor {
 
-    private val plan1 = true
+    private val plan1 = false
 
     /**
      * 给context注入自己的LayoutInflater

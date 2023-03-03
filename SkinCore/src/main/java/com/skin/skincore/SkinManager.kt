@@ -48,7 +48,7 @@ object SkinManager {
         if (!loaderServer.containsContext(context)) {
             val asset = AssetLoader.getAsset(
                 application,
-                ResourcesProviderManager.getPathProvider(theme)?.getSkinPath()
+                ResourcesProviderManager.getPathProvider(theme)
             )
             loaderServer.addLoader(
                 ContextLoader(
@@ -87,7 +87,7 @@ object SkinManager {
     fun switchTheme(theme: Int, ctx: Context? = null, isNight: Boolean? = this.isNight, eventType: IntArray = intArrayOf(BaseViewApply.EVENT_TYPE_THEME)) {
         val asset = AssetLoader.getAsset(
             application,
-            ResourcesProviderManager.getPathProvider(theme)?.getSkinPath()
+            ResourcesProviderManager.getPathProvider(theme)
         )
         if (this.theme != theme || this.isNight != isNight) {
             this.isNight = isNight ?: this.isNight
