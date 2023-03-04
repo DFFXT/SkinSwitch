@@ -34,8 +34,8 @@ class MergeResource(
         get() = asset.res
 
     // todo 优化MergeResource
-    var theme: Theme? = null
-        private set
+    val theme: Theme
+        get() = asset.getTheme()
 
     init {
         // theme 同步
@@ -59,7 +59,7 @@ class MergeResource(
             default.getResourceEntryName(themeId)
         }
         val skinThemeId = res.getIdentifier(themeName, default.getResourceTypeName(themeId), pkg)
-        theme = asset.applyTheme(skinThemeId)
+        asset.applyTheme(skinThemeId)
 
         val theme = newTheme()
         theme.applyStyle(themeId, true)
@@ -152,5 +152,4 @@ class MergeResource(
         // currentRes = res
         applyThemeStyle(themeId)
     }
-
 }
