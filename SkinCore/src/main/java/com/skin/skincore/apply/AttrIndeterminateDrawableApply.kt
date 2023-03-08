@@ -9,7 +9,7 @@ import com.skin.skincore.provider.IResourceProvider
 /**
  * ProgressBar android.R.attr.indeterminateDrawable 切换
  */
-class AttrIndeterminateDrawableApply : BaseViewApply<ProgressBar>(android.R.attr.indeterminateDrawable, ProgressBar::class.java) {
+internal class AttrIndeterminateDrawableApply : BaseViewApply<ProgressBar>(android.R.attr.indeterminateDrawable, ProgressBar::class.java) {
     override fun apply(view: ProgressBar, resId: Int, resType: String, provider: IResourceProvider, theme: Resources.Theme?) {
         when (resType) {
             ResType.MIPMAP,

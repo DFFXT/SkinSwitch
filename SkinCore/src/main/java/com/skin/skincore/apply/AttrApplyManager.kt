@@ -39,6 +39,7 @@ internal object AttrApplyManager {
         addViewApplyInternal(AttrProgressDrawableApply())
         addViewApplyInternal(AttrTextColorHintApply())
         addViewApplyInternal(AttrThumbApply())
+        addViewApplyInternal(AttrIndeterminateDrawableApply())
 
         // app:skin="false" 则不换肤
         SkinManager.setSkinAttrStrategy(ParseOutValue.SKIN_ATTR_FALSE, false)
