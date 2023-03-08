@@ -25,7 +25,8 @@ object ResourcesProviderManager {
      */
     fun getResourceProvider(context: Context, theme: Int): IResourceProvider {
         return if (theme == SkinManager.DEFAULT_THEME) {
-            defaultResourceProvider
+            if (this::defaultResourceProvider.isInitialized) defaultResourceProvider
+            else DefaultResourceProvider(context)
         } else {
             var provider = map[theme]
             if (provider == null) {

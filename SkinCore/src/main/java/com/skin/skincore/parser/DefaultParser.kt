@@ -49,8 +49,7 @@ internal class DefaultParser(supportAttr: HashSet<Int>) : IParser {
                     if (resId != 0) {
                         val attr = Attrs(
                             resId,
-                            value,
-                            view.context.resources.getResourceTypeName(resId)
+                            value
                         )
                         union.addAttr(attr)
                     }

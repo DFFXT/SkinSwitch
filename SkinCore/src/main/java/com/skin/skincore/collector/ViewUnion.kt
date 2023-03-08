@@ -5,6 +5,7 @@ import android.content.res.Resources
 import android.util.SparseArray
 import android.view.View
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
@@ -122,8 +123,7 @@ fun View.setBackgroundResourceSkinAble(@DrawableRes backgroundRes: Int) {
         this.addViewSkinAttrs(
             Attrs(
                 backgroundRes,
-                android.R.attr.background,
-                context.resources.getResourceTypeName(backgroundRes)
+                android.R.attr.background
             )
         )
     }
@@ -140,8 +140,7 @@ fun ImageView.setImageResourceSkinAble(@DrawableRes resId: Int) {
         this.addViewSkinAttrs(
             Attrs(
                 resId,
-                android.R.attr.src,
-                context.resources.getResourceTypeName(resId)
+                android.R.attr.src
             )
         )
         val providedBitmap = SkinManager.getResourceProvider(this.context).getDrawable(resId, context.theme)
@@ -162,7 +161,20 @@ fun TextView.setTextColorSkinAble(@ColorRes resId: Int) {
         val color = SkinManager.getResourceProvider(this.context).getColor(resId, context.theme)
         this.setTextColor(color)
     }
-    this.addViewSkinAttrs(Attrs(resId, android.R.attr.textColor, resourceType))
+    this.addViewSkinAttrs(Attrs(resId, android.R.attr.textColor))
+}
+
+/**
+ * 进度条progressDrawable支持
+ */
+fun ProgressBar.setProgressDrawableSkinAble(@DrawableRes resId: Int) {
+    if (resId == 0) {
+        progressDrawable = null
+        this.removeSkinAttr(android.R.attr.progressDrawable)
+    } else {
+        progressDrawable = SkinManager.getResourceProvider(context).getDrawable(resId, null)
+        this.addViewSkinAttrs(Attrs(resId, android.R.attr.progressDrawable))
+    }
 }
 
 /**

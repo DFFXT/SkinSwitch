@@ -9,6 +9,7 @@ import android.content.res.Resources.Theme
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
+import com.skin.log.Logger
 import com.skin.skincore.provider.MergeResource
 import java.lang.reflect.Field
 import java.lang.reflect.Method
@@ -88,11 +89,16 @@ internal val setApkAssetMethod: Method by lazy {
  */
 @SuppressLint("SoonBlockedPrivateApi")
 internal fun Context.getCurrentThemeId(): Int {
-    val appliedStyleId = Resources.Theme::class.java.getDeclaredMethod("getAppliedStyleResId").let {
-        it.isAccessible = true
-        it.invoke(theme) as Int
+    return try {
+        val appliedStyleId = Resources.Theme::class.java.getDeclaredMethod("getAppliedStyleResId").let {
+            it.isAccessible = true
+            it.invoke(theme) as Int
+        }
+        appliedStyleId
+    } catch (e: Exception) {
+        Logger.e("getCurrentThemeId", "getCurrentThemeId error:${e.message}")
+        0
     }
-    return appliedStyleId
 }
 
 /**

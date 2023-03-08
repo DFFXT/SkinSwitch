@@ -65,7 +65,7 @@ internal object AttrApplyManager {
                     eventType,
                     view,
                     it.resId,
-                    it.resourceType,
+                    it.getResourceType(view.resources),
                     provider,
                     view.context.getSkinTheme()
                 )
