@@ -12,6 +12,7 @@ import com.skin.skincore.loader.ContextLoaderServer
 import com.skin.skincore.parser.AttrParseInterceptor
 import com.skin.skincore.parser.ParseOutValue
 import com.skin.skincore.plug.SkinPackDeveloping
+import com.skin.skincore.provider.DefaultProviderFactory
 import com.skin.skincore.provider.IResourceProvider
 import com.skin.skincore.provider.ResourceProviderFactory
 import com.skin.skincore.provider.ResourcesProviderManager
@@ -27,12 +28,16 @@ object SkinManager {
     private lateinit var application: Application
     private var theme: Int = DEFAULT_THEME
     private var isNight: Boolean = false
+    var projectStyle: Int = 0
 
     /**
      * 对当前context进行初始化，凡是通过该context进行inflate的对象均进行view拦截
+     * @param projectStyle 当前应用主题样式，值最好为androidManifest.xml中theme属性，可为0
+     * @param providerFactory 资源提供器，一般继承[DefaultProviderFactory]
      */
-    fun init(ctx: Application, providerFactory: ResourceProviderFactory) {
+    fun init(ctx: Application, projectStyle: Int, providerFactory: ResourceProviderFactory) {
         this.application = ctx
+        this.projectStyle = projectStyle
         this.providerFactory = providerFactory
         isNight = ctx.resources.isNight()
         ResourcesProviderManager.init(ctx, providerFactory)

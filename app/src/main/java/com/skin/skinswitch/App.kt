@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.res.Resources
 import android.view.View
 import android.view.ViewGroup
+import com.example.skinswitch.R
 import com.skin.skincore.SkinManager
 import com.skin.skincore.apply.AttrSrcApply
 import com.skin.skincore.apply.base.BaseViewApply
@@ -25,7 +26,7 @@ class App : Application() {
 
     private fun initSkin() {
         SkinManager.init(
-            this,
+            this, R.style.Theme_SkinSwitch,
             object : DefaultProviderFactory() {
                 // private val nightProvider = NightProvider(application)
 
