@@ -47,9 +47,12 @@ class Asset(
     private lateinit var dayTheme: Theme
     private lateinit var nightTheme: Theme
 
-    fun getTheme(): Theme {
-        return if (res == day) dayTheme
-        else nightTheme
+    fun getTheme(): Theme? {
+        if (res == day) {
+            return if (this::dayTheme.isInitialized) return dayTheme else null
+        } else {
+            return if (this::nightTheme.isInitialized) return nightTheme else null
+        }
     }
 
     fun applyTheme(skinThemeId: Int) {

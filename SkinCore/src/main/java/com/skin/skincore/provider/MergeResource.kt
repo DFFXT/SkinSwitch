@@ -34,7 +34,7 @@ class MergeResource(
         get() = asset.res
 
     // todo 优化MergeResource
-    val theme: Theme
+    val theme: Theme?
         get() = asset.getTheme()
 
     init {
