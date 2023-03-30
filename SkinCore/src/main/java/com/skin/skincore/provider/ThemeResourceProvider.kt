@@ -5,23 +5,21 @@ import android.content.res.Resources
 import android.content.res.Resources.Theme
 import android.graphics.drawable.Drawable
 import androidx.core.content.res.ResourcesCompat
-import com.skin.skincore.asset.Asset
+import com.skin.skincore.asset.IAsset
 
 /**
- * @param res 资源提供者
- * @param pkgName 资源包包名
  * @param default 主工程资源，用于确定id对应的名称
  * @param defaultProvider 当无法找到资源时，使用该提供器返回默认资源
  */
 class ThemeResourceProvider(
-    private val asset: Asset,
+    private val asset: IAsset,
     private val default: Resources,
     private val defaultProvider: IResourceProvider
 ) :
     IResourceProvider {
 
     private val res: Resources
-        get() = asset.res
+        get() = asset.getResource()
 
     override fun getDefaultResourceProvider(): IResourceProvider {
         return defaultProvider

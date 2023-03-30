@@ -6,7 +6,7 @@ import android.view.View
 import com.skin.log.Logger
 import com.skin.skincore.apply.AttrApplyManager
 import com.skin.skincore.apply.base.BaseViewApply
-import com.skin.skincore.asset.Asset
+import com.skin.skincore.asset.IAsset
 import com.skin.skincore.collector.ViewContainer
 import com.skin.skincore.collector.applyNight
 import com.skin.skincore.collector.getViewUnion
@@ -27,9 +27,9 @@ import java.lang.ref.WeakReference
  */
 internal class ContextLoader(
     context: Context,
-    private var asset: Asset?,
+    private var asset: IAsset?,
     private var iResourceProvider: IResourceProvider,
-    private val parser: IParser
+    private val parser: IParser,
 ) {
     companion object {
         // 当view创建后立即进行换肤操作
@@ -59,14 +59,14 @@ internal class ContextLoader(
                         }
                     }
                 }
-            }
+            },
         )
         switchTheme(asset, iResourceProvider, event)
     }
 
-    fun switchTheme(asset: Asset?, iResourceProvider: IResourceProvider, eventType: IntArray) {
+    fun switchTheme(asset: IAsset?, iResourceProvider: IResourceProvider, eventType: IntArray) {
         this.iResourceProvider = iResourceProvider
-        //this.asset = asset
+        // this.asset = asset
         val ctx = ctxRef.get()
         if (ctx != null) {
             if (asset == null) {

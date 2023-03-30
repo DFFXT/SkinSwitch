@@ -3,9 +3,10 @@ package com.skin.skincore
 import android.app.Application
 import android.content.Context
 import android.view.View
+import com.skin.log.Logger
 import com.skin.skincore.apply.AttrApplyManager
 import com.skin.skincore.apply.base.BaseViewApply
-import com.skin.skincore.asset.AssetLoader
+import com.skin.skincore.asset.AssetLoaderManager
 import com.skin.skincore.collector.isNight
 import com.skin.skincore.loader.ContextLoader
 import com.skin.skincore.loader.ContextLoaderServer
@@ -21,6 +22,7 @@ import com.skin.skincore.provider.ResourcesProviderManager
  * 皮肤管理器
  */
 object SkinManager {
+    private const val TAG = "SkinManager_"
     const val DEFAULT_THEME = 0
     private val skinChangeListenerSet = HashSet<OnThemeChangeListener>()
     private val loaderServer = ContextLoaderServer()
@@ -51,17 +53,17 @@ object SkinManager {
      */
     fun makeContextSkinAble(context: Context) {
         if (!loaderServer.containsContext(context)) {
-            val asset = AssetLoader.getAsset(
+            val asset = AssetLoaderManager.getAsset(
                 application,
-                ResourcesProviderManager.getPathProvider(theme)
+                ResourcesProviderManager.getPathProvider(theme),
             )
             loaderServer.addLoader(
                 ContextLoader(
                     context,
                     asset,
                     ResourcesProviderManager.getResourceProvider(context, theme),
-                    AttrApplyManager.parser
-                )
+                    AttrApplyManager.parser,
+                ),
             )
         }
         applyThemeNight(isNight, context)
@@ -90,9 +92,10 @@ object SkinManager {
      * 需要[BaseViewApply]里面的eventType与之对应
      */
     fun switchTheme(theme: Int, ctx: Context? = null, isNight: Boolean? = this.isNight, eventType: IntArray = intArrayOf(BaseViewApply.EVENT_TYPE_THEME)) {
-        val asset = AssetLoader.getAsset(
+        Logger.d(TAG, "switchTheme $theme $ctx $isNight ${eventType.joinToString(",")}")
+        val asset = AssetLoaderManager.getAsset(
             application,
-            ResourcesProviderManager.getPathProvider(theme)
+            ResourcesProviderManager.getPathProvider(theme),
         )
         if (this.theme != theme || this.isNight != isNight) {
             this.isNight = isNight ?: this.isNight
@@ -103,7 +106,7 @@ object SkinManager {
             asset,
             ResourcesProviderManager.getResourceProvider(application, theme),
             ctx,
-            eventType
+            eventType,
         )
 
         this.theme = theme
@@ -113,6 +116,7 @@ object SkinManager {
      * 切换白天黑夜
      */
     fun applyThemeNight(isNight: Boolean, context: Context? = null) {
+        Logger.d(TAG, "applyThemeNight $isNight $context")
         this.isNight = isNight
         applyNightMode(isNight, context)
         forceRefreshView(context)
@@ -162,8 +166,9 @@ object SkinManager {
 
     private fun applyNightMode(isNight: Boolean, context: Context?) {
         // 更新当前MergeResource中的Resource
-        // loaderServer.applyNight(isNight, context)
+        loaderServer.applyNight(isNight, context)
         // 更新AssetLoader中已经加载的Resource
+        Logger.d(TAG, "applyNightMode $isNight")
         ResourcesProviderManager.applyNight(isNight)
     }
 

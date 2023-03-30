@@ -6,7 +6,7 @@ import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.util.DisplayMetrics
 import androidx.core.content.res.ResourcesCompat
-import com.skin.skincore.asset.Asset
+import com.skin.skincore.asset.IAsset
 
 /**
  * 换肤resource，通过当前主题加载对应皮肤包里面的资源
@@ -15,23 +15,22 @@ import com.skin.skincore.asset.Asset
  * todo 目前未实现theme的换肤
  */
 class MergeResource(
-    var asset: Asset,
+    var asset: IAsset,
     val default: Resources,
-    val projectPkg: String,
-    private var themeId: Int
+    private var themeId: Int,
 ) : Resources(
     default.assets,
     default.displayMetrics,
-    default.configuration
+    default.configuration,
 ) {
     private val res: Resources
-        get() = asset.res
+        get() = asset.getResource()
     private val pkg: String
         get() = asset.pkgName
     var useDefault = false
         private set
     private val currentRes: Resources
-        get() = asset.res
+        get() = asset.getResource()
 
     // todo 优化MergeResource
     val theme: Theme?
@@ -146,7 +145,7 @@ class MergeResource(
     /**
      * 设置皮肤包
      */
-    fun setSkinTheme(asset: Asset) {
+    fun setSkinTheme(asset: IAsset) {
         this.asset = asset
         useDefault = false
         // currentRes = res

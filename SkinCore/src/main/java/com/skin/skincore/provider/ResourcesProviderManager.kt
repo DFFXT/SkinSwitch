@@ -2,7 +2,7 @@ package com.skin.skincore.provider
 
 import android.content.Context
 import com.skin.skincore.SkinManager
-import com.skin.skincore.asset.AssetLoader
+import com.skin.skincore.asset.AssetLoaderManager
 import java.util.*
 
 /**
@@ -13,6 +13,7 @@ object ResourcesProviderManager {
     private val pathMap = WeakHashMap<Int, ISkinPathProvider>()
     private lateinit var defaultResourceProvider: IResourceProvider
     private lateinit var resourceProviderFactory: ResourceProviderFactory
+
     // 默认资源路径提供器
     private val defaultSkinPathProvider = CustomSkinPathProvider("", "", SkinManager.DEFAULT_THEME)
     fun init(context: Context, resourceProviderFactory: ResourceProviderFactory) {
@@ -25,18 +26,21 @@ object ResourcesProviderManager {
      */
     fun getResourceProvider(context: Context, theme: Int): IResourceProvider {
         return if (theme == SkinManager.DEFAULT_THEME) {
-            if (this::defaultResourceProvider.isInitialized) defaultResourceProvider
-            else DefaultResourceProvider(context)
+            if (this::defaultResourceProvider.isInitialized) {
+                defaultResourceProvider
+            } else {
+                DefaultResourceProvider(context)
+            }
         } else {
             var provider = map[theme]
             if (provider == null) {
-                val asset = AssetLoader.getAsset(context, getPathProvider(theme))
+                val asset = AssetLoaderManager.getAsset(context, getPathProvider(theme))
                     ?: throw IllegalArgumentException("no path for theme: $theme")
                 provider = resourceProviderFactory.getResourceProvider(
                     context,
                     theme,
                     asset,
-                    defaultResourceProvider
+                    defaultResourceProvider,
                 )
                 map[theme] = provider
             }
@@ -65,7 +69,7 @@ object ResourcesProviderManager {
      * 切换为黑夜模式
      */
     fun applyNight(isNight: Boolean) {
-        AssetLoader.getAll().values.forEach {
+        AssetLoaderManager.getAll().values.forEach {
             it?.applyNight(isNight)
         }
     }

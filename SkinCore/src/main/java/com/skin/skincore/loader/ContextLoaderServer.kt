@@ -2,13 +2,14 @@ package com.skin.skincore.loader
 
 import android.content.Context
 import android.view.View
-import com.skin.skincore.asset.Asset
+import com.skin.skincore.asset.IAsset
 import com.skin.skincore.parser.AttrParseInterceptor
 import com.skin.skincore.provider.IResourceProvider
 
 internal class ContextLoaderServer {
     // 全局context容器
     private val loaderContainer = LinkedHashSet<ContextLoader>()
+
     // 视图解析拦截
     private var interceptor: AttrParseInterceptor? = null
 
@@ -31,7 +32,7 @@ internal class ContextLoaderServer {
      * @param iResourceProvider 资源提供器
      * @param ctx 要切换的context，如果为null则应用整体切换
      */
-    fun switchTheme(asset: Asset?, iResourceProvider: IResourceProvider, ctx: Context?, eventType: IntArray) {
+    fun switchTheme(asset: IAsset?, iResourceProvider: IResourceProvider, ctx: Context?, eventType: IntArray) {
         checkContext()
         if (ctx != null) {
             getContextLoader(ctx)?.switchTheme(asset, iResourceProvider, eventType)

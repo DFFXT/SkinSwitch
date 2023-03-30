@@ -1,7 +1,7 @@
 package com.skin.skincore.provider
 
 import android.content.Context
-import com.skin.skincore.asset.Asset
+import com.skin.skincore.asset.IAsset
 
 /**
  * 构造资源提供器
@@ -11,7 +11,7 @@ interface ResourceProviderFactory {
     /**
      * 返回资源提供器
      */
-    fun getResourceProvider(ctx: Context, theme: Int, asset: Asset, defaultProvider: IResourceProvider): IResourceProvider
+    fun getResourceProvider(ctx: Context, theme: Int, asset: IAsset, defaultProvider: IResourceProvider): IResourceProvider
 
     /**
      * 返回对应主题的资源路径
