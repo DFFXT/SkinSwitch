@@ -19,7 +19,7 @@ import com.skin.skincore.provider.ISkinPathProvider
 class Asset(
     context: Context,
     private val skinPathProvider: ISkinPathProvider,
-) : IAsset {
+) : IAsset() {
     private val application = context.applicationContext as Application
     private val configuration = context.resources.configuration
     private val displayMetrics = context.resources.displayMetrics
@@ -27,8 +27,6 @@ class Asset(
     private val info = resourceLoader.createAsset(application, configuration, skinPathProvider)
     lateinit var res: Resources
         private set
-    override val pkgName: String
-        get() = info.pkgName
     private val day: Resources by lazy {
         if (!res.isNight()) return@lazy res
         val info = resourceLoader.createAsset(application, configuration, skinPathProvider)
@@ -51,6 +49,7 @@ class Asset(
     private lateinit var dayTheme: Theme
     private lateinit var nightTheme: Theme
 
+    override fun pkgName(): String = info.pkgName
     override fun getTheme(): Theme? {
         if (res == day) {
             return if (this::dayTheme.isInitialized) return dayTheme else null

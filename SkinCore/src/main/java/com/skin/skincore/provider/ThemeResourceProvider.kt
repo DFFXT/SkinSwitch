@@ -53,7 +53,7 @@ class ThemeResourceProvider(
     }
 
     private fun getDelegateResourceId(name: String, type: String): Int {
-        return res.getIdentifier(name, type, asset.pkgName)
+        return res.getIdentifier(name, type, asset.pkgName())
     }
 
     override fun getResourceEntryName(resId: Int): String {

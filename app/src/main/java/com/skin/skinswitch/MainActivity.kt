@@ -59,8 +59,14 @@ class MainActivity : AppCompatActivity() {
             .commit()
 
 
+        var presentation: Presentation? = null
         findViewById<View>(R.id.view).setOnClickListener {
             // SecondActivity.startActivity(this)
+            if (presentation != null) {
+                presentation?.dismiss()
+                presentation = null
+                return@setOnClickListener
+            }
             getSystemService(DisplayManager::class.java).displays.getOrNull(1)?.let {
                 object : Presentation(this, it) {
                     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,6 +76,7 @@ class MainActivity : AppCompatActivity() {
                 }.apply {
                     SkinManager.makeContextSkinAble(this.context)
                     show()
+                    presentation = this
                 }
             }
         }

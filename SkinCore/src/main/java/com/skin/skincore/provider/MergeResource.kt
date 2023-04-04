@@ -25,8 +25,7 @@ class MergeResource(
 ) {
     private val res: Resources
         get() = asset.getResource()
-    private val pkg: String
-        get() = asset.pkgName
+    private val pkg: String = asset.pkgName()
     var useDefault = false
         private set
     private val currentRes: Resources

@@ -69,7 +69,7 @@ object ResourcesProviderManager {
      * 切换为黑夜模式
      */
     fun applyNight(isNight: Boolean) {
-        AssetLoaderManager.getAll().values.forEach {
+        AssetLoaderManager.getAll().keys.forEach {
             it?.applyNight(isNight)
         }
     }

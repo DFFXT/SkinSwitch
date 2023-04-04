@@ -2,6 +2,7 @@ package com.skin.skincore.asset
 
 import android.content.Context
 import com.skin.skincore.provider.ISkinPathProvider
+import java.util.*
 
 /**
  * 资源加载管理，提供缓存
@@ -10,17 +11,21 @@ object AssetLoaderManager {
     // context转id映射
     var contextId = ContextId()
     private var assetFactory: IAssetFactory = DefaultAssetFactory()
-    private var map = HashMap<AssetKey?, IAsset?>()
+
+    // private val map = HashMap<AssetKey?, IAsset?>()
+    // 通过WeakHashMap来自动释放IAsset对象
+    private val map = WeakHashMap<IAsset, Unit>()
 
     fun getAsset(context: Context, provider: ISkinPathProvider): IAsset? {
         val path = provider.getSkinPath()
         val key = AssetKey(contextId.getId(context), path)
-        var asset = map[key]
-        if (map.containsKey(key)) {
+        var asset = map.keys.find { it.assetKey == key }
+        if (map.containsKey(asset)) {
             return asset
         } else {
             asset = createResource(context, provider)
-            map[key] = asset
+            asset.assetKey = key
+            map[asset] = Unit
         }
         return asset
     }
@@ -29,7 +34,7 @@ object AssetLoaderManager {
         return assetFactory.createAsset(context, provider)
     }
 
-    fun getAll(): HashMap<AssetKey?, IAsset?> = map
+    fun getAll(): WeakHashMap<IAsset, Unit> = map
 
     /**
      * 设置资源加载器
