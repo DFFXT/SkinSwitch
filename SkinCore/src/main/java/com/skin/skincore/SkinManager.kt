@@ -54,7 +54,7 @@ object SkinManager {
     fun makeContextSkinAble(context: Context) {
         if (!loaderServer.containsContext(context)) {
             val asset = AssetLoaderManager.getAsset(
-                application,
+                context,
                 ResourcesProviderManager.getPathProvider(theme),
             )
             loaderServer.addLoader(

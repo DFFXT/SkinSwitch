@@ -1,6 +1,8 @@
 package com.skin.skinswitch
 
+import android.app.Presentation
 import android.content.res.Resources
+import android.hardware.display.DisplayManager
 import android.os.Bundle
 import android.os.Environment
 import android.view.View
@@ -58,7 +60,18 @@ class MainActivity : AppCompatActivity() {
 
 
         findViewById<View>(R.id.view).setOnClickListener {
-            SecondActivity.startActivity(this)
+            // SecondActivity.startActivity(this)
+            getSystemService(DisplayManager::class.java).displays.getOrNull(1)?.let {
+                object : Presentation(this, it) {
+                    override fun onCreate(savedInstanceState: Bundle?) {
+                        super.onCreate(savedInstanceState)
+                        setContentView(R.layout.layout_presentaion)
+                    }
+                }.apply {
+                    SkinManager.makeContextSkinAble(this.context)
+                    show()
+                }
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.skin.skincore.asset
 
 import android.app.Application
+import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.content.res.Resources.Theme
@@ -11,28 +12,31 @@ import com.skin.skincore.provider.ISkinPathProvider
 
 /**
  * 皮肤包（apk）解析的资源
- * @param application 应用application
- * @param pkgName 皮肤包包名
- * @param res 皮肤包资源
+ * @param context 对应要换肤的context
+ * @param skinPathProvider 皮肤包配置
+ * todo Asset的释放
  */
 class Asset(
-    private val application: Application,
+    context: Context,
     private val skinPathProvider: ISkinPathProvider,
 ) : IAsset {
+    private val application = context.applicationContext as Application
+    private val configuration = context.resources.configuration
+    private val displayMetrics = context.resources.displayMetrics
     private val resourceLoader: IResourceLoader = DefaultResourceLoader()
-    private val info = resourceLoader.createAsset(application.baseContext, skinPathProvider)
+    private val info = resourceLoader.createAsset(application, configuration, skinPathProvider)
     lateinit var res: Resources
         private set
     override val pkgName: String
         get() = info.pkgName
     private val day: Resources by lazy {
         if (!res.isNight()) return@lazy res
-        val info = resourceLoader.createAsset(application.baseContext, skinPathProvider)
+        val info = resourceLoader.createAsset(application, configuration, skinPathProvider)
         createResource(info, false)
     }
     private val night: Resources by lazy {
         if (res.isNight()) return@lazy res
-        val info = resourceLoader.createAsset(application.baseContext, skinPathProvider)
+        val info = resourceLoader.createAsset(application, configuration, skinPathProvider)
         createResource(info, true)
     }
 
@@ -87,10 +91,10 @@ class Asset(
     }
 
     private fun createResource(assetInfo: AssetInfo, isNight: Boolean): Resources {
-        val config = Configuration(application.resources.configuration)
+        val config = Configuration(configuration)
         config.applyNight(isNight)
         // 这里创建了Resource对象，会更改AssetManger内部的Configuration，影响其他Resource持有的AssetManger
         // 所以需要一个Resource对应一个AssetManger
-        return Resources(assetInfo.assetManager, application.resources.displayMetrics, config)
+        return Resources(assetInfo.assetManager, displayMetrics, config)
     }
 }

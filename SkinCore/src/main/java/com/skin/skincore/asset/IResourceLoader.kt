@@ -1,12 +1,19 @@
 package com.skin.skincore.asset
 
-import android.content.Context
-import android.content.res.AssetManager
+import android.app.Application
+import android.content.res.Configuration
 import com.skin.skincore.provider.ISkinPathProvider
 
 /**
  * 资源包加载接口
  */
 interface IResourceLoader {
-    fun createAsset(context: Context, provider: ISkinPathProvider): AssetInfo
+    /**
+     * 如果返回null，则使用系统默认
+     */
+    fun createAsset(
+        application: Application,
+        configuration: Configuration,
+        provider: ISkinPathProvider,
+    ): AssetInfo
 }
