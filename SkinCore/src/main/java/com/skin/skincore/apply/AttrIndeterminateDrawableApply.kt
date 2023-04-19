@@ -15,6 +15,12 @@ internal class AttrIndeterminateDrawableApply : BaseViewApply<ProgressBar>(andro
             ResType.MIPMAP,
             ResType.DRAWABLE -> {
                 val drawable = provider.getDrawable(resId, theme)
+                // indeterminateDrawable 必须额外设置bounds
+                if (view.width != 0) {
+                    drawable.setBounds(0, 0, view.width, view.height)
+                } else {
+                    drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
+                }
                 // 这里不支持更改图片bounds
                 view.indeterminateDrawable = drawable
             }
