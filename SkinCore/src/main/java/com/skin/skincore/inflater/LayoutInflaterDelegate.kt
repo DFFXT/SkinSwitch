@@ -82,7 +82,7 @@ class LayoutInflaterDelegate(original: LayoutInflater, newContext: Context) :
         attrs: AttributeSet?
     ): View? {
         val v = super.onCreateView(viewContext, parent, name, attrs)
-        Logger.i(TAG_CREATE_VIEW, "3 onCreateView $name")
+        Logger.v(TAG_CREATE_VIEW, "3 onCreateView $name")
         if (v != null && attrs != null) {
             onViewCreatedListener?.onViewCreated(parent, v, name, attrs)
         }

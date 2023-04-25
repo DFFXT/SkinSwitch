@@ -13,6 +13,10 @@ object Logger : ILogger {
         this.logger = logger
     }
 
+    override fun v(tag: String, msg: String?) {
+        logger.v(tag, msg)
+    }
+
     override fun d(tag: String, msg: String?) {
         logger.d(tag, msg)
     }

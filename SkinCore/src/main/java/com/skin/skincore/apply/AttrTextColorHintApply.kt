@@ -1,19 +1,21 @@
 package com.skin.skincore.apply
 
 import android.content.res.Resources.Theme
-import android.widget.EditText
 import android.widget.TextView
 import com.skin.skincore.apply.base.BaseViewApply
 import com.skin.skincore.collector.ResType
 import com.skin.skincore.provider.IResourceProvider
 
-internal class AttrTextColorHintApply : BaseViewApply<EditText>(android.R.attr.textColorHint, EditText::class.java) {
+/**
+ * TextView提示语颜色
+ */
+internal class AttrTextColorHintApply : BaseViewApply<TextView>(android.R.attr.textColorHint, TextView::class.java) {
     override fun apply(
-        view: EditText,
+        view: TextView,
         resId: Int,
         resType: String,
         provider: IResourceProvider,
-        theme: Theme?
+        theme: Theme?,
     ) {
         when (resType) {
             ResType.DRAWABLE,

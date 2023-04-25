@@ -34,7 +34,7 @@ class PrivateFactoryDelegate(
         context: Context,
         attrs: AttributeSet
     ): View? {
-        Logger.i(TAG_CREATE_VIEW, "create private $name")
+        Logger.v(TAG_CREATE_VIEW, "create private $name")
         var v = super.onCreateView(parent, name, context, attrs)
         if (v == null) {
             if (name.indexOf('.') == -1) {
@@ -60,7 +60,7 @@ class PrivateFactoryDelegate(
                 viewCreated?.onViewCreated(parent, v, name, attrs)
             }
         }
-        Logger.i(TAG_CREATE_VIEW, "create private ${v != null}")
+        Logger.v(TAG_CREATE_VIEW, "create private ${v != null}")
         return v
     }
 

@@ -52,7 +52,7 @@ internal class ContextLoader(
                         val union = parser.parse(parent, view, attributeSet)
                         viewContainer.add(view, union)
                         interceptor?.afterParse(parent, view, attributeSet, union)
-                        Logger.i(TAG_CREATE_VIEW, "listen view created ok:$view")
+                        Logger.v(TAG_CREATE_VIEW, "listen view created ok:$view")
                         // view生成，如果是其它皮肤，则立即应用，因为background等属性是通过TypedArray来获取的
                         if (applyWhenCreate) {
                             AttrApplyManager.apply(event, view, union, iResourceProvider)

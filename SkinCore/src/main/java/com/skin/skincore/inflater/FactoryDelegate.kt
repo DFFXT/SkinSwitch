@@ -26,18 +26,18 @@ open class FactoryDelegate(
     }
 
     override fun onCreateView(parent: View?, name: String, context: Context, attrs: AttributeSet): View? {
-        Log.i(TAG_CREATE_VIEW, "onCreateView4 $name")
+        Logger.v(TAG_CREATE_VIEW, "onCreateView4 $name")
         otherFactory.forEach {
             if (it is Factory2) {
                 val v = it.onCreateView(parent, name, context, attrs)
                 if (v != null) {
                     viewCreated?.onViewCreated(parent, v, name, attrs)
-                    Logger.i(TAG_CREATE_VIEW, "onCreateView4 Ok")
+                    Logger.v(TAG_CREATE_VIEW, "onCreateView4 Ok")
                     return v
                 }
             }
         }
-        Logger.i(TAG_CREATE_VIEW, "onCreateView4 null")
+        Logger.v(TAG_CREATE_VIEW, "onCreateView4 null")
         return null
     }
 
@@ -47,11 +47,11 @@ open class FactoryDelegate(
             val v = it.onCreateView(name, context, attrs)
             if (v != null) {
                 viewCreated?.onViewCreated(null, v, name, attrs)
-                Logger.i(TAG_CREATE_VIEW, "onCreateView3 Ok")
+                Logger.v(TAG_CREATE_VIEW, "onCreateView3 Ok")
                 return v
             }
         }
-        Logger.i(TAG_CREATE_VIEW, "onCreateView3 null")
+        Logger.v(TAG_CREATE_VIEW, "onCreateView3 null")
         return null
     }
 

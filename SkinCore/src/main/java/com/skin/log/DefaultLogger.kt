@@ -6,6 +6,9 @@ import android.util.Log
  * 默认日志输出
  */
 internal class DefaultLogger : ILogger {
+    override fun v(tag: String, msg: String?) {
+        Log.v(tag, msg ?: "")
+    }
     override fun d(tag: String, msg: String?) {
         Log.d(tag, msg ?: "")
     }
