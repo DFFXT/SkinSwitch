@@ -49,6 +49,14 @@ object SkinManager {
     }
 
     /**
+     * 是否在view创建时就应用换肤
+     * @param apply true 会额外耗费时间进行换肤；false 页面启动快30%左右，前提是没有使用theme相关的样式
+     */
+    fun applyWhenCreate(apply: Boolean) {
+        ContextLoader.applyWhenCreate = apply
+    }
+
+    /**
      * 使对应context支持换肤
      */
     fun makeContextSkinAble(context: Context) {
