@@ -21,6 +21,10 @@ class ViewUnion(attrs: List<Attrs>? = null) : Iterable<Attrs> {
     // key 属性名称；value 属性值
     private val attrsMap = SparseArray<Attrs>()
 
+    // 当前View所属的布局id
+    var layoutId: Int = 0
+        internal set
+
     // 当前view的 app:skin 属性是什么
     var skinAttrValue: Int = ParseOutValue.SKIN_ATTR_UNDEFINE
         internal set

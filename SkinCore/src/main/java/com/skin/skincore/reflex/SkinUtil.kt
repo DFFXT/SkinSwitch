@@ -6,6 +6,7 @@ import android.content.ContextWrapper
 import android.content.res.AssetManager
 import android.content.res.Resources
 import android.content.res.Resources.Theme
+import android.util.AttributeSet
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
@@ -83,6 +84,12 @@ internal val setApkAssetMethod: Method by lazy {
     )
     method.isAccessible = true
     method
+}
+
+internal val xmlParser: Field by lazy {
+    val field = AttributeSet::class.java.getDeclaredField("mParser")
+    field.isAccessible = true
+    field
 }
 
 /**

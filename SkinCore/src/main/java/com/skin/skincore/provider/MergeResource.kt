@@ -3,10 +3,12 @@ package com.skin.skincore.provider
 import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.content.res.Resources
+import android.content.res.XmlResourceParser
 import android.graphics.drawable.Drawable
 import android.util.DisplayMetrics
 import androidx.core.content.res.ResourcesCompat
 import com.skin.skincore.asset.IAsset
+import java.util.WeakHashMap
 
 /**
  * 换肤resource，通过当前主题加载对应皮肤包里面的资源
@@ -132,6 +134,16 @@ class MergeResource(
         return currentRes.configuration
     }
 
+    /**
+     * 监听外部调用getLayout方法
+     * 将parser存储起来，用于确定view所在的布局
+     */
+    override fun getLayout(id: Int): XmlResourceParser {
+        val origin = super.getLayout(id)
+        layoutMapper[origin] = id
+        return origin
+    }
+
     // endregion
     /**
      * 切换到默认资源
@@ -149,5 +161,11 @@ class MergeResource(
         useDefault = false
         // currentRes = res
         applyThemeStyle(themeId)
+    }
+
+    companion object {
+        // 布局id
+        var layoutMapper: WeakHashMap<XmlResourceParser, Int> = WeakHashMap()
+            private set
     }
 }
