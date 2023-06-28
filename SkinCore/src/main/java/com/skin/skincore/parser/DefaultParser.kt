@@ -1,12 +1,14 @@
 package com.skin.skincore.parser
 
 import android.content.res.TypedArray
+import android.content.res.XmlResourceParser
 import android.util.AttributeSet
 import android.view.View
 import com.example.skincore.R
 import com.skin.skincore.collector.Attrs
 import com.skin.skincore.collector.ViewUnion
 import com.skin.skincore.collector.getViewUnion
+import com.skin.skincore.provider.MergeResource
 
 internal class DefaultParser(supportAttr: HashSet<Int>) : IParser {
     private val supportedAttrInternal = supportAttr.toHashSet()
@@ -32,7 +34,7 @@ internal class DefaultParser(supportAttr: HashSet<Int>) : IParser {
         // obtainStyledAttributes 参数2必须是升序数组
         val typedArray = view.context.obtainStyledAttributes(
             attributeSet,
-            keys
+            keys,
         )
         val union = ViewUnion()
         val parentUnion = parent?.getViewUnion()
@@ -49,7 +51,7 @@ internal class DefaultParser(supportAttr: HashSet<Int>) : IParser {
                     if (resId != 0) {
                         val attr = Attrs(
                             resId,
-                            value
+                            value,
                         )
                         union.addAttr(attr)
                     }
@@ -57,7 +59,6 @@ internal class DefaultParser(supportAttr: HashSet<Int>) : IParser {
             }
         }
         typedArray.recycle()
-
 
         if (union.skinForDescendants == ParseOutValue.SKIN_ATTR_TRUE) {
             // 需要将当前值传递给后代
@@ -73,6 +74,14 @@ internal class DefaultParser(supportAttr: HashSet<Int>) : IParser {
         }*/ /*else if (parentUnion != null) {
             // 如果当前view需要继承上层skin
             union.skinInheritedValue = parentUnion.skinInheritedValue
+        }*/
+        // 将当布局id给到ViewUnion
+        if (attributeSet is XmlResourceParser) {
+            union.layoutId = MergeResource.layoutMapper[attributeSet] ?: 0
+        }
+        /*val p = xmlParser.get(attributeSet)
+        if (p is MergeResource.XMlParserDelegate) {
+            union.layoutId = p.layoutId
         }*/
         return union
     }

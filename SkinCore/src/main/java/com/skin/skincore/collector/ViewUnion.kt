@@ -21,14 +21,21 @@ class ViewUnion(attrs: List<Attrs>? = null) : Iterable<Attrs> {
     // key 属性名称；value 属性值
     private val attrsMap = SparseArray<Attrs>()
 
+    // 当前View所属的布局id
+    var layoutId: Int = 0
+        internal set
+
     // 当前view的 app:skin 属性是什么
-    internal var skinAttrValue: Int = ParseOutValue.SKIN_ATTR_UNDEFINE
+    var skinAttrValue: Int = ParseOutValue.SKIN_ATTR_UNDEFINE
+        internal set
 
     // 从父布局那里继承而来的值
-    internal var skinInheritedValue: Int = ParseOutValue.SKIN_ATTR_UNDEFINE
+    var skinInheritedValue: Int = ParseOutValue.SKIN_ATTR_UNDEFINE
+        internal set
 
     // 当前app:skin_forDescendants 属性是什么, 是否需要传递给后代
-    internal var skinForDescendants: Int = ParseOutValue.SKIN_ATTR_UNDEFINE
+    var skinForDescendants: Int = ParseOutValue.SKIN_ATTR_UNDEFINE
+        internal set
 
     init {
         attrs?.forEach {
@@ -49,6 +56,10 @@ class ViewUnion(attrs: List<Attrs>? = null) : Iterable<Attrs> {
 
     fun removeAttr(attributeId: Int) {
         attrsMap.remove(attributeId)
+    }
+
+    operator fun get(attributeId: Int): Attrs? {
+        return attrsMap[attributeId]
     }
 
     override fun iterator(): Iterator<Attrs> = attrsMap.valueIterator()
@@ -118,13 +129,14 @@ internal fun View.clearSkinAttr() {
 fun View.setBackgroundResourceSkinAble(@DrawableRes backgroundRes: Int) {
     if (backgroundRes == 0) {
         background = null
+        this.removeSkinAttr(android.R.attr.background)
     } else {
         this.setBackgroundResource(backgroundRes)
         this.addViewSkinAttrs(
             Attrs(
                 backgroundRes,
-                android.R.attr.background
-            )
+                android.R.attr.background,
+            ),
         )
     }
 }
@@ -135,13 +147,14 @@ fun View.setBackgroundResourceSkinAble(@DrawableRes backgroundRes: Int) {
 fun ImageView.setImageResourceSkinAble(@DrawableRes resId: Int) {
     if (resId == 0) {
         this.setImageBitmap(null)
+        this.removeSkinAttr(android.R.attr.src)
     } else {
         // 更新资源id和资源类型
         this.addViewSkinAttrs(
             Attrs(
                 resId,
-                android.R.attr.src
-            )
+                android.R.attr.src,
+            ),
         )
         val providedBitmap = SkinManager.getResourceProvider(this.context).getDrawable(resId, context.theme)
         this.setImageDrawable(providedBitmap)
