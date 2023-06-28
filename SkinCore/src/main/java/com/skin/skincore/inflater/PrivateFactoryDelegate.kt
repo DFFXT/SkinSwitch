@@ -25,7 +25,8 @@ class PrivateFactoryDelegate(
     private val sClassPrefixList = arrayOf(
         "android.widget.",
         "android.webkit.",
-        "android.app."
+        "android.app.",
+        "android.view."
     )
 
     override fun onCreateView(

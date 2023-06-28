@@ -16,3 +16,4 @@ rootProject.name = "SkinSwitch"
 include ':app'
 include ':SkinCore'
 include ':skinPack-cartoon'
+include ':ViewDebug'

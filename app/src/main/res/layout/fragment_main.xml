@@ -12,7 +12,11 @@
         app:defaultNavHost="true"
         app:navGraph="@navigation/navi"
         />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
     <View
+        android:id="@+id/view_sp"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_marginStart="60dp"

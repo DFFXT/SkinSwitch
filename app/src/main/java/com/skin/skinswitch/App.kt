@@ -5,6 +5,7 @@ import android.content.res.Resources
 import android.view.View
 import android.view.ViewGroup
 import com.example.skinswitch.R
+import com.example.viewdebug.ViewDebugManager
 import com.skin.skincore.SkinManager
 import com.skin.skincore.apply.AttrSrcApply
 import com.skin.skincore.apply.base.BaseViewApply
@@ -53,5 +54,6 @@ class App : Application() {
         })
 
         //SkinManager.switchTheme(AppConst.THEME_CARTOON)
+        ViewDebugManager.init(this)
     }
 }
