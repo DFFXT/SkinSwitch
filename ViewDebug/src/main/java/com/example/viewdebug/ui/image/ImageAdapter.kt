@@ -13,6 +13,7 @@ import com.example.viewdebug.ui.skin.imageResource
 internal class ImageAdapter : BaseRecyclerAdapter<ImageAdapter.Item, ImageAdapter.VH>() {
 
     var onAttributeNameClick: ((Item) -> Unit)? = null
+    var onLayoutNameClick: ((Item) -> Unit)? = null
 
     inner class VH(val binding: ViewDebugLayoutImageItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -25,6 +26,9 @@ internal class ImageAdapter : BaseRecyclerAdapter<ImageAdapter.Item, ImageAdapte
                 "/" + itemView.context.resources.getResourceEntryName(item.id)
             binding.tvName.setOnClickListener {
                 onAttributeNameClick?.invoke(item)
+            }
+            binding.tvLayout.setOnClickListener {
+                onLayoutNameClick?.invoke(item)
             }
         }
     }

@@ -13,7 +13,7 @@ import java.util.LinkedList
  * 将xml转换成spannable
  */
 class XmlParser {
-    fun getXmlText(ctx: Context, id: Int): Spannable {
+    fun getXmlText(ctx: Context, id: Int, click: (String) -> Unit): Spannable {
         ctx.resources.getXml(id).use {
             val builder = SpannableStringBuilder()
 
@@ -52,6 +52,7 @@ class XmlParser {
                                 object : ClickableSpan() {
                                     override fun onClick(widget: View) {
                                         Log.i("XmlParser", "click $attrValue")
+                                        click.invoke(attrValue)
                                     }
                                 },
                                 builder.length - attrValue.length - 1,

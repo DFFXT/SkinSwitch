@@ -1,5 +1,7 @@
 package com.example.viewdebug.ui.image
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -36,13 +38,20 @@ internal class ViewImageCaptureResultDialog(
         if (captureAttrId != null) {
             attrIds.addAll(captureAttrId)
         }
+        adapter.onLayoutNameClick = {
+            copyToClipboard(ctx, it.layoutName)
+        }
         adapter.onAttributeNameClick = {
+            val attrValue = ctx.resources.getResourceEntryName(it.id)
             try {
-                val parsedValue = XmlParser().getXmlText(ctx, it.id)
+                val parsedValue = XmlParser().getXmlText(ctx, it.id) { text ->
+                    copyToClipboard(ctx, text)
+                }
                 val dialog = XmlTextDialog(ctx, hostPage)
-                val name = ctx.resources.getResourceTypeName(it.id) + "/" +ctx.resources.getResourceEntryName(it.id)
+                val name = ctx.resources.getResourceTypeName(it.id) + "/" + attrValue
                 dialog.show(name, parsedValue)
             } catch (e: Exception) {
+                copyToClipboard(ctx, attrValue)
             }
         }
         dialogBinding =
@@ -52,6 +61,11 @@ internal class ViewImageCaptureResultDialog(
                 false,
             )
         dialogBinding.rvImage.adapter = adapter
+    }
+
+    private fun copyToClipboard(ctx: Context, text: String) {
+        val clipboardManager = ctx.getSystemService(ClipboardManager::class.java)
+        clipboardManager.setPrimaryClip(ClipData.newPlainText("UI调试", text))
     }
 
     fun show(capturedViews: List<View>) {

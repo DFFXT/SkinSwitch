@@ -18,12 +18,16 @@ import java.lang.ref.WeakReference
  */
 object ViewDebugManager {
     private val activityLifecycleCallbacks = object : ActivityStackCallback() {
+        private var init = false
         override fun onActivityCreated(p0: Activity, p1: Bundle?) {
             super.onActivityCreated(p0, p1)
             uiControl.onActivityChange(WeakReference(p0))
-            addPage(ViewImageShowPage())
-            addPage(EmptyPage())
-            uiControl.show()
+            if (!init) {
+                addPage(ViewImageShowPage())
+                addPage(EmptyPage())
+                uiControl.show()
+                init = true
+            }
         }
     }
     private lateinit var app: Application
