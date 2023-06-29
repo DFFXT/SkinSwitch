@@ -17,7 +17,7 @@ class XmlParser {
         ctx.resources.getXml(id).use {
             val builder = SpannableStringBuilder()
 
-            val breakLine = LinkedList<Boolean>()
+            val breakLine = LinkedList<Pair<Boolean, Int>>()
             while (true) {
                 when (it.eventType) {
                     XmlPullParser.START_DOCUMENT -> {
@@ -25,17 +25,13 @@ class XmlParser {
 
                     XmlPullParser.START_TAG -> {
                         if (breakLine.size != 0) {
-                            breakLine[breakLine.size - 1] = true
+                            breakLine[breakLine.size - 1] = Pair(true, it.attributeCount)
                         }
-                        breakLine.add(false)
-                        if (builder.isNotEmpty()) {
-                            builder.append("\n")
-                        }
-                        repeat(it.depth - 1) {
-                            builder.append("\t")
-                        }
+                        breakLine.add(Pair(false, it.attributeCount))
+                        builder.indent(it.depth - 1)
                         builder.append("<" + it.name + "")
                         for (i in 0 until it.attributeCount) {
+                            builder.indent(it.depth)
                             val attrName = it.getAttributeName(i)
                             builder.append(" $attrName=")
                             val attrIdValue = it.getAttributeResourceValue(i, -1)
@@ -56,7 +52,7 @@ class XmlParser {
                                     }
                                 },
                                 builder.length - attrValue.length - 1,
-                                builder.length,
+                                builder.length - 1,
                                 Spannable.SPAN_INCLUSIVE_EXCLUSIVE,
                             )
                         }
@@ -64,17 +60,15 @@ class XmlParser {
                     }
 
                     XmlPullParser.END_TAG -> {
-                        if (breakLine.removeLast()) {
-                            builder.append("\n")
-                            repeat(it.depth - 1) {
-                                builder.append("\t")
-                            }
+                        val last = breakLine.removeLast()
+                        if (last.first || last.second > 0) {
+                            builder.indent(it.depth - 1)
                         }
                         builder.append("</" + it.name + ">")
                     }
 
                     XmlPullParser.TEXT -> {
-                        breakLine[breakLine.size - 1] = true
+                        breakLine[breakLine.size - 1] = Pair(true, 0)
                         repeat(it.depth - 1) {
                             builder.append("\t")
                         }
@@ -92,6 +86,15 @@ class XmlParser {
             }
             Log.i("XmlParser", builder.toString())
             return builder
+        }
+    }
+
+    private fun SpannableStringBuilder.indent(tabSize: Int) {
+        if (this.lastOrNull() != '\n') {
+            append("\n")
+        }
+        repeat(tabSize) {
+            append("\t")
         }
     }
 }

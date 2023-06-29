@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.viewdebug.databinding.ViewDebugImageSetContainerBinding
 import com.example.viewdebug.ui.UIPage
+import com.example.viewdebug.util.setSize
 import com.skin.skincore.collector.getViewUnion
 
 /**
@@ -23,20 +24,11 @@ class ViewImageCaptureResultDialog(
 
     init {
         adapter.onLayoutNameClick = {
-            copyToClipboard(ctx, it.layoutName)
+            // copyToClipboard(ctx, it.layoutName)
+            tryShowXmlText(ctx, it.layoutId)
         }
         adapter.onAttributeNameClick = {
-            val attrValue = ctx.resources.getResourceEntryName(it.id)
-            try {
-                val parsedValue = XmlParser().getXmlText(ctx, it.id) { text ->
-                    copyToClipboard(ctx, text)
-                }
-                val dialog = XmlTextDialog(ctx, hostPage)
-                val name = ctx.resources.getResourceTypeName(it.id) + "/" + attrValue
-                dialog.show(name, parsedValue)
-            } catch (e: Exception) {
-                copyToClipboard(ctx, attrValue)
-            }
+            tryShowXmlText(ctx, it.id)
         }
         dialogBinding =
             ViewDebugImageSetContainerBinding.inflate(
@@ -44,7 +36,22 @@ class ViewImageCaptureResultDialog(
                 hostPage.tabView.parent as ViewGroup,
                 false,
             )
+        dialogBinding.root.setSize(width = ctx.resources.displayMetrics.widthPixels / 2)
         dialogBinding.rvImage.adapter = adapter
+    }
+
+    private fun tryShowXmlText(ctx: Context, id: Int) {
+        val attrValue = ctx.resources.getResourceEntryName(id)
+        try {
+            val parsedValue = XmlParser().getXmlText(ctx, id) { text ->
+                copyToClipboard(ctx, text)
+            }
+            val dialog = XmlTextDialog(ctx, hostPage)
+            val name = ctx.resources.getResourceTypeName(id) + "/" + attrValue
+            dialog.show(name, parsedValue)
+        } catch (e: Exception) {
+            copyToClipboard(ctx, attrValue)
+        }
     }
 
     private fun copyToClipboard(ctx: Context, text: String) {
@@ -67,7 +74,7 @@ class ViewImageCaptureResultDialog(
             for (attr in u) {
                 attrIds.forEach {
                     if (it.key == attr.attributeId) {
-                        data.add(ImageAdapter.Item(attr.resId, "$layout.xml", it.value))
+                        data.add(ImageAdapter.Item(attr.resId, u.layoutId, "$layout.xml", it.value))
                     }
                 }
             }

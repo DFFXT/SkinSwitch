@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.example.viewdebug.databinding.ViewDebugXmlTextContainerBinding
 import com.example.viewdebug.ui.UIPage
+import com.example.viewdebug.util.setSize
 
 class XmlTextDialog(
     private val ctx: Context,
@@ -17,6 +18,7 @@ class XmlTextDialog(
 
     init {
         binding.tvText.movementMethod = LinkMovementMethod.getInstance()
+        binding.container.setSize(width = ctx.resources.displayMetrics.widthPixels / 2)
     }
     fun show(title: String, xml: CharSequence) {
         binding.tvName.text = title

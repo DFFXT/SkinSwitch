@@ -86,11 +86,13 @@ abstract class UIPage {
 
     @CallSuper
     open fun onShow() {
+        tabView.isSelected = true
         isOnShow = true
     }
 
     @CallSuper
     open fun onClose() {
+        tabView.isSelected = false
         isOnShow = false
     }
 

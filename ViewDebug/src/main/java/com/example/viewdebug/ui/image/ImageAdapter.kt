@@ -49,6 +49,7 @@ internal class ImageAdapter : BaseRecyclerAdapter<ImageAdapter.Item, ImageAdapte
 
     class Item(
         val id: Int,
+        val layoutId: Int,
         val layoutName: String,
         val name: String,
     )

@@ -2,44 +2,63 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/view_debug_dialog_background"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/view_debug_dialog_background"
+    android:paddingVertical="50dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="400dp"
+        android:id="@+id/container"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:background="@color/view_debug_image_set_bg"
         android:clickable="true"
-        android:focusable="true"
         android:elevation="5dp"
-        android:layout_gravity="center"
-        android:padding="20dp">
+        android:focusable="true"
+        android:padding="20dp"
+        >
 
         <TextView
             android:id="@+id/tv_name"
-            android:textColor="@color/view_debug_highlight_text_color"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/view_debug_bottom_line_1dp"
+            android:backgroundTint="@color/view_debug_dialog_background"
+            android:textColor="@color/view_debug_highlight_text_color"
             android:textSize="@dimen/view_debug_big_text_size"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:backgroundTint="@color/view_debug_dialog_background"
-            android:background="@drawable/view_debug_bottom_line_1dp"
-            tools:text="drawable/button_background"/>
+            tools:text="drawable/button_background" />
 
-        <TextView
-            android:id="@+id/tv_text"
-            android:layout_width="match_parent"
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/view_debug_common_text_size"
-            android:textColor="@color/view_debug_common_text_color"
+            android:layout_gravity="center"
+            app:layout_constrainedHeight="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight_max="400dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_name"
-            tools:text="xml code here" />
+            app:layout_constraintTop_toBottomOf="@id/tv_name">
 
+            <TextView
+                android:id="@+id/tv_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/view_debug_common_text_color"
+                android:textSize="@dimen/view_debug_common_text_size"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_max="400dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_name"
+                tools:text="xml code here" />
+
+
+        </androidx.core.widget.NestedScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 </FrameLayout>
