@@ -16,10 +16,24 @@ import com.example.viewdebug.ui.UIPage
  * @param append 哪种方式设置属性id
  */
 class ViewImageShowPage(
-    private val captureAttrId: List<Pair<Int, String>>? = null,
-    private val append: Boolean = true,
+    private val captureAttrId: ArrayList<Pair<Int, String>> = ArrayList(),
 ) :
     UIPage() {
+
+    private val attribute by lazy {
+        val attrIds = HashMap<Int, String>()
+        attrIds.put(android.R.attr.background, "background")
+        attrIds.put(android.R.attr.src, "background")
+        attrIds.put(android.R.attr.foreground, "foreground")
+        attrIds.put(android.R.attr.drawableStart, "drawableStart")
+        attrIds.put(android.R.attr.drawableTop, "drawableTop")
+        attrIds.put(android.R.attr.drawableEnd, "drawableEnd")
+        attrIds.put(android.R.attr.drawableBottom, "drawableBottom")
+        attrIds.put(android.R.attr.thumb, "thumb")
+        attrIds.put(android.R.attr.button, "button")
+        attrIds
+    }
+    private var dialog: ViewImageCaptureResultDialog? = null
 
     override fun enableTouch(): Boolean = true
 
@@ -42,7 +56,10 @@ class ViewImageShowPage(
                 ViewGroup.LayoutParams.MATCH_PARENT,
             )
             val capture = ViewCapture()
-            val dialog = ViewImageCaptureResultDialog(ctx, this@ViewImageShowPage)
+            dialog = ViewImageCaptureResultDialog(ctx, this@ViewImageShowPage, attribute)
+            captureAttrId.forEach {
+                dialog?.addAttribute(it.first, it.second)
+            }
             setOnTouchListener { _, event ->
                 if (event.action == MotionEvent.ACTION_UP) {
                     val hostRootView =
@@ -50,10 +67,18 @@ class ViewImageShowPage(
                     hostRootView ?: return@setOnTouchListener true
                     val capturedViews =
                         capture.capture(hostRootView, event.rawX.toInt(), event.rawY.toInt())
-                    dialog.show(capturedViews)
+                    dialog?.show(capturedViews)
                 }
                 return@setOnTouchListener true
             }
         }
+    }
+
+    fun addAttribute(id: Int, name: String) {
+        attribute[id] = name
+    }
+
+    fun removeAttribute(id: Int) {
+        attribute.remove(id)
     }
 }

@@ -16,28 +16,12 @@ import com.skin.skincore.collector.getViewUnion
 class ViewImageCaptureResultDialog(
     ctx: Context,
     private val hostPage: UIPage,
-    captureAttrId: List<Pair<Int, String>>? = null,
-    append: Boolean = true,
+    private val attrIds: HashMap<Int, String>,
 ) {
     private val adapter = ImageAdapter()
     private val dialogBinding: ViewDebugImageSetContainerBinding
-    private val attrIds = ArrayList<Pair<Int, String>>()
 
     init {
-        if (captureAttrId == null || append) {
-            attrIds.add(Pair(android.R.attr.background, "background"))
-            attrIds.add(Pair(android.R.attr.src, "background"))
-            attrIds.add(Pair(android.R.attr.foreground, "foreground"))
-            attrIds.add(Pair(android.R.attr.drawableStart, "drawableStart"))
-            attrIds.add(Pair(android.R.attr.drawableTop, "drawableTop"))
-            attrIds.add(Pair(android.R.attr.drawableEnd, "drawableEnd"))
-            attrIds.add(Pair(android.R.attr.drawableBottom, "drawableBottom"))
-            attrIds.add(Pair(android.R.attr.thumb, "thumb"))
-            attrIds.add(Pair(android.R.attr.button, "button"))
-        }
-        if (captureAttrId != null) {
-            attrIds.addAll(captureAttrId)
-        }
         adapter.onLayoutNameClick = {
             copyToClipboard(ctx, it.layoutName)
         }
@@ -68,18 +52,22 @@ class ViewImageCaptureResultDialog(
         clipboardManager.setPrimaryClip(ClipData.newPlainText("UI调试", text))
     }
 
+    fun addAttribute(id: Int, name: String) {
+        attrIds.put(id, name)
+    }
+
     fun show(capturedViews: List<View>) {
         val data = ArrayList<ImageAdapter.Item>()
         for (v in capturedViews) {
             val u = v.getViewUnion() ?: continue
             val layout = v.context.resources.getResourceEntryName(u.layoutId)
             attrIds.forEach {
-                //ability.invoke()
+                // ability.invoke()
             }
             for (attr in u) {
                 attrIds.forEach {
-                    if (it.first == attr.attributeId) {
-                        data.add(ImageAdapter.Item(attr.resId, "$layout.xml", it.second))
+                    if (it.key == attr.attributeId) {
+                        data.add(ImageAdapter.Item(attr.resId, "$layout.xml", it.value))
                     }
                 }
             }
@@ -89,9 +77,4 @@ class ViewImageCaptureResultDialog(
             hostPage.showDialog(dialogBinding.root)
         }
     }
-
-    class ViewAttrInfo(
-        val resId: Int,
-        val layoutName: String,
-    )
 }

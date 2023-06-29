@@ -14,4 +14,8 @@
         <!-- Customize your theme here. -->
         <item name="viewInflaterClass">com.google.android.material.theme.MaterialComponentsViewInflater</item>
     </style>
+    <style name="s">
+        <item name="android:value"/>
+        <item name="android:name"/>
+    </style>
 </resources>
