@@ -49,8 +49,8 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
     implementation("com.squareup.leakcanary:leakcanary-android:2.9.1")
 
-    implementation("androidx.navigation:navigation-fragment-ktx:2.5.1")
-    implementation("androidx.navigation:navigation-ui-ktx:2.5.1")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.3.2")
+    implementation("androidx.navigation:navigation-ui-ktx:2.3.2")
 }
 val f = (ext.get("buildSkinModule") as org.codehaus.groovy.runtime.MethodClosure).invoke(
     "skinPack-cartoon",
