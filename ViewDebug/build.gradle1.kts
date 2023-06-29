@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.viewdebug"
+    // namespace = "com.example.viewdebug"
     compileSdk = 30
 
     defaultConfig {
