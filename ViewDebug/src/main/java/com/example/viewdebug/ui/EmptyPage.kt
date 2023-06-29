@@ -20,7 +20,7 @@ class EmptyPage : UIPage() {
             val size =
                 ctx.resources.getDimensionPixelSize(R.dimen.view_debug_control_ui_status_bar_height)
             layoutParams = ViewGroup.LayoutParams(size, size)
-            setBackgroundResource(com.google.android.material.R.drawable.ic_m3_chip_close)
+            setBackgroundResource(R.mipmap.view_debug_common_close)
         }
     }
 

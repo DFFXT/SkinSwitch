@@ -3,10 +3,12 @@ package com.example.viewdebug
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
+import android.view.View
 import com.example.viewdebug.listener.ActivityStackCallback
 import com.example.viewdebug.ui.EmptyPage
 import com.example.viewdebug.ui.UIControl
 import com.example.viewdebug.ui.UIPage
+import com.example.viewdebug.ui.image.ViewImageCaptureResultDialog
 import com.example.viewdebug.ui.image.ViewImageShowPage
 import java.lang.ref.WeakReference
 
@@ -43,5 +45,9 @@ object ViewDebugManager {
 
     fun removePage(page: UIPage) {
         uiControl.removePage(page)
+    }
+
+    fun loadImageShowPage(ability: (View) -> ViewImageCaptureResultDialog.ViewAttrInfo) {
+        //addPage(ViewImageShowPage())
     }
 }

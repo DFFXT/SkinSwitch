@@ -15,7 +15,10 @@ import com.example.viewdebug.ui.UIPage
  * @param captureAttrId first:属性id @see[android.R.attr.src], second:属性描述
  * @param append 哪种方式设置属性id
  */
-class ViewImageShowPage(private val captureAttrId: List<Pair<Int, String>>? = null, private val append: Boolean = true) :
+class ViewImageShowPage(
+    private val captureAttrId: List<Pair<Int, String>>? = null,
+    private val append: Boolean = true,
+) :
     UIPage() {
 
     override fun enableTouch(): Boolean = true

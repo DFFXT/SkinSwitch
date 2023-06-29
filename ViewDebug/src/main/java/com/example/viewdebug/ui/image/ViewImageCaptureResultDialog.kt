@@ -13,7 +13,7 @@ import com.skin.skincore.collector.getViewUnion
 /**
  * 显示拾取view相关信息
  */
-internal class ViewImageCaptureResultDialog(
+class ViewImageCaptureResultDialog(
     ctx: Context,
     private val hostPage: UIPage,
     captureAttrId: List<Pair<Int, String>>? = null,
@@ -73,6 +73,9 @@ internal class ViewImageCaptureResultDialog(
         for (v in capturedViews) {
             val u = v.getViewUnion() ?: continue
             val layout = v.context.resources.getResourceEntryName(u.layoutId)
+            attrIds.forEach {
+                //ability.invoke()
+            }
             for (attr in u) {
                 attrIds.forEach {
                     if (it.first == attr.attributeId) {
@@ -86,4 +89,9 @@ internal class ViewImageCaptureResultDialog(
             hostPage.showDialog(dialogBinding.root)
         }
     }
+
+    class ViewAttrInfo(
+        val resId: Int,
+        val layoutName: String,
+    )
 }
