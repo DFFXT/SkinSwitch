@@ -2,24 +2,33 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/view_debug_image_set_bg"
-    android:elevation="5dp"
     android:layout_width="400dp"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/view_debug_image_set_bg"
+    android:elevation="5dp">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/view_debug_control_ui_status_bar_height"
+        android:background="@color/view_debug_image_detail_title_bar_bg"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/iv_close"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/view_debug_control_ui_status_bar_height"
+        android:layout_height="@dimen/view_debug_control_ui_status_bar_height"
         android:src="@mipmap/view_debug_common_close"
+        android:tint="@color/view_debug_white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="PrivateResource" />
+        tools:ignore="PrivateResource,UseAppTint" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:paddingVertical="5dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constrainedHeight="true"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -3,4 +3,7 @@
     <dimen name="view_debug_control_ui_status_bar_height">30dp</dimen>
     <dimen name="view_debug_common_text_size">16sp</dimen>
     <dimen name="view_debug_big_text_size">20sp</dimen>
+
+    <dimen name="view_debug_ui_control_button_margin">5dp</dimen>
+    <dimen name="view_debug_elevation">5dp</dimen>
 </resources>

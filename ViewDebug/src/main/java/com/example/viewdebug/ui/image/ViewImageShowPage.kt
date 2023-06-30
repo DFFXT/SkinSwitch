@@ -2,6 +2,7 @@ package com.example.viewdebug.ui.image
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.view.MotionEvent
 import android.view.View
@@ -9,6 +10,7 @@ import android.view.ViewGroup
 import com.example.viewdebug.R
 import com.example.viewdebug.ViewCapture
 import com.example.viewdebug.ui.UIPage
+import com.example.viewdebug.util.enableSelect
 
 /**
  * 显示当前点击处View的背景、图片资源等
@@ -44,7 +46,10 @@ class ViewImageShowPage(
             val size =
                 ctx.resources.getDimensionPixelSize(R.dimen.view_debug_control_ui_status_bar_height)
             layoutParams = ViewGroup.LayoutParams(size, size)
-            setBackgroundColor(Color.BLUE)
+            setBackgroundResource(R.mipmap.view_debug_image_layer_pick)
+            backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+            // enablePress()
+            enableSelect()
         }
     }
 

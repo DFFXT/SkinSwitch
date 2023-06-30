@@ -5,16 +5,22 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.skin.skincore.collector.Attrs
 import com.skin.skincore.collector.addViewSkinAttrs
+import com.skin.skincore.collector.removeSkinAttr
 
 object Skinable {
     internal var onChangeListener: ((View, resId: Int, attrId: Int) -> Unit)? = { v, resId, attrId ->
         // 使用SkinManager方式换肤
-        v.addViewSkinAttrs(
-            Attrs(
-                resId,
-                attrId,
-            ),
-        )
+        if (resId != 0) {
+            v.addViewSkinAttrs(
+                Attrs(
+                    resId,
+                    attrId,
+                ),
+            )
+        } else {
+            v.removeSkinAttr(attrId)
+        }
+
     }
 
     fun setModuleResourceSwitchListener(onChangeListener: ((View, resId: Int, attrId: Int) -> Unit)) {
