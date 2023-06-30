@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <color name="view_debug_white">#fff</color>
+    <color name="view_debug_black">#000</color>
+    <color name="view_debug_transparent">#0000</color>
+    <color name="view_debug_red">#F00</color>
     <color name="view_debug_common_text_color">#8000</color>
     <color name="view_debug_highlight_text_color">#938</color>
     <color name="view_debug_item_bottom_line">#8000</color>
     <color name="view_debug_image_set_bg">#FFdddddd</color>
     <color name="view_debug_dialog_background">#33000000</color>
+    <color name="view_debug_dialog_image_detail_bg">#FFF</color>
+    <color name="view_debug_image_detail_title_bar_bg">#578FFF</color>
 </resources>

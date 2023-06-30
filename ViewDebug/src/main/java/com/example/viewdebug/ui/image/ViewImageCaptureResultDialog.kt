@@ -23,8 +23,12 @@ class ViewImageCaptureResultDialog(
     private val dialogBinding: ViewDebugImageSetContainerBinding
 
     init {
+        adapter.onImageClick = {
+            val dialog = ImageDetailDialog(hostPage)
+            dialog.show(it.id)
+        }
         adapter.onLayoutNameClick = {
-            // copyToClipboard(ctx, it.layoutName)
+            copyToClipboard(ctx, it.layoutName)
             tryShowXmlText(ctx, it.layoutId)
         }
         adapter.onAttributeNameClick = {
@@ -67,14 +71,16 @@ class ViewImageCaptureResultDialog(
         val data = ArrayList<ImageAdapter.Item>()
         for (v in capturedViews) {
             val u = v.getViewUnion() ?: continue
-            val layout = v.context.resources.getResourceEntryName(u.layoutId)
-            attrIds.forEach {
-                // ability.invoke()
+            val layoutInfo = if (u.layoutId == 0) {
+                // 没有布局信息，直接new的对象
+                "未知：" + v::class.java.name
+            } else {
+                v.context.resources.getResourceEntryName(u.layoutId) + ".xml"
             }
             for (attr in u) {
                 attrIds.forEach {
                     if (it.key == attr.attributeId) {
-                        data.add(ImageAdapter.Item(attr.resId, u.layoutId, "$layout.xml", it.value))
+                        data.add(ImageAdapter.Item(attr.resId, u.layoutId, layoutInfo, it.value))
                     }
                 }
             }
@@ -83,5 +89,9 @@ class ViewImageCaptureResultDialog(
             adapter.update(data)
             hostPage.showDialog(dialogBinding.root)
         }
+    }
+
+    fun close() {
+        hostPage.closeDialog(dialogBinding.root)
     }
 }

@@ -9,6 +9,7 @@ import com.example.viewdebug.ui.UIControl
 import com.example.viewdebug.ui.UIPage
 import com.example.viewdebug.ui.image.ViewDebugImageManager
 import java.lang.ref.WeakReference
+import java.util.LinkedList
 
 /**
  * 视图调试工具
@@ -19,14 +20,41 @@ import java.lang.ref.WeakReference
 object ViewDebugManager {
     private val activityLifecycleCallbacks = object : ActivityStackCallback() {
         private var init = false
+        private val activities = LinkedList<Activity>()
+        private var currentActivity: Activity? = null
         override fun onActivityCreated(p0: Activity, p1: Bundle?) {
             super.onActivityCreated(p0, p1)
+            currentActivity = p0
+            activities.add(0, p0)
             uiControl.onActivityChange(WeakReference(p0))
             if (!init) {
                 addPage(ViewDebugImageManager.getPage())
                 addPage(EmptyPage())
-                uiControl.show()
                 init = true
+            }
+        }
+
+        override fun onActivityResumed(p0: Activity) {
+            super.onActivityResumed(p0)
+            currentActivity = p0
+            uiControl.onActivityChange(WeakReference(p0))
+            uiControl.show()
+        }
+
+        override fun onActivityDestroyed(p0: Activity) {
+            super.onActivityDestroyed(p0)
+            activities.remove(p0)
+            // 所有页面退出后直接隐藏
+            if (activities.isEmpty()) {
+                uiControl.close()
+            }
+        }
+
+        override fun onActivityPaused(p0: Activity) {
+            super.onActivityPaused(p0)
+            // 应用后台，隐藏
+            if (p0 == currentActivity) {
+                uiControl.close()
             }
         }
     }
@@ -44,4 +72,10 @@ object ViewDebugManager {
     fun removePage(page: UIPage) {
         uiControl.removePage(page)
     }
+
+    /*fun destroy() {
+        app.unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks)
+        // app 持有不用销毁
+        uiControl.destroy()
+    }*/
 }

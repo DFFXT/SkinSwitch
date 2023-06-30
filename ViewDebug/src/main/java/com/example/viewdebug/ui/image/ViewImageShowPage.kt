@@ -81,4 +81,9 @@ class ViewImageShowPage(
     fun removeAttribute(id: Int) {
         attribute.remove(id)
     }
+
+    override fun onClose() {
+        super.onClose()
+        dialog?.close()
+    }
 }

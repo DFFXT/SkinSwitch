@@ -54,6 +54,5 @@ class App : Application() {
         })
 
         //SkinManager.switchTheme(AppConst.THEME_CARTOON)
-        ViewDebugManager.init(this)
     }
 }

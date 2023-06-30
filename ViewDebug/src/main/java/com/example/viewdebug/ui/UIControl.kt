@@ -22,7 +22,12 @@ class UIControl(private val ctx: Context) {
 
     private var hostActivity: WeakReference<Activity>? = null
 
+    // 是否显示
+    var isShown = false
+        private set
+
     fun show() {
+        if (isShown) return
         val lp = WindowManager.LayoutParams(
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT,
@@ -45,10 +50,13 @@ class UIControl(private val ctx: Context) {
             set(lp, flag or 0x00000040)
         }
         wm.addView(rootView.root, lp)
+        isShown = true
     }
 
     fun close() {
-        wm.removeView(rootView.root)
+        if (!isShown) return
+        wm.removeViewImmediate(rootView.root)
+        isShown = false
     }
 
     fun onActivityChange(hostActivity: WeakReference<Activity>) {
