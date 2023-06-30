@@ -14,6 +14,7 @@ internal class ImageAdapter : BaseRecyclerAdapter<ImageAdapter.Item, ImageAdapte
 
     var onAttributeNameClick: ((Item) -> Unit)? = null
     var onLayoutNameClick: ((Item) -> Unit)? = null
+    var onImageClick: ((Item) -> Unit)? = null
 
     inner class VH(val binding: ViewDebugLayoutImageItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -29,6 +30,9 @@ internal class ImageAdapter : BaseRecyclerAdapter<ImageAdapter.Item, ImageAdapte
             }
             binding.tvLayout.setOnClickListener {
                 onLayoutNameClick?.invoke(item)
+            }
+            binding.ivImage.setOnClickListener {
+                onImageClick?.invoke(item)
             }
         }
     }

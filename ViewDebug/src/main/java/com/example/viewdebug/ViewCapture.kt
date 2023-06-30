@@ -38,8 +38,8 @@ internal class ViewCapture {
         ) {
             if (captureInvisible || rootView.isShown) {
                 if (rootView is ViewGroup) {
+                    out.add(0, rootView)
                     rootView.children.forEach { v ->
-                        out.add(0, rootView)
                         findViewByPosition(
                             v,
                             offsetX + rootView.left,

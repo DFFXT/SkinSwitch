@@ -22,7 +22,7 @@ class XmlTextDialog(
         binding.tvName.text = title
         binding.tvText.text = xml
         binding.tvName.setOnClickListener {
-            copyToClipboard(ctx, title.split("/")[1])
+            copyToClipboard(ctx, title)
         }
         hostPage.showDialog(binding.root)
     }
@@ -30,5 +30,9 @@ class XmlTextDialog(
     private fun copyToClipboard(ctx: Context, text: String) {
         val clipboardManager = ctx.getSystemService(ClipboardManager::class.java)
         clipboardManager.setPrimaryClip(ClipData.newPlainText("UI调试", text))
+    }
+
+    fun close() {
+        hostPage.closeDialog(binding.root)
     }
 }

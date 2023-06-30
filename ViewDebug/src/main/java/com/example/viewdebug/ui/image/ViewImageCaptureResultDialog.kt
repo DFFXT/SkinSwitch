@@ -22,6 +22,10 @@ class ViewImageCaptureResultDialog(
     private val dialogBinding: ViewDebugImageSetContainerBinding
 
     init {
+        adapter.onImageClick = {
+            val dialog = ImageDetailDialog(hostPage)
+            dialog.show(it.id)
+        }
         adapter.onLayoutNameClick = {
             copyToClipboard(ctx, it.layoutName)
         }
@@ -29,14 +33,18 @@ class ViewImageCaptureResultDialog(
             val attrValue = ctx.resources.getResourceEntryName(it.id)
             try {
                 val parsedValue = XmlParser().getXmlText(ctx, it.id) { text ->
-                    copyToClipboard(ctx, text)
+                    if (text.indexOf('/', 0, false) == -1) {
+                        copyToClipboard(ctx, text)
+                    } else {
+                        copyToClipboard(ctx, text.split('/')[1])
+                    }
                 }
                 val dialog = XmlTextDialog(ctx, hostPage)
                 val name = ctx.resources.getResourceTypeName(it.id) + "/" + attrValue
                 dialog.show(name, parsedValue)
             } catch (e: Exception) {
-                copyToClipboard(ctx, attrValue)
             }
+            copyToClipboard(ctx, attrValue)
         }
         dialogBinding =
             ViewDebugImageSetContainerBinding.inflate(
@@ -60,14 +68,16 @@ class ViewImageCaptureResultDialog(
         val data = ArrayList<ImageAdapter.Item>()
         for (v in capturedViews) {
             val u = v.getViewUnion() ?: continue
-            val layout = v.context.resources.getResourceEntryName(u.layoutId)
-            attrIds.forEach {
-                // ability.invoke()
+            val layoutInfo = if (u.layoutId == 0) {
+                // 没有布局信息，直接new的对象
+                "未知：" + v::class.java.name
+            } else {
+                v.context.resources.getResourceEntryName(u.layoutId) + ".xml"
             }
             for (attr in u) {
                 attrIds.forEach {
                     if (it.key == attr.attributeId) {
-                        data.add(ImageAdapter.Item(attr.resId, "$layout.xml", it.value))
+                        data.add(ImageAdapter.Item(attr.resId, layoutInfo, it.value))
                     }
                 }
             }
@@ -76,5 +86,9 @@ class ViewImageCaptureResultDialog(
             adapter.update(data)
             hostPage.showDialog(dialogBinding.root)
         }
+    }
+
+    fun close() {
+        hostPage.closeDialog(dialogBinding.root)
     }
 }
