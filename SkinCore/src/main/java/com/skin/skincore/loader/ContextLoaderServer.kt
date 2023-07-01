@@ -4,7 +4,9 @@ import android.content.Context
 import android.view.View
 import com.skin.skincore.asset.IAsset
 import com.skin.skincore.parser.AttrParseInterceptor
+import com.skin.skincore.parser.AttrParseListener
 import com.skin.skincore.provider.IResourceProvider
+import java.util.LinkedList
 
 internal class ContextLoaderServer {
     // 全局context容器
@@ -12,6 +14,9 @@ internal class ContextLoaderServer {
 
     // 视图解析拦截
     private var interceptor: AttrParseInterceptor? = null
+
+    // 视图解析监听
+    private val attrParseListeners = LinkedList<AttrParseListener>()
 
     /**
      * 将contextLoader添加到容器
@@ -23,6 +28,7 @@ internal class ContextLoaderServer {
         }
         if (!loaderContainer.contains(contextLoader)) {
             contextLoader.interceptor = interceptor
+            contextLoader.attrParseListeners = attrParseListeners
             loaderContainer.add(contextLoader)
         }
     }
@@ -32,7 +38,12 @@ internal class ContextLoaderServer {
      * @param iResourceProvider 资源提供器
      * @param ctx 要切换的context，如果为null则应用整体切换
      */
-    fun switchTheme(asset: IAsset?, iResourceProvider: IResourceProvider, ctx: Context?, eventType: IntArray) {
+    fun switchTheme(
+        asset: IAsset?,
+        iResourceProvider: IResourceProvider,
+        ctx: Context?,
+        eventType: IntArray,
+    ) {
         checkContext()
         if (ctx != null) {
             getContextLoader(ctx)?.switchTheme(asset, iResourceProvider, eventType)
@@ -102,6 +113,10 @@ internal class ContextLoaderServer {
         loaderContainer.forEach {
             it.interceptor = interceptor
         }
+    }
+
+    fun addAttrParseListener(attrParseListener: AttrParseListener) {
+        attrParseListeners.add(attrParseListener)
     }
 
     /**

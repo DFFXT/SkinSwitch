@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.viewdebug.databinding.ViewDebugImageSetContainerBinding
 import com.example.viewdebug.ui.UIPage
+import com.example.viewdebug.util.getViewDebugInfo
 import com.example.viewdebug.util.setSize
 import com.skin.skincore.collector.getViewUnion
 
@@ -71,16 +72,18 @@ class ViewImageCaptureResultDialog(
         val data = ArrayList<ImageAdapter.Item>()
         for (v in capturedViews) {
             val u = v.getViewUnion() ?: continue
-            val layoutInfo = if (u.layoutId == 0) {
+            val debugInfo = v.getViewDebugInfo()
+            val layoutId = debugInfo?.layoutId ?: 0
+            val layoutInfo = if (layoutId == 0) {
                 // 没有布局信息，直接new的对象
                 "未知：" + v::class.java.name
             } else {
-                v.context.resources.getResourceEntryName(u.layoutId) + ".xml"
+                v.context.resources.getResourceEntryName(layoutId) + ".xml"
             }
             for (attr in u) {
                 attrIds.forEach {
                     if (it.key == attr.attributeId) {
-                        data.add(ImageAdapter.Item(attr.resId, u.layoutId, layoutInfo, it.value))
+                        data.add(ImageAdapter.Item(attr.resId, layoutId, layoutInfo, it.value))
                     }
                 }
             }

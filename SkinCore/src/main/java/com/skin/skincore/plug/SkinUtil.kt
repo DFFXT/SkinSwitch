@@ -6,6 +6,7 @@ import android.view.ContextThemeWrapper
 import androidx.appcompat.app.AppCompatActivity
 import com.skin.skincore.asset.IAsset
 import com.skin.skincore.provider.MergeResource
+import com.skin.skincore.provider.ResourcesProviderManager
 import com.skin.skincore.reflex.avtivityResourcesFiled
 import com.skin.skincore.reflex.contextResourcesField
 import com.skin.skincore.reflex.getCurrentThemeId
@@ -37,7 +38,12 @@ internal fun Context.updateResource(asset: IAsset) {
         // 资源设置
         filed.set(
             target,
-            MergeResource(asset, this.resources, getCurrentThemeId())
+            ResourcesProviderManager.resourceObjectCreator.createResourceObject(
+                asset,
+                this.resources,
+                getCurrentThemeId(),
+            ),
+            // MergeResource(asset, this.resources, getCurrentThemeId())
         )
     }
 }

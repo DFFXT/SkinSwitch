@@ -11,6 +11,7 @@ import com.skin.skincore.collector.isNight
 import com.skin.skincore.loader.ContextLoader
 import com.skin.skincore.loader.ContextLoaderServer
 import com.skin.skincore.parser.AttrParseInterceptor
+import com.skin.skincore.parser.AttrParseListener
 import com.skin.skincore.parser.ParseOutValue
 import com.skin.skincore.plug.SkinPackDeveloping
 import com.skin.skincore.provider.DefaultProviderFactory
@@ -203,5 +204,12 @@ object SkinManager {
      */
     fun setViewAttrParseInterceptor(interceptor: AttrParseInterceptor) {
         loaderServer.setAttrParseInterceptor(interceptor)
+    }
+
+    /**
+     * 设置属性解析监听
+     */
+    fun addViewAttrParseListener(listener: AttrParseListener) {
+        loaderServer.addAttrParseListener(listener)
     }
 }

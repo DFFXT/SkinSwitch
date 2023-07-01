@@ -3,7 +3,7 @@ package com.skin.skincore.provider
 import android.content.Context
 import com.skin.skincore.SkinManager
 import com.skin.skincore.asset.AssetLoaderManager
-import java.util.*
+import java.util.WeakHashMap
 
 /**
  * 资源提供者管理
@@ -14,11 +14,31 @@ object ResourcesProviderManager {
     private lateinit var defaultResourceProvider: IResourceProvider
     private lateinit var resourceProviderFactory: ResourceProviderFactory
 
+    // Resource对象创建器
+    internal lateinit var resourceObjectCreator: ResourceObjectCreator
+    private var resourceObjectCreatorHasSet = false
+
     // 默认资源路径提供器
     private val defaultSkinPathProvider = CustomSkinPathProvider("", "", SkinManager.DEFAULT_THEME)
     fun init(context: Context, resourceProviderFactory: ResourceProviderFactory) {
         defaultResourceProvider = resourceProviderFactory.getDefaultProvider(context)
+        if (!resourceObjectCreatorHasSet) {
+            this.resourceObjectCreator = DefaultMergeResourceCreator
+        }
         this.resourceProviderFactory = resourceProviderFactory
+    }
+
+    /**
+     * 替换Resource对象创建器
+     * 只允许设置一次
+     * 要设置需要在init之前设置
+     */
+    fun replaceResourceObjectCreator(creator: ResourceObjectCreator) {
+        if (resourceObjectCreatorHasSet) {
+            throw IllegalStateException("resourceObjectCreator already replaced")
+        }
+        resourceObjectCreator = creator
+        resourceObjectCreatorHasSet = true
     }
 
     /**

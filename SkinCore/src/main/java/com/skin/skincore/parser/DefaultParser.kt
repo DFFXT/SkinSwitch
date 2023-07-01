@@ -75,10 +75,6 @@ internal class DefaultParser(supportAttr: HashSet<Int>) : IParser {
             // 如果当前view需要继承上层skin
             union.skinInheritedValue = parentUnion.skinInheritedValue
         }*/
-        // 将当布局id给到ViewUnion
-        if (attributeSet is XmlResourceParser) {
-            union.layoutId = MergeResource.layoutMapper[attributeSet] ?: 0
-        }
         /*val p = xmlParser.get(attributeSet)
         if (p is MergeResource.XMlParserDelegate) {
             union.layoutId = p.layoutId
