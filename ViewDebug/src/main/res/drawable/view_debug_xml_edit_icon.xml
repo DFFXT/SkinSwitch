@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true" android:drawable="@mipmap/view_debug_xml_edit_save"/>
+    <item android:drawable="@mipmap/view_debug_common_modify"/>
+</selector>

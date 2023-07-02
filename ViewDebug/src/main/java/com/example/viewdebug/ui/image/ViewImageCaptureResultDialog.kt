@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.viewdebug.databinding.ViewDebugImageSetContainerBinding
 import com.example.viewdebug.ui.UIPage
+import com.example.viewdebug.util.adjustOrientation
 import com.example.viewdebug.util.getViewDebugInfo
 import com.example.viewdebug.util.setSize
 import com.skin.skincore.collector.getViewUnion
@@ -41,7 +42,7 @@ class ViewImageCaptureResultDialog(
                 hostPage.tabView.parent as ViewGroup,
                 false,
             )
-        dialogBinding.root.setSize(width = ctx.resources.displayMetrics.widthPixels / 2)
+        adjustOrientation(dialogBinding.root)
         dialogBinding.rvImage.adapter = adapter
     }
 
@@ -52,8 +53,7 @@ class ViewImageCaptureResultDialog(
                 copyToClipboard(ctx, text)
             }
             val dialog = XmlTextDialog(ctx, hostPage)
-            val name = ctx.resources.getResourceTypeName(id) + "/" + attrValue
-            dialog.show(name, parsedValue)
+            dialog.show(id, parsedValue)
         } catch (e: Exception) {
             copyToClipboard(ctx, attrValue)
         }

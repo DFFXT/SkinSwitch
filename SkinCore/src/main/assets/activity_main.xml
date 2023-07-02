@@ -16,7 +16,7 @@
         android:id="@+id/view"
         android:layout_width="@dimen/test_d"
         android:layout_height="40dp"
-        android:text="1s2"
+        android:text="1002"
         android:background="@drawable/theme_drawable"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

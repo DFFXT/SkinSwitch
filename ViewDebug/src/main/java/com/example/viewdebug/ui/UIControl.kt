@@ -39,9 +39,12 @@ class UIControl(private val ctx: Context) {
         val contentLp = getLayoutParams()
         contentLp.width = ctx.resources.displayMetrics.widthPixels
         contentLp.height = ctx.resources.displayMetrics.heightPixels
+        //contentLp.flags = contentLp.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+        //contentLp.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT
         wm.addView(contentBinding.root, contentLp)
         // 添加控制栏
         val lp = getLayoutParams()
+        lp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
         wm.addView(uiControlBinding.root, lp)
         isShown = true
     }
@@ -117,8 +120,8 @@ class UIControl(private val ctx: Context) {
         } else {
             lp.type = WindowManager.LayoutParams.TYPE_PHONE
         }
-        lp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or 0x00000040
+        lp.flags =
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
         lp.format = PixelFormat.TRANSLUCENT
         lp.gravity = Gravity.END or Gravity.TOP
         lp.width = WindowManager.LayoutParams.WRAP_CONTENT

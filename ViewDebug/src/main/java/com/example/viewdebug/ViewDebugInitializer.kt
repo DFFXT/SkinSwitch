@@ -6,6 +6,7 @@ import android.content.res.Resources
 import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.Keep
+import androidx.startup.AppInitializer
 import androidx.startup.Initializer
 import com.example.viewdebug.ui.skin.ViewDebugMergeResource
 import com.example.viewdebug.util.ViewDebugInfo
@@ -26,6 +27,7 @@ import java.util.Collections
 @Keep
 class ViewDebugInitializer : Initializer<ViewDebugInitializer> {
     override fun create(context: Context): ViewDebugInitializer {
+        ctx = context.applicationContext as Application
         // 替换换肤框架的MergeResource对象
         ResourcesProviderManager.replaceResourceObjectCreator(object : ResourceObjectCreator {
             override fun createResourceObject(
@@ -57,5 +59,10 @@ class ViewDebugInitializer : Initializer<ViewDebugInitializer> {
 
     override fun dependencies(): MutableList<Class<out Initializer<*>>> {
         return Collections.emptyList()
+    }
+
+    companion object {
+        lateinit var ctx: Application
+            private set
     }
 }

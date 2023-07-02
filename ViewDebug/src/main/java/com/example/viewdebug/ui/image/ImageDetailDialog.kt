@@ -11,6 +11,7 @@ import com.example.viewdebug.ui.UIPage
 import com.example.viewdebug.ui.dialog.BaseDialog
 import com.example.viewdebug.ui.skin.backgroundResource
 import com.example.viewdebug.ui.skin.imageResource
+import com.example.viewdebug.util.adjustOrientation
 
 /**
  * 图片详情
@@ -43,6 +44,7 @@ internal class ImageDetailDialog(host: UIPage) : BaseDialog(host) {
         } else {
             updateSelectedBg(binding.color2, 1)
         }
+        adjustOrientation(binding.root)
         return binding.root
     }
 

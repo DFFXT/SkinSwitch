@@ -15,40 +15,69 @@
         android:background="@color/view_debug_image_set_bg"
         android:clickable="true"
         android:elevation="5dp"
-        android:focusable="true"
-        >
+        android:focusable="true">
 
-
-        <TextView
-            android:id="@+id/tv_name"
+        <View
             android:layout_width="match_parent"
             android:layout_height="@dimen/view_debug_control_ui_status_bar_height"
             android:background="@color/view_debug_image_detail_title_bar_bg"
-            android:textColor="@color/view_debug_white"
-            android:textSize="@dimen/view_debug_big_text_size"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/view_debug_control_ui_status_bar_height"
             android:gravity="center_vertical"
             android:paddingHorizontal="15dp"
+            android:textColor="@color/view_debug_white"
+            android:textSize="@dimen/view_debug_big_text_size"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="drawable/button_background" />
+
+        <ImageView
+            android:id="@+id/iv_xml_text_operate"
+            android:layout_width="@dimen/view_debug_control_ui_status_bar_height"
+            android:layout_height="@dimen/view_debug_control_ui_status_bar_height"
+            android:padding="5dp"
+            android:src="@drawable/view_debug_xml_edit_icon"
+            android:tint="@color/view_debug_white"
+            app:layout_constraintStart_toEndOf="@id/tv_name"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="UseAppTint" />
+
+        <ImageView
+            android:id="@+id/iv_close"
+            android:layout_width="@dimen/view_debug_control_ui_status_bar_height"
+            android:layout_height="@dimen/view_debug_control_ui_status_bar_height"
+            android:padding="5dp"
+            android:src="@mipmap/view_debug_common_close"
+            android:tint="@color/view_debug_white"
+            android:visibility="gone"
+            app:layout_constraintStart_toEndOf="@id/iv_xml_text_operate"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible"
+            tools:ignore="UseAppTint" />
+
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/scrollView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            app:layout_constrainedHeight="true"
             android:padding="15dp"
+            app:layout_constrainedHeight="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight_max="400dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_name">
 
-            <TextView
+            <EditText
                 android:id="@+id/tv_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@null"
                 android:textColor="@color/view_debug_common_text_color"
                 android:textSize="@dimen/view_debug_common_text_size"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -60,6 +89,7 @@
 
 
         </androidx.core.widget.NestedScrollView>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
