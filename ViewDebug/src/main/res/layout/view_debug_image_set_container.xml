@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="400dp"
     android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
     android:background="@color/view_debug_image_set_bg"
     android:elevation="5dp">
 
@@ -12,6 +14,21 @@
         android:layout_height="@dimen/view_debug_control_ui_status_bar_height"
         android:background="@color/view_debug_image_detail_title_bar_bg"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_hostName"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/view_debug_control_ui_status_bar_height"
+        android:gravity="center_vertical"
+        android:textColor="@color/view_debug_white"
+        android:paddingHorizontal="@dimen/view_debug_ui_control_button_margin"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintEnd_toStartOf="@id/iv_close"
+        app:layout_constraintHorizontal_bias="0"
+        android:textSize="@dimen/view_debug_big_text_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="MainActivity" />
 
     <ImageView
         android:id="@+id/iv_close"

@@ -1,5 +1,6 @@
 package com.example.viewdebug.util
 
+import android.content.res.Resources
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
@@ -33,8 +34,24 @@ internal fun View.enableSelect() {
 }
 
 internal class ViewDebugInfo(
-    val layoutId: Int?
-)
+    val layoutId: Int?,
+) {
+    fun getLayoutName(res: Resources): String? {
+        layoutId ?: return null
+        if (layoutId > 0) {
+            return res.getResourceEntryName(layoutId)
+        }
+        return null
+    }
+
+    fun getLayoutTypeAndName(res: Resources): String? {
+        layoutId ?: return null
+        if (layoutId > 0) {
+            return res.getResourceTypeName(layoutId) + "/" + res.getResourceEntryName(layoutId)
+        }
+        return null
+    }
+}
 
 internal fun View.getViewDebugInfo(): ViewDebugInfo? {
     return (this.getTag(R.id.view_debug_info) as? ViewDebugInfo)

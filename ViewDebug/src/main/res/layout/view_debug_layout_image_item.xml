@@ -22,7 +22,7 @@
 
     <TextView
         android:id="@+id/tv_layout"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/view_debug_common_text_color"
         app:layout_constraintStart_toStartOf="parent"
@@ -30,11 +30,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginStart="50dp"
         android:textSize="@dimen/view_debug_small_text_size"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintHorizontal_bias="0"
         tools:text="layout/main_activity.xml"/>
 
     <TextView
         android:id="@+id/tv_name"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/tv_layout"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -43,6 +45,8 @@
         android:gravity="center_vertical"
         android:layout_marginStart="50dp"
         android:textSize="@dimen/view_debug_small_text_size"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constrainedWidth="true"
         android:textColor="@color/view_debug_common_text_color"
         tools:text="background:@tools:sample/avatars"/>
 

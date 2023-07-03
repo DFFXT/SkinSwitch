@@ -2,10 +2,12 @@ package com.example.viewdebug.ui.image
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.viewdebug.databinding.ViewDebugLayoutImageItemBinding
 import com.example.viewdebug.ui.skin.imageResource
+import java.lang.ref.WeakReference
 
 /**
  * 图片显示适配器
@@ -15,6 +17,7 @@ internal class ImageAdapter : BaseRecyclerAdapter<ImageAdapter.Item, ImageAdapte
     var onAttributeNameClick: ((Item) -> Unit)? = null
     var onLayoutNameClick: ((Item) -> Unit)? = null
     var onImageClick: ((Item) -> Unit)? = null
+    var onItemClick: ((Item) -> Unit)? = null
 
     inner class VH(val binding: ViewDebugLayoutImageItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -34,6 +37,9 @@ internal class ImageAdapter : BaseRecyclerAdapter<ImageAdapter.Item, ImageAdapte
             binding.ivImage.setOnClickListener {
                 onImageClick?.invoke(item)
             }
+            binding.root.setOnClickListener {
+                onItemClick?.invoke(item)
+            }
         }
     }
 
@@ -52,6 +58,7 @@ internal class ImageAdapter : BaseRecyclerAdapter<ImageAdapter.Item, ImageAdapte
     }
 
     class Item(
+        val target: WeakReference<View>,
         val id: Int,
         val layoutId: Int,
         val layoutName: String,

@@ -3,10 +3,10 @@ package com.example.viewdebug
 import android.app.Application
 import android.content.Context
 import android.content.res.Resources
+import android.provider.Settings
 import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.Keep
-import androidx.startup.AppInitializer
 import androidx.startup.Initializer
 import com.example.viewdebug.ui.skin.ViewDebugMergeResource
 import com.example.viewdebug.util.ViewDebugInfo
@@ -28,6 +28,11 @@ import java.util.Collections
 class ViewDebugInitializer : Initializer<ViewDebugInitializer> {
     override fun create(context: Context): ViewDebugInitializer {
         ctx = context.applicationContext as Application
+        if (!Settings.canDrawOverlays(context)) {
+            // 没有显示浮窗权限
+            // Toast.makeText(context, "没有出现在应用上层的权限，无法使用调试功能", Toast.LENGTH_SHORT).show()
+            return this
+        }
         // 替换换肤框架的MergeResource对象
         ResourcesProviderManager.replaceResourceObjectCreator(object : ResourceObjectCreator {
             override fun createResourceObject(

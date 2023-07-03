@@ -36,15 +36,20 @@ class UIControl(private val ctx: Context) {
     fun show() {
         if (isShown) return
         // 添加内容区域
-        val contentLp = getLayoutParams()
-        contentLp.width = ctx.resources.displayMetrics.widthPixels
-        contentLp.height = ctx.resources.displayMetrics.heightPixels
-        //contentLp.flags = contentLp.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-        //contentLp.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT
+        var contentLp = contentBinding.root.layoutParams
+        if (contentLp == null) {
+            contentLp = getLayoutParams()
+            contentLp.width = ctx.resources.displayMetrics.widthPixels
+            contentLp.height = ctx.resources.displayMetrics.heightPixels
+            contentLp.flags = contentLp.flags or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+        }
         wm.addView(contentBinding.root, contentLp)
         // 添加控制栏
-        val lp = getLayoutParams()
-        lp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+        var lp = uiControlBinding.root.layoutParams
+        if (lp == null) {
+            lp = getLayoutParams()
+            lp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+        }
         wm.addView(uiControlBinding.root, lp)
         isShown = true
     }
