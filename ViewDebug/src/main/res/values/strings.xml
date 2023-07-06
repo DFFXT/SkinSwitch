@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="view_debug_image_detail_title">背景选择</string>
+    <string name="view_debug_view_detal_title">详细信息</string>
 </resources>

@@ -7,12 +7,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.lifecycle.ViewTreeLifecycleOwner
+import com.example.viewdebug.R
 import com.example.viewdebug.databinding.ViewDebugDialogDetailInfoBinding
 import com.example.viewdebug.ui.UIPage
 import com.example.viewdebug.ui.dialog.BaseDialog
+import com.example.viewdebug.ui.skin.textColor
 import com.example.viewdebug.util.adjustOrientation
 import com.example.viewdebug.util.fragmentViewLifecycleOwnerFragmentFiled
 import com.example.viewdebug.util.getViewDebugInfo
+import java.util.LinkedList
 
 /**
  * view的想象信息
@@ -49,21 +52,36 @@ internal class ViewDetailInfoDialog(host: UIPage) : BaseDialog(host) {
             addDescribe("Owner(layout)", it)
         }
 
+        applyReference()
         show()
     }
 
+    private val leftIds = LinkedList<Int>()
+    private val rightIds = LinkedList<Int>()
+
+    /**
+     * 添加详细信息
+     */
     private fun addDescribe(label: String, value: String) {
-        return
         val tvLabel = AppCompatTextView(host.tabView.context)
         tvLabel.text = label
-        tvLabel.id = tvLabel.hashCode()
+        tvLabel.textSize = tvLabel.resources.getDimension(R.dimen.view_debug_common_text_size)
+        tvLabel.textColor(R.color.view_debug_black)
+        tvLabel.id = View.generateViewId()
         val tvValue = AppCompatTextView(host.tabView.context)
         tvValue.text = value
-        tvValue.id = tvValue.hashCode()
+        tvValue.textSize = tvLabel.resources.getDimension(R.dimen.view_debug_common_text_size)
+        tvValue.textColor(R.color.view_debug_black)
+        tvValue.id = View.generateViewId()
 
         binding.layoutContent.addView(tvLabel)
         binding.layoutContent.addView(tvValue)
-        binding.flowLeft.referencedIds = intArrayOf(tvLabel.id)
-        binding.flowRight.referencedIds = intArrayOf(tvValue.id)
+        leftIds.add(tvLabel.id)
+        rightIds.add(tvValue.id)
+    }
+
+    private fun applyReference() {
+        binding.flowLeft.referencedIds = leftIds.toIntArray()
+        binding.flowRight.referencedIds = rightIds.toIntArray()
     }
 }

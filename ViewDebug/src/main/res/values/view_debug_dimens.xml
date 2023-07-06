@@ -7,4 +7,5 @@
 
     <dimen name="view_debug_ui_control_button_margin">5dp</dimen>
     <dimen name="view_debug_elevation">5dp</dimen>
+    <dimen name="view_debug_common_padding">15dp</dimen>
 </resources>

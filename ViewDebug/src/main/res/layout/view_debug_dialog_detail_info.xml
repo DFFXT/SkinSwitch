@@ -3,12 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
     android:background="@color/view_debug_image_set_bg">
 
-    <View
+    <TextView
         android:id="@+id/view_debug_title_bar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/view_debug_control_ui_status_bar_height"
+        android:text="@string/view_debug_view_detal_title"
+        android:gravity="center_vertical"
+        android:textColor="@color/view_debug_white"
+        android:textSize="@dimen/view_debug_big_text_size"
+        android:paddingHorizontal="@dimen/view_debug_common_padding"
         android:background="@color/view_debug_image_detail_title_bar_bg"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -23,52 +30,40 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layout_content"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:padding="@dimen/view_debug_common_padding">
 
             <androidx.constraintlayout.helper.widget.Flow
                 android:id="@+id/flow_left"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:constraint_referenced_ids="tv_targetLabel,tv_hostNameLabel, tv_idLabel"
                 app:flow_horizontalAlign="end"
                 app:flow_verticalGap="5dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:background="@color/view_debug_image_detail_title_bar_bg"
+                app:layout_constraintEnd_toStartOf="@id/flow_right"
+                app:layout_constraintStart_toEndOf="@id/flow_left"
+                app:layout_constraintTop_toTopOf="@id/flow_left"
+                app:layout_constraintBottom_toBottomOf="@id/flow_left"/>
 
             <androidx.constraintlayout.helper.widget.Flow
                 android:id="@+id/flow_right"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                app:constraint_referenced_ids="tv_target"
+                android:orientation="vertical"
+                app:flow_horizontalAlign="start"
                 app:flow_verticalGap="5dp"
                 app:layout_constraintStart_toEndOf="@id/flow_left"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/tv_targetLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="View:" />
 
-            <TextView
-                android:id="@+id/tv_hostNameLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Activity:" />
-
-            <TextView
-                android:id="@+id/tv_idLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="id:" />
-
-            <TextView
-                android:id="@+id/tv_target"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="ImageView" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
