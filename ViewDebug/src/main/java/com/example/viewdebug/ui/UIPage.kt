@@ -17,6 +17,7 @@ abstract class UIPage {
 
     lateinit var tabView: View
     lateinit var contentView: ViewGroup
+    val ctx by lazy { tabView.context }
 
     // 当前activity
     internal var hostActivity: WeakReference<Activity>? = null

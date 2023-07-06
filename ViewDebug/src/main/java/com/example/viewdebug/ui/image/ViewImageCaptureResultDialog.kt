@@ -6,9 +6,8 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.fragment.app.ViewDetailInfoDialog
 import com.example.viewdebug.databinding.ViewDebugImageSetContainerBinding
+import com.example.viewdebug.rv.MultiTypeRecyclerAdapter
 import com.example.viewdebug.ui.UIPage
 import com.example.viewdebug.util.adjustOrientation
 import com.example.viewdebug.util.getViewDebugInfo
@@ -23,30 +22,18 @@ class ViewImageCaptureResultDialog(
     private val hostPage: UIPage,
     private val attrIds: HashMap<Int, String>,
 ) {
-    private val adapter = ImageAdapter()
+    private val imageItemHandler = ImageItemHandler(hostPage)
+    private val rAdapter = MultiTypeRecyclerAdapter<Any>()
     private val dialogBinding: ViewDebugImageSetContainerBinding
 
+    companion object {
+        private var mode = 0
+        private var MODE_IMAGE = 0
+        private var MODE_VIEW = 1
+    }
+
     init {
-        adapter.onImageClick = {
-            val dialog = ImageDetailDialog(hostPage)
-            dialog.show(it.id)
-        }
-        adapter.onLayoutNameClick = {
-            copyToClipboard(ctx, it.layoutName)
-            tryShowXmlText(ctx, it.layoutId)
-        }
-        adapter.onAttributeNameClick = {
-            tryShowXmlText(ctx, it.id)
-        }
-        adapter.onItemClick = {
-            val target = it.target.get()
-            if (target != null) {
-                val dialog = ViewDetailInfoDialog(hostPage)
-                dialog.show(target)
-            } else {
-                Toast.makeText(hostPage.tabView.context, "对象已经消失", Toast.LENGTH_SHORT).show()
-            }
-        }
+
         dialogBinding =
             ViewDebugImageSetContainerBinding.inflate(
                 LayoutInflater.from(ctx),
@@ -54,26 +41,11 @@ class ViewImageCaptureResultDialog(
                 false,
             )
         adjustOrientation(dialogBinding.root)
-        dialogBinding.rvImage.adapter = adapter
+        dialogBinding.rvImage.adapter = rAdapter
+        rAdapter.registerItemHandler(imageItemHandler)
     }
 
-    private fun tryShowXmlText(ctx: Context, id: Int) {
-        val attrValue = ctx.resources.getResourceEntryName(id)
-        try {
-            val parsedValue = XmlParser().getXmlText(ctx, id) { text ->
-                // 只复制名称，不复制类型
-                if (text.indexOf("/") >= 0) {
-                    copyToClipboard(ctx, text.split('/')[1])
-                } else {
-                    copyToClipboard(ctx, text)
-                }
-            }
-            val dialog = XmlTextDialog(ctx, hostPage)
-            dialog.show(id, parsedValue)
-        } catch (e: Exception) {
-            copyToClipboard(ctx, attrValue)
-        }
-    }
+
 
     private fun copyToClipboard(ctx: Context, text: String) {
         val clipboardManager = ctx.getSystemService(ClipboardManager::class.java)
@@ -85,7 +57,26 @@ class ViewImageCaptureResultDialog(
     }
 
     fun show(title: String, capturedViews: List<View>) {
-        val data = ArrayList<ImageAdapter.Item>()
+        dialogBinding.tvHostName.text = title
+        if (mode == MODE_IMAGE) {
+            showModeImage(capturedViews)
+        } else {
+            showModeView(capturedViews)
+        }
+    }
+
+    private fun showModeView(capturedViews: List<View>) {
+        capturedViews.map {
+            ImageItemHandler.ViewItem(
+                WeakReference(it),
+                it.getViewUnion(),
+                it.getViewDebugInfo(),
+            )
+        }
+    }
+
+    private fun showModeImage(capturedViews: List<View>) {
+        val data = ArrayList<ImageItemHandler.Item>()
         for (v in capturedViews) {
             val u = v.getViewUnion() ?: continue
             val debugInfo = v.getViewDebugInfo()
@@ -99,14 +90,14 @@ class ViewImageCaptureResultDialog(
             for (attr in u) {
                 attrIds.forEach {
                     if (it.key == attr.attributeId) {
-                        data.add(ImageAdapter.Item(WeakReference(v), attr.resId, layoutId, layoutInfo, it.value))
+                        data.add(ImageItemHandler.Item(WeakReference(v), attr.resId, layoutId, layoutInfo, it.value))
                     }
                 }
             }
         }
-        dialogBinding.tvHostName.text = title
+
         if (data.isNotEmpty()) {
-            adapter.update(data)
+            rAdapter.update(data)
             hostPage.showDialog(dialogBinding.root)
         }
     }
