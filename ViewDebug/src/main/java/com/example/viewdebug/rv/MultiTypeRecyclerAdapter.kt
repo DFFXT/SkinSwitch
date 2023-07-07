@@ -40,7 +40,7 @@ class MultiTypeRecyclerAdapter<T : Any> :
         for (handler in itemHandler) {
             if (handler.canHandle(data[position])) {
                 handler.onBindView(data[position], position, holder)
-                break
+                return
             }
         }
         throw Exception("onBindViewHolder error, no handler for: $position")
