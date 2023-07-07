@@ -1,5 +1,6 @@
 package com.example.viewdebug.xml.struct.writer.helper.value
 
+import com.example.viewdebug.xml.struct.XmlCompiler
 import com.example.viewdebug.xml.struct.writer.helper.ResourceType
 import java.lang.StringBuilder
 
@@ -8,7 +9,7 @@ import java.lang.StringBuilder
  */
 class AttrColorValueCompile : AttrValueCompile("color") {
     private val builder = StringBuilder()
-    override fun compile(attrValue: String): Pair<Byte, Int>? {
+    override fun compile(attrValue: String, compiler: XmlCompiler): Pair<Byte, Int>? {
         if (attrValue.startsWith("#")) {
 
 

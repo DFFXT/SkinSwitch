@@ -35,3 +35,4 @@ internal fun tryShowXmlText(ctx: Context, id: Int, hostPage: UIPage) {
         copyToClipboard(ctx, attrValue)
     }
 }
+

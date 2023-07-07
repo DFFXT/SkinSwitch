@@ -1,13 +1,14 @@
 package com.example.viewdebug.xml.struct.writer.helper.value
 
 import com.example.viewdebug.ViewDebugInitializer
+import com.example.viewdebug.xml.struct.XmlCompiler
 import com.example.viewdebug.xml.struct.writer.helper.ResourceType
 
 /**
  * 解析color格式
  */
 class AttReferenceValueCompile : AttrValueCompile("reference") {
-    override fun compile(attrValue: String): Pair<Byte, Int>? {
+    override fun compile(attrValue: String, compiler: XmlCompiler): Pair<Byte, Int>? {
         // 是引用类型
         val end = attrValue.indexOf('/')
         if (end > 0) {

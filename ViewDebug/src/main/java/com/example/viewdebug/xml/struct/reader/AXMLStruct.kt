@@ -1,8 +1,10 @@
 package com.example.viewdebug.xml.struct.reader
 
+import com.skin.log.Logger
 import java.nio.ByteBuffer
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.LinkedHashMap
 import kotlin.experimental.and
 
 /**
@@ -48,6 +50,7 @@ abstract class BaseChunk : IRead {
     var headerSize: Short = 0
     var chunkSize: Int = 0
     override fun read(data: ByteBuffer) {
+        log("read on ${data.position()}  ${this.javaClass.simpleName}")
         type = data.short
         headerSize = data.short
         chunkSize = data.int
@@ -221,9 +224,11 @@ class ChunkString : BaseChunk() {
     var isUTF8: Short = 0
     var isSorted: Short = 0
 
+    // todo 有可能发生错误，[StringPool.cpp]中是先读取的style再读取的string
     // 从该chunk开始计数的start
     var stringsStart: Int = 0
     var styleStart: Int = 0
+
 
     // stringCount * 4
     // 这是一段连续的Index数组，每个index占4字节(对应java的Integer)，各个数字表示对应的各个字符串，从StringStart开始的偏移量
@@ -232,7 +237,7 @@ class ChunkString : BaseChunk() {
     // styleAccount * 4
     val styleOffset = ArrayList<Int>()
 
-    val stringPools = HashMap<Int, StringPool>()
+    val stringPools = LinkedHashMap<Int, StringPool>()
     override fun onRead(data: ByteBuffer) {
         stringCount = data.int
         styleCount = data.int
@@ -250,8 +255,11 @@ class ChunkString : BaseChunk() {
         println("开始读取string ${data.position()}")
         repeat(stringCount) {
             data.position(startPosition + stringOffsets[it])
+            log("reader string = start read -> ${data.position()}")
             val stringPool = StringPool(isUTF8.toInt() != 0)
             stringPool.read(data)
+            log("reader string = ${stringPool.chars}")
+            log("reader string = end read -> ${data.position()}")
             stringPools[stringOffsets[it]] = stringPool
         }
     }
@@ -413,4 +421,9 @@ class ChunkEndTag : BaseTagChunk() {
 
     override fun onRead2(data: ByteBuffer) {
     }
+}
+
+
+private fun log(string: String) {
+    Logger.i("XmlRead", string)
 }

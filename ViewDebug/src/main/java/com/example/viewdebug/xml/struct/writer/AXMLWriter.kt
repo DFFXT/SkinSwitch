@@ -1,11 +1,13 @@
 package com.example.viewdebug.xml.struct.writer
 
 import com.example.viewdebug.xml.struct.reader.IWrite
+import com.skin.log.Logger
 import java.nio.ByteBuffer
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
 import kotlin.collections.LinkedHashMap
+import kotlin.collections.LinkedHashSet
 
 /**
  * chunk信息写入
@@ -16,6 +18,7 @@ abstract class BaseChunkWriter(var startPosition: Int) : IWrite {
     var headerSize: Short = 0
     var chunkSize: Int = 0
     override fun write(data: ByteBuffer) {
+        log("write on ${data.position()}  ${this.javaClass.simpleName}")
         data.position(startPosition)
         data.putShort(type)
         data.putShort(headerSize)
@@ -129,6 +132,12 @@ class ChunkStringWriter(startPosition: Int) : BaseChunkWriter(startPosition) {
     val styleOffset = ArrayList<Int>()
 
     val stringPools = LinkedHashMap<Int, StringPool>()
+
+    /**
+     * todo 有可能发生错误，[StringPool.cpp]中是先读取的styleOffset再读取的stringOffset
+     * 那么这里其实应该先写stylePool再写stringPool
+     * 因为stylePool一直为0，所以不会读取错误
+     */
     override fun onWrite(data: ByteBuffer) {
         data.putInt(stringOffsets.size)
         data.putInt(styleOffset.size)
@@ -146,13 +155,24 @@ class ChunkStringWriter(startPosition: Int) : BaseChunkWriter(startPosition) {
         println("开始保存string ${data.position()}")
         var i = 0
         stringPools.forEach {
-            println("write start start ${data.position()} ${stringOffsets.get(i)}")
+            log("write string start start ${data.position()}")
             it.value.isUTF8 = isUTF8 != 0.toShort()
             it.value.write(data)
+            log("write string ${it.value.string}")
+            log("write string end start ${data.position()}")
             i++
         }
-        // 经过对比，这里必须要添加两字节
-        data.putShort(0)
+        // todo stylePool
+
+
+        // todo 这里需要特别注意，需要进行4字节对齐,
+        // [frameworks/base/tools/aapt2/StringPool.cpp]中在读取完字符串后，进行了，out->Align4()操作
+        // 经查看源码，会进行4字节取余，然后在out中进行偏移
+        // 那么，在写入时得考虑这个问题，长度不足4的整数倍需要补齐
+        val padding = data.position() % 4
+        repeat(4 -padding) {
+            data.put(0)
+        }
     }
 
     fun getString(index: Int): String {
@@ -163,7 +183,7 @@ class ChunkStringWriter(startPosition: Int) : BaseChunkWriter(startPosition) {
     /**
      * 单条字符串信息写入
      */
-    class StringPool(private val string: String) : IWrite {
+    class StringPool(val string: String) : IWrite {
 
         companion object {
             // 额外内容
@@ -233,11 +253,10 @@ class ChunkSystemResourceIdWriter(startPosition: Int) : BaseChunkWriter(startPos
     }
 
     // 长度为（chunkSize-8）4
-    val resourceIds = HashSet<Int>()
+    val resourceIds = LinkedHashSet<Int>()
     override fun onWrite(data: ByteBuffer) {
         // todo
-        resourceIds.add(16842996)
-        resourceIds.add(16842997)
+
         resourceIds.forEach {
             data.putInt(it)
         }
@@ -360,4 +379,8 @@ class ChunkEndTagWriter(startPosition: Int) : BaseTagChunkWriter(startPosition) 
 
     override fun onWrite2(data: ByteBuffer) {
     }
+}
+
+private fun log(string: String) {
+    Logger.i("XmlWrite", string)
 }

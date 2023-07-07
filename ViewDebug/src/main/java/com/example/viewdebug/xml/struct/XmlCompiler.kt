@@ -27,8 +27,6 @@ class XmlCompiler(private val ctx: Context) {
     val builder = factory.newDocumentBuilder()
 
 
-    private val systemResourceId = HashSet<Int>()
-
     // key 是字符串，value是字节偏移
     private val stringPool = LinkedHashMap<String, Pair<Int, Int>>()
     private var poolByteSize = 0
@@ -36,6 +34,12 @@ class XmlCompiler(private val ctx: Context) {
     // 申请1024*100的空间
     private val buffer: ByteBuffer = ByteBuffer.allocate(1024 * 100).order(ByteOrder.LITTLE_ENDIAN)
     fun compile(stream: InputStream): ByteBuffer {
+        addString("background")
+        addString("layout_width")
+        addString("layout_height")
+        addString("android")
+        addString("androidx.constraintlayout.widget.ConstraintLayout")
+        addString("http://schemas.android.com/apk/res/android")
         val doc = builder.parse(stream)
         // step 1：创建字符常量池
         // 记录所有的node name、attribute name、attribute value、namespace
@@ -127,7 +131,7 @@ class XmlCompiler(private val ctx: Context) {
                 val attrSplit = attr.nodeName.split(":")
                 addString(attrSplit[1])
                 addString(attrSplit[0])
-                addString(attr.nodeValue)
+                //addString(attr.nodeValue)
             } else {
                 addString(attr.nodeName)
             }
