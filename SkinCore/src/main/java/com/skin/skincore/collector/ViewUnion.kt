@@ -163,13 +163,8 @@ fun ImageView.setImageResourceSkinAble(@DrawableRes resId: Int) {
 fun TextView.setTextColorSkinAble(@ColorRes resId: Int) {
     val resourceType = context.resources.getResourceTypeName(resId)
     // 文本颜色如果是drawable类型，那么一定是stateColor，不可能是图片
-    if (resourceType == ResType.DRAWABLE) {
-        val stateColor = SkinManager.getResourceProvider(this.context).getStateColor(resId, context.theme)
-        this.setTextColor(stateColor)
-    } else {
-        val color = SkinManager.getResourceProvider(this.context).getColor(resId, context.theme)
-        this.setTextColor(color)
-    }
+    val stateColor = SkinManager.getResourceProvider(this.context).getStateColor(resId, context.theme)
+    this.setTextColor(stateColor)
     this.addViewSkinAttrs(Attrs(resId, android.R.attr.textColor))
 }
 
