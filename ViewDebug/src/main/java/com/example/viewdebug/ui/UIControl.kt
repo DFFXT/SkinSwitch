@@ -100,6 +100,7 @@ class UIControl(private val ctx: Context) {
                 lp.flags = lp.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
             } else {
                 lp.flags = lp.flags and WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE.inv()
+                lp.flags = lp.flags and WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE.inv()
             }
             wm.updateViewLayout(contentBinding.root, lp)
         }

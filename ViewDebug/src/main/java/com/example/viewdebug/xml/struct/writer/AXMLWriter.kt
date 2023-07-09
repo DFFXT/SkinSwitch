@@ -1,5 +1,6 @@
 package com.example.viewdebug.xml.struct.writer
 
+import com.example.viewdebug.ViewDebugInitializer
 import com.example.viewdebug.xml.struct.reader.IWrite
 import com.skin.log.Logger
 import java.nio.ByteBuffer
@@ -143,7 +144,7 @@ class ChunkStringWriter(startPosition: Int) : BaseChunkWriter(startPosition) {
         data.putInt(styleOffset.size)
 
         data.putShort(isUTF8)
-        data.putShort(0)
+        data.putShort(isSorted)
         data.putInt(stringsStart + stringOffsets.size * 4 + styleOffset.size * 4)
         data.putInt(0)
         stringOffsets.forEach {
@@ -255,9 +256,9 @@ class ChunkSystemResourceIdWriter(startPosition: Int) : BaseChunkWriter(startPos
     // 长度为（chunkSize-8）4
     val resourceIds = LinkedHashSet<Int>()
     override fun onWrite(data: ByteBuffer) {
-        // todo
-
-        resourceIds.forEach {
+        // 这里需要排序
+        resourceIds.sorted().forEach {
+            log("???? $it")
             data.putInt(it)
         }
     }
@@ -321,6 +322,8 @@ class ChunkStartTagWriter(startPosition: Int) : BaseTagChunkWriter(startPosition
         data.putShort(idIndex)
         data.putShort(classIndex)
         data.putShort(styleIndex)
+        // todo 属性标签需要通过 R.attr.xxx 的值从小到大排序
+        attributes.sortBy { it.systemResourceId }
         attributes.forEach {
             it.write(data)
         }
@@ -329,13 +332,14 @@ class ChunkStartTagWriter(startPosition: Int) : BaseTagChunkWriter(startPosition
 
 /**
  * 属性写入
+ * @param systemResourceId 属性对应id，不参与write，只参与排序
  */
-class Attribute : IWrite {
+class Attribute(var systemResourceId: Int) : IWrite {
     var namespaceUri: Int = -1
     var name: Int = 0
 
     // 如果value==-1，则需要取resValue中获取
-    var value: Int = 0
+    var value: Int = -1
     lateinit var resValue: ResValue
     override fun write(data: ByteBuffer) {
         data.putInt(namespaceUri)
@@ -355,6 +359,8 @@ class Attribute : IWrite {
         // todo
         var type: Byte = 0x10
         var data: Int = 0
+
+        var parentValue = false
         override fun write(data: ByteBuffer) {
             data.putShort(size)
             data.put(res0)

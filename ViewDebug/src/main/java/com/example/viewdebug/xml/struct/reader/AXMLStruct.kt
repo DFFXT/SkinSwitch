@@ -58,6 +58,15 @@ abstract class BaseChunk : IRead {
     }
 
     protected abstract fun onRead(data: ByteBuffer)
+
+    override fun equals(other: Any?): Boolean {
+        if(other is BaseChunk) {
+            return (other.type == this.type
+                    &&other.headerSize == this.headerSize
+                    &&other.chunkSize == this.chunkSize)
+        }
+        return super.equals(other)
+    }
 }
 
 /**
@@ -77,6 +86,14 @@ abstract class BaseTagChunk : BaseChunk() {
     }
 
     abstract fun onRead2(data: ByteBuffer)
+
+    override fun equals(other: Any?): Boolean {
+        if (super.equals(other) && other is BaseTagChunk) {
+            return (namespaceUri == other.namespaceUri
+                    &&name == other.name)
+        }
+        return super.equals(other)
+    }
 }
 
 class ChunkFile : BaseChunk() {
@@ -203,7 +220,12 @@ class ChunkFile : BaseChunk() {
         }
     }
 
-    private fun addKeyValue() {
+    override fun equals(other: Any?): Boolean {
+        if(this === other) return true
+        if (other is ChunkFile) {
+
+        }
+        return super.equals(other)
     }
 }
 
@@ -411,6 +433,14 @@ class Attribute : IRead {
             type = data.get()
             this.data = data.int
         }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other is ChunkFile) {
+            super.equals(other)
+        }
+        return super.equals(other)
     }
 }
 

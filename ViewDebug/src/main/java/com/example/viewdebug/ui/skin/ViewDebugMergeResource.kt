@@ -1,9 +1,12 @@
 package com.example.viewdebug.ui.skin
 
+import android.content.res.AssetManager
 import android.content.res.Resources
 import android.content.res.XmlResourceParser
 import android.util.AttributeSet
 import com.example.viewdebug.ViewDebugInitializer
+import com.example.viewdebug.xml.pack.PackAssetsFile
+import com.skin.skincore.asset.Asset
 import com.skin.skincore.asset.IAsset
 import com.skin.skincore.provider.MergeResource
 import java.io.File
@@ -22,7 +25,7 @@ class ViewDebugMergeResource(asset: IAsset, default: Resources, themeId: Int) :
         val parser = if (layoutInterceptorMapper.contains(id)) {
             val dir =
                 ViewDebugInitializer.ctx.externalCacheDir!!.absolutePath + File.separator + "layout"
-            asset.getResource().assets.openXmlResourceParser("assets/$name.xml")
+            interceptedAsset!!.openXmlResourceParser("assets/${PackAssetsFile.TYPE_LAYOUT}/$id.xml")
         } else {
             super.getLayout(id)
         }
@@ -40,5 +43,6 @@ class ViewDebugMergeResource(asset: IAsset, default: Resources, themeId: Int) :
 
     companion object {
         val layoutInterceptorMapper = HashSet<Int>()
+        var interceptedAsset: AssetManager? = null
     }
 }

@@ -12,6 +12,10 @@ import com.example.viewdebug.databinding.ViewDebugXmlTextContainerBinding
 import com.example.viewdebug.ui.UIPage
 import com.example.viewdebug.ui.skin.ViewDebugMergeResource
 import com.example.viewdebug.util.adjustOrientation
+import com.example.viewdebug.xml.pack.PackAssetsFile
+import com.example.viewdebug.xml.struct.XmlCompiler
+import com.example.viewdebug.xml.struct.writer.ChunkFileWriter
+import com.skin.skincore.asset.DefaultResourceLoader
 import java.io.File
 
 class XmlTextDialog(
@@ -33,7 +37,6 @@ class XmlTextDialog(
         adjustOrientation(binding.container)
         binding.ivXmlTextOperate.setOnClickListener {
             Toast.makeText(it.context, "未实现该功能", Toast.LENGTH_LONG).show()
-            return@setOnClickListener
             if (mode == 0) {
                 binding.tvText.requestFocus()
                 binding.tvText.selectAll()
@@ -60,23 +63,98 @@ class XmlTextDialog(
 
     private fun saveChange() {
         // todo 需要将xml编译为AXML格式文件，然后才能动态加载，目前还未实现，理论上能在android上生成，需要R文件参与编译
-       /* val dirPath = ctx.externalCacheDir!!.absolutePath + File.separator + "layout"
-        val dir = File(dirPath)
-        if (!dir.exists()) {
-            dir.mkdirs()
+        val compiler = XmlCompiler(ctx)
+        val buffer = compiler.compile(binding.tvText.text.toString().byteInputStream())
+        val byteArray = ByteArray(buffer.limit())
+        buffer.get(byteArray, 0, buffer.limit())
+        // 打包
+        val pack = PackAssetsFile()
+        pack.addLayoutFile(byteArray.inputStream(), layoutId.toString())
+        pack.pack()
+        // 读入
+        val assetManager = DefaultResourceLoader().createAssetManager(pack.getPackedApkPath(), ctx)
+        if (assetManager != null) {
+            ViewDebugMergeResource.interceptedAsset = assetManager.second
+            ViewDebugMergeResource.layoutInterceptorMapper.add(layoutId)
         }
-        val file = File(dir, layoutId.toString())
-        file.writeText(originText.toString())
-        ViewDebugMergeResource.layoutInterceptorMapper.add(layoutId)*/
     }
 
     fun show(layoutId: Int, xml: CharSequence) {
+        val layoutId = ctx.resources.getIdentifier("test_type", "layout", ctx.packageName)
         val attrValue = ctx.resources.getResourceEntryName(layoutId)
         val title = ctx.resources.getResourceTypeName(layoutId) + "/" + attrValue
         this.layoutId = layoutId
         this.originText = xml
         binding.tvName.text = title
-        binding.tvText.setText(xml)
+        val t = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                "<androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\n" +
+                "    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\n" +
+                "    xmlns:tools=\"http://schemas.android.com/tools\"\n" +
+                "    android:layout_width=\"match_parent\"\n" +
+                "    android:layout_height=\"match_parent\"\n" +
+                "    tools:context=\"com.skin.skinswitch.MainActivity\">\n" +
+                "\n" +
+                "    <androidx.fragment.app.FragmentContainerView\n" +
+                "        android:id=\"@+id/container\"\n" +
+                "        android:layout_width=\"match_parent\"\n" +
+                "        android:layout_height=\"match_parent\"\n" +
+                "        tools:name=\"com.skin.skinswitch.module.HomeFragment\" />\n" +
+                "\n" +
+                "    <TextView\n" +
+                "        android:id=\"@+id/view\"\n" +
+                "        android:layout_width=\"@dimen/test_d\"\n" +
+                "        android:layout_height=\"40dp\"\n" +
+                "        android:text=\"1\"\n" +
+                "        android:background=\"@drawable/theme_drawable\"\n" +
+                "        app:layout_constraintStart_toStartOf=\"parent\"\n" +
+                "        app:layout_constraintTop_toTopOf=\"parent\" />\n" +
+                "\n" +
+                "    <RadioGroup\n" +
+                "        android:id=\"@+id/group_skin\"\n" +
+                "        android:layout_width=\"wrap_content\"\n" +
+                "        android:layout_height=\"wrap_content\"\n" +
+                "        android:layout_marginTop=\"200dp\"\n" +
+                "        app:layout_constraintTop_toTopOf=\"parent\"\n" +
+                "        app:layout_constraintStart_toStartOf=\"parent\"\n" +
+                "        app:layout_constraintEnd_toStartOf=\"@id/group_mode\">\n" +
+                "        <RadioButton\n" +
+                "            android:id=\"@+id/radio_defaultSkin\"\n" +
+                "            android:layout_width=\"wrap_content\"\n" +
+                "            android:layout_height=\"wrap_content\"\n" +
+                "            android:textColor=\"@color/test_text_color\"\n" +
+                "            android:text=\"默认资源\"/>\n" +
+                "        <RadioButton\n" +
+                "            android:id=\"@+id/radio_customSkin\"\n" +
+                "            android:layout_width=\"wrap_content\"\n" +
+                "            android:layout_height=\"wrap_content\"\n" +
+                "            android:textColor=\"@color/test_text_color\"\n" +
+                "            android:text=\"皮肤包资源\"/>\n" +
+                "    </RadioGroup>\n" +
+                "    <RadioGroup\n" +
+                "        android:id=\"@+id/group_mode\"\n" +
+                "        android:layout_width=\"wrap_content\"\n" +
+                "        android:layout_height=\"wrap_content\"\n" +
+                "        app:layout_constraintEnd_toEndOf=\"parent\"\n" +
+                "        app:layout_constraintStart_toEndOf=\"@id/group_skin\"\n" +
+                "        app:layout_constraintTop_toTopOf=\"@id/group_skin\"\n" +
+                "        >\n" +
+                "        <RadioButton\n" +
+                "            android:id=\"@+id/radio_dayMode\"\n" +
+                "            android:layout_width=\"wrap_content\"\n" +
+                "            android:layout_height=\"wrap_content\"\n" +
+                "            android:textColor=\"@color/test_text_color\"\n" +
+                "            android:text=\"白天模式\"/>\n" +
+                "        <RadioButton\n" +
+                "            android:id=\"@+id/radio_nightMode\"\n" +
+                "            android:layout_width=\"wrap_content\"\n" +
+                "            android:layout_height=\"wrap_content\"\n" +
+                "            android:textColor=\"@color/test_text_color\"\n" +
+                "            android:text=\"夜间模式\"/>\n" +
+                "    </RadioGroup>\n" +
+                "\n" +
+                "\n" +
+                "</androidx.constraintlayout.widget.ConstraintLayout>"
+        binding.tvText.setText(t)
         binding.tvName.setOnClickListener {
             copyToClipboard(ctx, title)
         }

@@ -61,8 +61,8 @@ class MainActivity : AppCompatActivity() {
 
         var presentation: Presentation? = null
         findViewById<View>(R.id.view).setOnClickListener {
-            // SecondActivity.startActivity(this)
-            if (presentation != null) {
+            TestActivity.startActivity(this)
+            /*if (presentation != null) {
                 presentation?.dismiss()
                 presentation = null
                 return@setOnClickListener
@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity() {
                     show()
                     presentation = this
                 }
-            }
+            }*/
         }
     }
 }

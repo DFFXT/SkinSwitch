@@ -1,25 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/test_id_ConstraintLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <TextView
-        android:layout_width="20dp"
-        android:layout_height="wrap_content"
-        android:background="#00f"
-        android:scaleX="1.3"
-        android:text="abc"
-        android:clickable="true"
-        android:backgroundTint="@color/white" />
-
-    <ProgressBar
-        android:layout_width="20dp"
-        android:layout_height="wrap_content"
-        android:background="#ffffffff"
-        android:backgroundTint="?attr/backgroundColor"
-        android:progress="33" />
-    <ProgressBar
-        android:layout_width="20dp"
-        android:layout_height="wrap_content"
-        android:background="#ffffffff"
-        android:progress="0x44" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+    android:layout_height="match_parent"
+    android:background="@color/view_debug_red"
+    android:text="sdsd" />

@@ -9,6 +9,7 @@ import com.example.viewdebug.xml.struct.writer.ChunkNamespaceWriter
 import com.example.viewdebug.xml.struct.writer.ChunkStartTagWriter
 import com.example.viewdebug.xml.struct.writer.ChunkStringWriter
 import com.example.viewdebug.xml.struct.writer.helper.AttributeWriterHelper
+import com.skin.log.Logger
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
 import java.io.InputStream
@@ -34,9 +35,11 @@ class XmlCompiler(private val ctx: Context) {
     // 申请1024*100的空间
     private val buffer: ByteBuffer = ByteBuffer.allocate(1024 * 100).order(ByteOrder.LITTLE_ENDIAN)
     fun compile(stream: InputStream): ByteBuffer {
+        addString("id")
         addString("background")
         addString("layout_width")
         addString("layout_height")
+        addString("View")
         addString("android")
         addString("androidx.constraintlayout.widget.ConstraintLayout")
         addString("http://schemas.android.com/apk/res/android")
@@ -81,7 +84,13 @@ class XmlCompiler(private val ctx: Context) {
         }
     }
 
-    fun addString(string: String): Int {
+    /**
+     * 字符串常量也需要排序
+     * 按照R.attr.xxx从小到大排序
+     *
+     * 所以这里需要重构，先添加所有字符信息，待write时才根据字符串确定index
+     */
+    fun addString(string: String, priority: Int = 0): Int {
         val preByteSize = poolByteSize
         if (!stringPool.contains(string)) {
             stringPool[string] = Pair(stringPool.size, poolByteSize)
@@ -136,9 +145,11 @@ class XmlCompiler(private val ctx: Context) {
                 addString(attr.nodeName)
             }
         } else {
+            // 忽略tools
+            if (attr.nodeName.startsWith("tools:")) return
             val tag = (chunkFile.chunkTags.last as ChunkStartTagWriter)
             tag.attributes.add(
-                Attribute().apply {
+                Attribute(Int.MAX_VALUE).apply {
                     var nsPrefix: String? = null
                     var attrName: String
                     if (attr.nodeName.contains(":")) {
@@ -158,7 +169,13 @@ class XmlCompiler(private val ctx: Context) {
                         // 当前是id，添加id资源
                         if (attr.nodeName == "android:id") {
                             addViewId(attr.nodeValue)
-                            tag.idIndex = tag.attributes.size.toShort()
+                            tag.idIndex = ((tag.attributes.size.toShort() + 1).toShort())
+                        }
+                        // 设置 用于排序
+                        this.systemResourceId = if (nsPrefix == "android") {
+                            ViewDebugInitializer.ctx.resources.getIdentifier(attrName,"attr", "android")
+                        } else {
+                            ViewDebugInitializer.ctx.resources.getIdentifier(attrName,"attr", ViewDebugInitializer.ctx.packageName)
                         }
                     } else {
                         attrName = attr.nodeName
@@ -173,10 +190,12 @@ class XmlCompiler(private val ctx: Context) {
                         ctx.packageName
                     }
                     val attrId = ctx.resources.getIdentifier(attrName, "attr", pkg)
+                    Logger.i("++++", "id = " + attrId)
                     chunkFile.chunkSystemResourceId.resourceIds.add(attrId)
                     // resValue.type
-                    this.value = -1
+                    this.value = if (!resValue.parentValue) -1 else resValue.data
                     this.resValue = resValue
+                    Logger.v("sssss", resValue.data.toString() +"  ${attr.nodeName}  ${attr.nodeValue}")
 
 
                 },
@@ -195,6 +214,10 @@ class XmlCompiler(private val ctx: Context) {
                 val attrs = ArrayList<Node>()
                 for (i in 0 until node.attributes.length) {
                     val attr = node.attributes.item(i)
+                    // 忽略tools
+                    if (attr.nodeName.startsWith("tools:")) {
+                        continue
+                    }
                     // 这里是命名空间
                     if (attr.nodeName.startsWith("xmlns:")) {
                         addNamespace(attr, findStr)

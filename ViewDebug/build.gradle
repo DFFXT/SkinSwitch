@@ -12,6 +12,12 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
+        externalNativeBuild {
+            cmake {
+                arguments "-DANDROID_ARM_NEON=TRUE","-DCMAKE_BUILD_TYPE=Release"
+                cppFlags '-std=c++11'
+            }
+        }
     }
 
     buildTypes {
@@ -29,6 +35,12 @@ android {
     }
     viewBinding {
         enabled = true
+    }
+    externalNativeBuild {
+        cmake {
+            path file('src/main/cpp/CMakeLists.txt')
+            version '3.18.1'
+        }
     }
 }
 
