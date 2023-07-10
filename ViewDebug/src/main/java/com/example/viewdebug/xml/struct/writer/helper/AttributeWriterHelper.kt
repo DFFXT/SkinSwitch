@@ -7,7 +7,7 @@ import com.example.viewdebug.xml.struct.writer.helper.value.AttReferenceValueCom
 import com.example.viewdebug.xml.struct.writer.helper.value.AttrBooleanValueCompile
 import com.example.viewdebug.xml.struct.writer.helper.value.AttrColorValueCompile
 import com.example.viewdebug.xml.struct.writer.helper.value.AttrDimensionValueCompile
-import com.example.viewdebug.xml.struct.writer.helper.value.AttrEnumValueCompile
+import com.example.viewdebug.xml.struct.writer.helper.value.AttrTransValueCompile
 import com.example.viewdebug.xml.struct.writer.helper.value.AttrStringValueCompile
 import com.example.viewdebug.xml.struct.writer.helper.value.AttrValueCompile
 import com.skin.log.Logger
@@ -19,7 +19,7 @@ class AttributeWriterHelper(private val compiler: XmlCompiler) {
     init {
         addCompiler(AttrColorValueCompile())
         addCompiler(AttReferenceValueCompile())
-        addCompiler(AttrEnumValueCompile())
+        addCompiler(AttrTransValueCompile())
         addCompiler(AttrDimensionValueCompile())
         addCompiler(AttrBooleanValueCompile())
         addCompiler(AttrStringValueCompile())
@@ -35,8 +35,8 @@ class AttributeWriterHelper(private val compiler: XmlCompiler) {
     fun compileAttributeResValue(tagName: String, attrName: String, attrValue: String, nsPrefix: String?): Attribute.ResValue? {
         val result = AndroidXmlManager.getValue(tagName, attrName, attrValue, nsPrefix!!)
         if (result != null) {
-            Logger.i("AttributeWriterHelper", "type ${result.type}")
-            var singleType = result.type!!
+            Logger.i("AttributeWriterHelper", "$tagName $attrName $attrValue type ${result.type}")
+            var singleType = result.type
             var realAttrValue = attrValue
 
 
@@ -45,8 +45,8 @@ class AttributeWriterHelper(private val compiler: XmlCompiler) {
                 // 是引用类型
                 "reference"
             } else {
-                if (result.type.contains("|")) {
-                    val types = result.type.split("|")
+                if (singleType?.contains("|") == true) {
+                    val types = singleType.split("|")
                     // 找出非引用格式
                     for (type in types) {
                         if (singleType != AttrValueFormat.REFERENCE) {
@@ -69,15 +69,14 @@ class AttributeWriterHelper(private val compiler: XmlCompiler) {
             if (compiledAttrValue == null) {
                 throw Exception("error $compileType $realAttrValue")
             }
+            if (compiledAttrValue.stringValue != null) {
+                compiler.addOtherString(compiledAttrValue.stringValue)
+            }
             return Attribute.ResValue().apply {
                 this.data = compiledAttrValue.data
                 this.type = compiledAttrValue.type
-                this.parentValue = compiledAttrValue.parentValueValid
+                this.stringData = compiledAttrValue.stringValue
             }
-
-
-
-            // todo
         }
         return null
     }

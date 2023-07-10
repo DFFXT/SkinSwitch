@@ -39,7 +39,7 @@ class ViewImageShowPage(
 
     override fun enableTouch(): Boolean = true
 
-    override fun enableFocus(): Boolean = false
+    override fun enableFocus(): Boolean = true
 
     override fun onCreateTabView(ctx: Context): View {
         return View(ctx).apply {

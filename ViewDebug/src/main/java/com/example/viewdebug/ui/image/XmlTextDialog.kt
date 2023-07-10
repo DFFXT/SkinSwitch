@@ -62,7 +62,6 @@ class XmlTextDialog(
     }
 
     private fun saveChange() {
-        // todo 需要将xml编译为AXML格式文件，然后才能动态加载，目前还未实现，理论上能在android上生成，需要R文件参与编译
         val compiler = XmlCompiler(ctx)
         val buffer = compiler.compile(binding.tvText.text.toString().byteInputStream())
         val byteArray = ByteArray(buffer.limit())

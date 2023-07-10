@@ -22,10 +22,21 @@ object CompileTest {
     fun main(vararg args: String) {
         val str = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
                 "<androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\n" +
-                "    android:id=\"@+id/test_id_ConstraintLayout\"\n" +
                 "    android:layout_width=\"match_parent\"\n" +
-                "    android:background=\"@color/view_debug_red\"\n" +
-                "    android:layout_height=\"match_parent\">\n" +
+                "    android:layout_height=\"34dp\"\n" +
+                "    android:clickable=\"true\"\n" +
+                "    android:focusable=\"false\"\n" +
+                "    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\n" +
+                "    android:background=\"@color/view_debug_white\">\n" +
+                "\n" +
+                "    <TextView\n" +
+                "        android:id=\"@+id/search_src_text\"\n" +
+                "        android:layout_width=\"wrap_content\"\n" +
+                "        android:layout_height=\"wrap_content\"\n" +
+                "        android:text=\"ssss\"\n" +
+                "        app:layout_constraintStart_toStartOf=\"parent\"\n" +
+                "        app:layout_constraintTop_toTopOf=\"parent\"/>\n" +
+                "\n" +
                 "</androidx.constraintlayout.widget.ConstraintLayout>"
 
         val compiler = XmlCompiler(ViewDebugInitializer.ctx)
@@ -43,7 +54,7 @@ object CompileTest {
 
 
         val stdFile = ChunkFile()
-        val b = ViewDebugInitializer.ctx.assets.open("test_type.xml").readBytes()
+        val b = ViewDebugInitializer.ctx.assets.open("view_debug_compile_test.xml").readBytes()
         val bf = ByteBuffer.wrap(b).order(ByteOrder.LITTLE_ENDIAN)
         stdFile.read(bf)
         //val t = ViewDebugInitializer.ctx.assets.openXmlResourceParser("assets/test_write.xml")

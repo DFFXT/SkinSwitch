@@ -12,7 +12,6 @@ import com.example.viewdebug.xml.struct.writer.helper.AttrValueFormat
  */
 class AttrStringValueCompile : AttrValueCompile(AttrValueFormat.STRING) {
     override fun compile(attrValue: String, compiler: XmlCompiler): CompiledAttrValue {
-        val index = compiler.addString(attrValue)
-        return CompiledAttrValue(TypedValue.TYPE_STRING.toByte(), index, true)
+        return CompiledAttrValue(TypedValue.TYPE_STRING.toByte(), -1, attrValue)
     }
 }

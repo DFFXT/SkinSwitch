@@ -24,29 +24,17 @@ import javax.xml.parsers.DocumentBuilderFactory
 class XmlCompiler(private val ctx: Context) {
     private val chunkFile = ChunkFileWriter()
     private val attributeWriterHelper = AttributeWriterHelper(this)
-    val factory = DocumentBuilderFactory.newInstance()
-    val builder = factory.newDocumentBuilder()
+    private val factory = DocumentBuilderFactory.newInstance()
+    private val builder = factory.newDocumentBuilder()
 
-
-    // key 是字符串，value是字节偏移
-    private val stringPool = LinkedHashMap<String, Pair<Int, Int>>()
-    private var poolByteSize = 0
     private var filterTextNode = true
+
     // 申请1024*100的空间
     private val buffer: ByteBuffer = ByteBuffer.allocate(1024 * 100).order(ByteOrder.LITTLE_ENDIAN)
     fun compile(stream: InputStream): ByteBuffer {
-        addString("id")
-        addString("background")
-        addString("layout_width")
-        addString("layout_height")
-        addString("View")
-        addString("android")
-        addString("androidx.constraintlayout.widget.ConstraintLayout")
-        addString("http://schemas.android.com/apk/res/android")
         val doc = builder.parse(stream)
         // step 1：创建字符常量池
         // 记录所有的node name、attribute name、attribute value、namespace
-        val len = doc.childNodes.length
         compile(doc.childNodes, buffer, true)
         compile(doc.childNodes, buffer, false)
         chunkFile.write(buffer)
@@ -68,18 +56,6 @@ class XmlCompiler(private val ctx: Context) {
             }
             addStartTag(node, findStr)
             compile(node.childNodes, buffer, findStr)
-            /*if (node.hasAttributes()) {
-                val attrs = node.attributes
-                for (attrIndex in 0 until attrs.length) {
-                    val attr = attrs.item(attrIndex)
-                    // 这里是命名空间
-                    if (attr.nodeName.startsWith("xmlns:")) {
-                        addNamespace(attr, findStr)
-                    } else {
-                        addAttribute(attr, findStr)
-                    }
-                }
-            }*/
             addEndTag(node, findStr)
         }
     }
@@ -90,44 +66,42 @@ class XmlCompiler(private val ctx: Context) {
      *
      * 所以这里需要重构，先添加所有字符信息，待write时才根据字符串确定index
      */
-    fun addString(string: String, priority: Int = 0): Int {
-        val preByteSize = poolByteSize
-        if (!stringPool.contains(string)) {
-            stringPool[string] = Pair(stringPool.size, poolByteSize)
-            chunkFile.chunkString.stringOffsets.add(poolByteSize)
-            chunkFile.chunkString.stringPools[poolByteSize] = ChunkStringWriter.StringPool(string)
-            poolByteSize += string.toByteArray().size + ChunkStringWriter.StringPool.extra_size_utf8
-            println("add:->" + string)
-        }
-
-        return chunkFile.chunkString.stringOffsets.indexOf(preByteSize)
+    private fun addString(string: String, type: Int, priority: Int) {
+        chunkFile.chunkString.addString(type, priority, string)
     }
 
-    fun getStringIndex(str: String): Int {
-        println(str)
-        return stringPool[str]!!.first
+    fun addAttrNameString(attrName: String, nsPrefix: String) {
+        val priority = if (nsPrefix == "android") {
+            ctx.resources.getIdentifier(attrName, "attr", nsPrefix)
+        } else {
+            ctx.resources.getIdentifier(attrName, "attr", ctx.packageName)
+        }
+        addString(attrName, ChunkStringWriter.PRIORITY_TYPE_ATTR_NAME, priority)
+    }
+
+    fun addOtherString(string: String) {
+        addString(string, ChunkStringWriter.PRIORITY_TYPE_ATTR_VALUE, 0)
     }
 
     private fun addNamespace(node: Node, findStr: Boolean) {
         val prefix = node.nodeName.substring("xmlns:".length)
         val uri = node.nodeValue
         if (findStr) {
-            addString(uri)
-            addString(prefix)
+            addOtherString(uri)
+            addOtherString(prefix)
         } else {
-            val index = getStringIndex(uri)
-            chunkFile.chunkStartNamespace[index] = ChunkNamespaceWriter(0, ChunkNamespaceWriter.TYPE_START).apply {
+            chunkFile.chunkStartNamespace.add(ChunkNamespaceWriter(0, ChunkNamespaceWriter.TYPE_START, chunkFile).apply {
                 this.comment = -1
-                this.uri = index
+                this.uri = uri
                 this.lineNumber = 0
-                this.prefix = getStringIndex(prefix)
-            }
-            chunkFile.chunkEndNamespace[index] = ChunkNamespaceWriter(0, ChunkNamespaceWriter.TYPE_END).apply {
+                this.prefix = prefix
+            })
+            chunkFile.chunkEndNamespace.add(ChunkNamespaceWriter(0, ChunkNamespaceWriter.TYPE_END, chunkFile).apply {
                 this.comment = -1
-                this.uri = index
+                this.uri = uri
                 this.lineNumber = 0
-                this.prefix = getStringIndex(prefix)
-            }
+                this.prefix = prefix
+            })
         }
         // 这里将命名空间提升到顶级， todo 确定命名空间实际位置
     }
@@ -138,49 +112,42 @@ class XmlCompiler(private val ctx: Context) {
 
             if (attr.nodeName.contains(":")) {
                 val attrSplit = attr.nodeName.split(":")
-                addString(attrSplit[1])
-                addString(attrSplit[0])
+                addOtherString(attrSplit[0])
+                addAttrNameString(attrSplit[1], attrSplit[0])
                 //addString(attr.nodeValue)
             } else {
-                addString(attr.nodeName)
+                // todo
+                // 没有前缀的属性
+                addOtherString(attr.nodeName)
             }
         } else {
             // 忽略tools
             if (attr.nodeName.startsWith("tools:")) return
             val tag = (chunkFile.chunkTags.last as ChunkStartTagWriter)
             tag.attributes.add(
-                Attribute(Int.MAX_VALUE).apply {
+                Attribute(Int.MAX_VALUE, chunkFile).apply {
                     var nsPrefix: String? = null
-                    var attrName: String
+                    val attrName: String
                     if (attr.nodeName.contains(":")) {
                         val attrSplit = attr.nodeName.split(":")
                         attrName = attrSplit[1]
-                        this.name = getStringIndex(attrName)
+                        this.name = attrName
                         nsPrefix = attrSplit[0]
-                        val prefixIndex = getStringIndex(nsPrefix)
-                        var uri = 0
-                        for (ns in chunkFile.chunkStartNamespace) {
-                            if (ns.value.prefix == prefixIndex) {
-                                uri = ns.value.uri
-                                break
-                            }
-                        }
-                        this.namespaceUri = uri
+                        this.namespacePrefix = nsPrefix
                         // 当前是id，添加id资源
                         if (attr.nodeName == "android:id") {
-                            addViewId(attr.nodeValue)
                             tag.idIndex = ((tag.attributes.size.toShort() + 1).toShort())
                         }
                         // 设置 用于排序
                         this.systemResourceId = if (nsPrefix == "android") {
-                            ViewDebugInitializer.ctx.resources.getIdentifier(attrName,"attr", "android")
+                            ViewDebugInitializer.ctx.resources.getIdentifier(attrName, "attr", "android")
                         } else {
-                            ViewDebugInitializer.ctx.resources.getIdentifier(attrName,"attr", ViewDebugInitializer.ctx.packageName)
+                            ViewDebugInitializer.ctx.resources.getIdentifier(attrName, "attr", ViewDebugInitializer.ctx.packageName)
                         }
                     } else {
                         attrName = attr.nodeName
-                        this.name = getStringIndex(attrName)
-                        this.namespaceUri = -1
+                        this.name = attrName
+                        this.namespacePrefix = ""
                     }
                     // 从常量池获取，因为目前所有值都在这里
                     val resValue = attributeWriterHelper.compileAttributeResValue(tagNode.nodeName, attrName, attr.nodeValue, nsPrefix)!!
@@ -193,9 +160,9 @@ class XmlCompiler(private val ctx: Context) {
                     Logger.i("++++", "id = " + attrId)
                     chunkFile.chunkSystemResourceId.resourceIds.add(attrId)
                     // resValue.type
-                    this.value = if (!resValue.parentValue) -1 else resValue.data
+                    // this.value = if (!resValue.parentValue) -1 else resValue.data
                     this.resValue = resValue
-                    Logger.v("sssss", resValue.data.toString() +"  ${attr.nodeName}  ${attr.nodeValue}")
+                    Logger.v("sssss", resValue.data.toString() + "  ${attr.nodeName}  ${attr.nodeValue}")
 
 
                 },
@@ -203,13 +170,9 @@ class XmlCompiler(private val ctx: Context) {
         }
     }
 
-    private fun addViewId(attrValue: String) {
-
-    }
-
     private fun addStartTag(node: Node, findStr: Boolean) {
         if (findStr) {
-            addString(node.nodeName)
+            addOtherString(node.nodeName)
             if (node.hasAttributes()) {
                 val attrs = ArrayList<Node>()
                 for (i in 0 until node.attributes.length) {
@@ -231,12 +194,12 @@ class XmlCompiler(private val ctx: Context) {
                 }
             }
         } else {
-            val tag = ChunkStartTagWriter(0)
+            val tag = ChunkStartTagWriter(0, chunkFile)
             chunkFile.chunkTags.add(tag)
             tag.apply {
-                this.name = getStringIndex(node.nodeName)
+                this.name = node.nodeName
                 // tag 暂时不算命名空间
-                this.namespaceUri = -1
+                this.namespaceUri = ""
                 this.comment = -1
                 this.idIndex = 0
                 this.classIndex = 0
@@ -258,16 +221,6 @@ class XmlCompiler(private val ctx: Context) {
                     attrs.forEach {
                         addAttribute(node, it, findStr)
                     }
-                    /*for (i in 0 until node.attributes.length) {
-                        val attr = node.attributes.item(i)
-                        // 这里是命名空间
-                        if (attr.nodeName.startsWith("xmlns:")) {
-                            addNamespace(attr, findStr)
-                        } else {
-                            addAttribute(attr, findStr)
-                        }
-
-                    }*/
                 }
             }
         }
@@ -275,13 +228,13 @@ class XmlCompiler(private val ctx: Context) {
 
     private fun addEndTag(node: Node, findStr: Boolean) {
         if (findStr) {
-            addString(node.nodeName)
+            // addOtherString(node.nodeName)
         } else {
             chunkFile.chunkTags.add(
-                ChunkEndTagWriter(0).apply {
-                    this.name = getStringIndex(node.nodeName)
+                ChunkEndTagWriter(0, chunkFile).apply {
+                    this.name = node.nodeName
                     // tag 暂时不算命名空间
-                    this.namespaceUri = -1
+                    this.namespaceUri = ""
                     this.comment = -1
                 },
             )

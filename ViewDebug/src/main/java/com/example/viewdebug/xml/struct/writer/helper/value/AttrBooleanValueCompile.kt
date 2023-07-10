@@ -14,6 +14,6 @@ class AttrBooleanValueCompile : AttrValueCompile("boolean") {
         val data = if (attrValue.equals("true", true)) {
             1
         } else 0
-        return CompiledAttrValue(TypedValue.TYPE_INT_BOOLEAN.toByte(), data, true)
+        return CompiledAttrValue(TypedValue.TYPE_INT_BOOLEAN.toByte(), data)
     }
 }

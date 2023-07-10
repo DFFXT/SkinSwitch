@@ -1,8 +1,10 @@
 package com.example.viewdebug.xml.struct.rule
 
+import com.skin.log.Logger
 import org.w3c.dom.Node
 import java.io.InputStream
 import javax.xml.parsers.DocumentBuilderFactory
+import kotlin.math.max
 
 /**
  * 将value.xml等文件解析成规则
@@ -14,7 +16,7 @@ class RuleParse(val nsPrefix: String) {
      * key：属性名称
      * value：属性值，由于文件中会存在多个declare-styleable下有相同属性的情况，所以用list存储
      */
-    val attrMap = HashMap<String, ArrayList<AttrDesc>>()
+    val attrMap = HashMap<String, AttrDesc>()
 
     fun parse(stream: InputStream) {
         val factory = DocumentBuilderFactory.newInstance()
@@ -48,23 +50,42 @@ class RuleParse(val nsPrefix: String) {
     }
 
     private fun parseAttr(parent: String, node: Node) {
-        val attr = node.attributes.getNamedItem("name")
-        val format = node.attributes.getNamedItem("format")
-        val desc = AttrDesc(parent, format?.nodeValue)
-        var descList = attrMap[attr.nodeValue]
-        if (descList == null) {
-            descList = ArrayList()
-            attrMap[attr.nodeValue] = descList
+        val attr = node.attributes.getNamedItem("name").nodeValue
+        val format = node.attributes.getNamedItem("format")?.nodeValue
+        var desc = attrMap[attr]
+        if (desc == null) {
+            desc = AttrDesc(parent, format)
+            attrMap[attr] = desc
         }
-        descList.add(desc)
+        if (format != null) {
+            if (desc.format != null && desc.format != format) {
+                Logger.e("RuleParse", "parseAttr warning  ${format} replaced ${desc.format}")
+            }
+            desc.format = format
+        }
+
         if (node.hasChildNodes()) {
             for (i in 0 until node.childNodes.length) {
                 val childNode = node.childNodes.item(i)
                 if (childNode.nodeType == Node.ELEMENT_NODE && childNode.nodeName == "enum") {
+                    // 枚举类型
                     if (childNode.hasAttributes()) {
                         val enumName = childNode.attributes.getNamedItem("name").nodeValue
                         val enumValue = childNode.attributes.getNamedItem("value").nodeValue
                         desc.addEnum(enumName, enumValue)
+                    }
+                } else if (childNode.nodeType == Node.ELEMENT_NODE && childNode.nodeName == "flag") {
+                    // flag类型，比如：end|top
+                    if (childNode.hasAttributes()) {
+                        val flagName = childNode.attributes.getNamedItem("name").nodeValue
+                        val flagValue = childNode.attributes.getNamedItem("value").nodeValue
+                        // 目前暂时只考虑flag为16进制和10进制的情况
+                        val value = if (flagValue.startsWith("0x")) {
+                            flagValue.substring(2, flagValue.length).toUInt(16)
+                        } else {
+                            flagValue.toUInt(10)
+                        }
+                        desc.addFlag(flagName, value)
                     }
                 }
             }
@@ -78,42 +99,98 @@ class RuleParse(val nsPrefix: String) {
     fun getValue(tagName: String, attrName: String, rowValue: String): ValueData? {
         attrMap[attrName]?.let {
             // 找枚举
-            for (desc in it) {
-                if (desc.getEnumValue(rowValue) != null) {
-                    return ValueData(
-                        type = desc.format,
-                        value = desc.getEnumValue(rowValue),
-                    )
-                }
+            if (it.getEnumValue(rowValue) != null) {
+                return ValueData(
+                    type = it.format,
+                    value = it.getEnumValue(rowValue),
+                )
             }
-            // 找类型
-            for (desc in it) {
-                if (desc.format != null) {
-                    return ValueData(
-                        type = desc.format,
-                        value = desc.getEnumValue(rowValue),
-                    )
-                }
+            if (it.getFlag(rowValue) != null) {
+
             }
+            // 找flag
+            return ValueData(
+                type = it.format,
+                value = it.getFlag(rowValue)?.toString(),
+            )
         }
         return null
     }
 
     class AttrDesc(
         // 当前属性所属，""、ViewGroup_Layout、TextView_Layout、ConstraintLayout_Layout、XXView等
+        @Deprecated("")
         val parent: String,
-        val format: String?,
-        private val enumMap: HashMap<String, String> = HashMap<String, String>(),
-    ) {
+        var format: String?,
+
+        ) {
+
+        private val enumMap: HashMap<String, String> = HashMap<String, String>()
+        private val flagMap: HashMap<String, UInt> = HashMap()
         fun addEnum(key: String, value: String) {
+            if (enumMap.contains(key)) {
+                if (enumMap[key] != value) {
+                    Logger.e("RuleParse", "warning addEnum key= $key, $value replaced ${enumMap[key]}")
+                }
+            }
             enumMap[key] = value
         }
 
         fun getEnumValue(key: String): String? {
             return enumMap[key]
         }
+
+        fun addFlag(key: String, value: UInt) {
+            if (flagMap.contains(key)) {
+                if (flagMap[key] != value) {
+                    Logger.e("RuleParse", "warning addFlag key= $key, $value replaced ${flagMap[key]}")
+                }
+            }
+            flagMap[key] = value
+        }
+
+        /**
+         * 当前描述是否有效
+         */
+        fun isValid(): Boolean {
+            return format != null || enumMap.size > 0 || flagMap.size > 0
+        }
+
+        /**
+         * 获取flag，
+         */
+        fun getFlag(key: String): UInt? {
+            val keys = key.trim()
+
+            if (keys.contains("|")) {
+                val keyList = keys.split("|")
+                var result:UInt = 0u
+                for (k in keyList) {
+                    val v = flagMap[k]
+                    if (v != null) {
+                        result = result or v
+                    }
+                }
+                return result
+            } else {
+                return flagMap[keys]
+            }
+        }
+
+        /**
+         * 优先级，由于规则文件中有很多重复的定义，
+         * 所以需要定义优先级，首先是枚举优先级最高，然后是有flag的次之，没有任何约束的优先级最低
+         */
+        fun getPriority(): Int {
+            return max(enumMap.size, flagMap.size)
+        }
     }
 
+    /**
+     * 返回结果
+     * @param type <attr format="xxx"> 中的xxx
+     * @param value 如果当前属性需要进行转换，比如：枚举、flag等，则会将结果返回，否则为null
+     */
     data class ValueData(
         val type: String?,
         val value: String?,

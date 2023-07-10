@@ -1,14 +1,9 @@
 package com.example.viewdebug.xml.struct.writer
 
-import com.example.viewdebug.ViewDebugInitializer
 import com.example.viewdebug.xml.struct.reader.IWrite
 import com.skin.log.Logger
 import java.nio.ByteBuffer
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashSet
-import kotlin.collections.LinkedHashMap
-import kotlin.collections.LinkedHashSet
 
 /**
  * chunk信息写入
@@ -42,16 +37,16 @@ abstract class BaseChunkWriter(var startPosition: Int) : IWrite {
 /**
  * base tag 信息写入
  */
-abstract class BaseTagChunkWriter(startPosition: Int) : BaseChunkWriter(startPosition) {
+abstract class BaseTagChunkWriter(startPosition: Int, private val chunkFileWriter: ChunkFileWriter) : BaseChunkWriter(startPosition) {
     var lineNumber: Int = 0
     var comment: Int = -1
-    var namespaceUri: Int = -1
-    var name: Int = -1
+    var namespaceUri: String = ""
+    lateinit var name: String
     override fun onWrite(data: ByteBuffer) {
         data.putInt(lineNumber)
         data.putInt(comment)
-        data.putInt(namespaceUri)
-        data.putInt(name)
+        data.putInt(chunkFileWriter.chunkString.getStringIndex(namespaceUri))
+        data.putInt(chunkFileWriter.chunkString.getStringIndex(name))
         onWrite2(data)
         writeChunkSize(data, data.position() - startPosition)
     }
@@ -75,8 +70,8 @@ class ChunkFileWriter : BaseChunkWriter(0) {
     // 字符串常量池
     val chunkString: ChunkStringWriter = ChunkStringWriter(0)
     val chunkSystemResourceId: ChunkSystemResourceIdWriter = ChunkSystemResourceIdWriter(0)
-    var chunkStartNamespace = HashMap<Int, ChunkNamespaceWriter>()
-    var chunkEndNamespace = HashMap<Int, ChunkNamespaceWriter>()
+    var chunkStartNamespace = ArrayList<ChunkNamespaceWriter>()
+    var chunkEndNamespace = ArrayList<ChunkNamespaceWriter>()
     val chunkTags = LinkedList<BaseTagChunkWriter>()
     override fun onWrite(data: ByteBuffer) {
         chunkString.startPosition = data.position()
@@ -85,16 +80,16 @@ class ChunkFileWriter : BaseChunkWriter(0) {
         chunkSystemResourceId.startPosition = data.position()
         chunkSystemResourceId.write(data)
         chunkStartNamespace.forEach {
-            it.value.startPosition = data.position()
-            it.value.write(data)
+            it.startPosition = data.position()
+            it.write(data)
         }
         chunkTags.forEach {
             it.startPosition = data.position()
             it.write(data)
         }
         chunkEndNamespace.forEach {
-            it.value.startPosition = data.position()
-            it.value.write(data)
+            it.startPosition = data.position()
+            it.write(data)
         }
     }
 }
@@ -109,6 +104,10 @@ class ChunkStringWriter(startPosition: Int) : BaseChunkWriter(startPosition) {
     companion object {
         const val HEADER_SIZE = 0x1c.toShort()
         const val TYPE: Short = 0x1
+
+        const val PRIORITY_TYPE_ATTR_NAME = 4
+        const val PRIORITY_TYPE_NS = 3
+        const val PRIORITY_TYPE_ATTR_VALUE = 2
     }
 
     init {
@@ -132,7 +131,60 @@ class ChunkStringWriter(startPosition: Int) : BaseChunkWriter(startPosition) {
     // styleAccount * 4
     val styleOffset = ArrayList<Int>()
 
-    val stringPools = LinkedHashMap<Int, StringPool>()
+    private val stringPools = HashMap<String, StringPool>()
+    private lateinit var sortedStringPool: ArrayList<StringPool>
+
+    // key type
+    private val attrNames = ArrayList<StringPool>()
+
+    private val otherStrings = ArrayList<StringPool>()
+
+
+    /**
+     * 新增字符串
+     * 根据解析争取的axml文件
+     * 发现属性名称是第一优先级
+     *  属性名称内部根据对应的属性id小到大排序
+     * 其它是第二优先级，
+     *  其它字符串内部根据ASCII排序，中午还不清楚，也应该是根据其每个的byte数值来排序
+     */
+    fun addString(type: Int, priority: Int, string: String) {
+        if (!stringPools.contains(string)) {
+            val pool = StringPool(priority.toLong() or (type.toLong() shl 32), string)
+            stringPools[string] = pool
+            if (type == PRIORITY_TYPE_ATTR_NAME) {
+                attrNames.add(pool)
+            } else {
+                otherStrings.add(pool)
+            }
+        }
+    }
+
+    /**
+     * 对所有文本进行排序
+     */
+    private fun sort() {
+        var preOffset = 0
+        val sortedAttrNames = attrNames.sortedBy { it.priority }
+        val sortedOthers = otherStrings.sortedBy { it.string }
+        sortedStringPool = ArrayList()
+        sortedStringPool.addAll(sortedAttrNames)
+        sortedStringPool.addAll(sortedOthers)
+        sortedStringPool.forEachIndexed { index, stringPool ->
+            stringPool.index = index
+            stringPool.isUTF8 = isUTF8 != 0.toShort()
+            stringOffsets.add(index, preOffset)
+            preOffset += stringPool.getChunkSize()
+        }
+    }
+
+    /**
+     * 获取字符串在池子中的位置
+     * 必须在sort之后才有效
+     */
+    fun getStringIndex(string: String): Int {
+        return stringPools[string]?.index ?: -1
+    }
 
     /**
      * todo 有可能发生错误，[StringPool.cpp]中是先读取的styleOffset再读取的stringOffset
@@ -140,6 +192,7 @@ class ChunkStringWriter(startPosition: Int) : BaseChunkWriter(startPosition) {
      * 因为stylePool一直为0，所以不会读取错误
      */
     override fun onWrite(data: ByteBuffer) {
+        sort()
         data.putInt(stringOffsets.size)
         data.putInt(styleOffset.size)
 
@@ -155,11 +208,10 @@ class ChunkStringWriter(startPosition: Int) : BaseChunkWriter(startPosition) {
         }
         println("开始保存string ${data.position()}")
         var i = 0
-        stringPools.forEach {
+        sortedStringPool.forEach {
             log("write string start start ${data.position()}")
-            it.value.isUTF8 = isUTF8 != 0.toShort()
-            it.value.write(data)
-            log("write string ${it.value.string}")
+            it.write(data)
+            log("write string ${it.string}")
             log("write string end start ${data.position()}")
             i++
         }
@@ -170,21 +222,23 @@ class ChunkStringWriter(startPosition: Int) : BaseChunkWriter(startPosition) {
         // [frameworks/base/tools/aapt2/StringPool.cpp]中在读取完字符串后，进行了，out->Align4()操作
         // 经查看源码，会进行4字节取余，然后在out中进行偏移
         // 那么，在写入时得考虑这个问题，长度不足4的整数倍需要补齐
-        val padding = data.position() % 4
-        repeat(4 -padding) {
-            data.put(0)
-        }
-    }
 
-    fun getString(index: Int): String {
-        val offset = stringOffsets[index]
-        return stringPools[offset]!!.chars
+        val padding = data.position() % 4
+        //根据对比Android studio实际编译结果 刚好的情况下还需要补4字节
+        if (padding == 0) {
+            data.putInt(0)
+        } else {
+            repeat(4 - padding) {
+                data.put(0)
+            }
+        }
+
     }
 
     /**
      * 单条字符串信息写入
      */
-    class StringPool(val string: String) : IWrite {
+    class StringPool(val priority: Long, val string: String) : IWrite {
 
         companion object {
             // 额外内容
@@ -194,11 +248,13 @@ class ChunkStringWriter(startPosition: Int) : BaseChunkWriter(startPosition) {
             const val extra_size_not_utf8 = 4
         }
 
+        var index = 0
+
         var isUTF8: Boolean = false
         var len: Short = 0
 
         // isUTF8 ? 1byte * byteLength : 2byte * charLength
-        lateinit var chars: String
+        // lateinit var chars: String
 
         // isUTF8 ? 1byte : 2byte
         var separator: Short = 0
@@ -213,29 +269,22 @@ class ChunkStringWriter(startPosition: Int) : BaseChunkWriter(startPosition) {
                 println("-->write str start:${data.position()}")
                 data.put(strByte)
                 println("-->write str end:${data.position()}")
-
-                // val t = data.get().toShort()
-                /*len = (t and 0xFF.toShort())
-                val c = ByteArray(len.toInt()) {
-                    data.get()
-                }
-                chars = String(c)
-                val f = chars*/
                 data.put(0)
             } else {
                 data.putShort((strByte.size / 2).toShort())
                 println("-->write str start $string:${data.position()}")
                 data.put(strByte)
                 println("-->write str end:${data.position()}")
-                /*val c = ByteArray(data.short * 2) {
-                    data.get()
-                }
-                chars = String(c)
-                val f = chars*/
                 data.putShort(0)
             }
+        }
 
-            // separator = data.short
+        fun getChunkSize(): Int {
+            return if (isUTF8) {
+                string.toByteArray().size + extra_size_utf8
+            } else {
+                string.toByteArray().size + extra_size_not_utf8
+            }
         }
     }
 }
@@ -267,36 +316,33 @@ class ChunkSystemResourceIdWriter(startPosition: Int) : BaseChunkWriter(startPos
 /**
  * 开始命名空间区块写入
  */
-class ChunkNamespaceWriter(startPosition: Int, type: Short) : BaseChunkWriter(startPosition) {
+class ChunkNamespaceWriter(startPosition: Int, type: Short, private val chunkFileWriter: ChunkFileWriter) : BaseChunkWriter(startPosition) {
     companion object {
         const val TYPE_START = 0x100.toShort()
         const val TYPE_END = 0x101.toShort()
-        fun create(prefix: String, uri: String): ChunkNamespaceWriter {
-            return ChunkNamespaceWriter(0, 0)
-        }
     }
 
     init {
-        this.type = type.toShort()
+        this.type = type
         this.headerSize = 0x10
     }
 
     var lineNumber: Int = 0
     var comment: Int = 0
-    var prefix: Int = 0
-    var uri: Int = 0
+    lateinit var prefix: String
+    lateinit var uri: String
     override fun onWrite(data: ByteBuffer) {
         data.putInt(lineNumber)
         data.putInt(comment)
-        data.putInt(prefix)
-        data.putInt(uri)
+        data.putInt(chunkFileWriter.chunkString.getStringIndex(prefix))
+        data.putInt(chunkFileWriter.chunkString.getStringIndex(uri))
     }
 }
 
 /**
  * 开始tag写入
  */
-class ChunkStartTagWriter(startPosition: Int) : BaseTagChunkWriter(startPosition) {
+class ChunkStartTagWriter(startPosition: Int, chunkFileWriter: ChunkFileWriter) : BaseTagChunkWriter(startPosition, chunkFileWriter) {
     companion object {
         const val TYPE = 0x0102.toShort()
     }
@@ -322,7 +368,7 @@ class ChunkStartTagWriter(startPosition: Int) : BaseTagChunkWriter(startPosition
         data.putShort(idIndex)
         data.putShort(classIndex)
         data.putShort(styleIndex)
-        // todo 属性标签需要通过 R.attr.xxx 的值从小到大排序
+
         attributes.sortBy { it.systemResourceId }
         attributes.forEach {
             it.write(data)
@@ -334,17 +380,24 @@ class ChunkStartTagWriter(startPosition: Int) : BaseTagChunkWriter(startPosition
  * 属性写入
  * @param systemResourceId 属性对应id，不参与write，只参与排序
  */
-class Attribute(var systemResourceId: Int) : IWrite {
-    var namespaceUri: Int = -1
-    var name: Int = 0
+class Attribute(var systemResourceId: Int, private val chunkFileWriter: ChunkFileWriter) : IWrite {
+    var namespacePrefix: String = ""
+    lateinit var name: String
 
     // 如果value==-1，则需要取resValue中获取
-    var value: Int = -1
+    private var value: Int = -1
     lateinit var resValue: ResValue
     override fun write(data: ByteBuffer) {
-        data.putInt(namespaceUri)
-        data.putInt(name)
-        data.putInt(value)
+        // todo 理论上应该进行范围判定
+        val nsUri = chunkFileWriter.chunkStartNamespace.find { it.prefix == namespacePrefix }!!.uri
+        data.putInt(chunkFileWriter.chunkString.getStringIndex(nsUri))
+        data.putInt(chunkFileWriter.chunkString.getStringIndex(name))
+        if (resValue.stringData == null) {
+            data.putInt(value)
+        } else {
+            resValue.data = chunkFileWriter.chunkString.getStringIndex(resValue.stringData!!)
+            data.putInt(resValue.data)
+        }
         resValue.write(data)
     }
 
@@ -356,11 +409,11 @@ class Attribute(var systemResourceId: Int) : IWrite {
 
         // value类型，比如整数（分10进制、8进制等）、dp、sp、引用，具体只见[struct Res_value]
         // 这里默认是int10进制
-        // todo
         var type: Byte = 0x10
         var data: Int = 0
 
-        var parentValue = false
+        // 如果不为null则，需要将其index赋值attr.data
+        var stringData: String? = null
         override fun write(data: ByteBuffer) {
             data.putShort(size)
             data.put(res0)
@@ -373,7 +426,7 @@ class Attribute(var systemResourceId: Int) : IWrite {
 /**
  * 结束tag写入
  */
-class ChunkEndTagWriter(startPosition: Int) : BaseTagChunkWriter(startPosition) {
+class ChunkEndTagWriter(startPosition: Int, chunkFileWriter: ChunkFileWriter) : BaseTagChunkWriter(startPosition, chunkFileWriter) {
     companion object {
         const val TYPE = 0x0103.toShort()
     }

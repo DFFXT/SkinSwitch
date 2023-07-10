@@ -4,6 +4,15 @@
     android:layout_height="34dp"
     android:clickable="true"
     android:focusable="false"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/view_debug_white">
+
+    <TextView
+        android:id="@+id/search_src_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ssss"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

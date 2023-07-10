@@ -12,6 +12,6 @@ abstract class AttrValueCompile(val type: String) {
 class CompiledAttrValue(
     val type: Byte,
     val data: Int,
-    // 当data的值需要通过字符串常量池获取的话，则为true
-    val parentValueValid: Boolean = false
+    // 当前数据为字符串
+    val stringValue: String? = null
 )

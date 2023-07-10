@@ -15,12 +15,15 @@ object IOUtil {
      * @param file 如果是文件夹，则只对文件夹内的文件进行压缩（不生成当前文件夹名称），如果是文件，则直接压缩
      */
     fun zip(output: String, file: File) {
+        if (!file.exists()) return
         FileOutputStream(output).use {
             ZipOutputStream(it).use { zip ->
                 if (file.isDirectory) {
                     file.listFiles()?.forEach { f ->
                         zipFile(zip, f, "", ByteArray(1024 * 1024))
                     }
+                } else {
+                    zipFile(zip, file, "",  ByteArray(1024 * 1024))
                 }
             }
         }

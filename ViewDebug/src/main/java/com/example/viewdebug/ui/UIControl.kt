@@ -96,10 +96,15 @@ class UIControl(private val ctx: Context) {
                 }
             }
             val lp = contentBinding.root.layoutParams as WindowManager.LayoutParams
+            // 根据页面配置焦点和触摸状态
             if (!delegate.enableTouch()) {
                 lp.flags = lp.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
             } else {
                 lp.flags = lp.flags and WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE.inv()
+            }
+            if (!delegate.enableFocus()) {
+                lp.flags = lp.flags or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+            } else {
                 lp.flags = lp.flags and WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE.inv()
             }
             wm.updateViewLayout(contentBinding.root, lp)

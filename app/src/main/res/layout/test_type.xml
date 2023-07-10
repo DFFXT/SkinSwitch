@@ -1,7 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/test_id_ConstraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/view_debug_red"
-    android:text="sdsd" />
+    android:text="sdsssssd">
+
+
+    <TextView
+        android:text="LL66L0L"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:text="LLLL)"
+        android:layout_width="wrap_content"
+        android:layout_gravity="end"
+        android:textColor="@color/white"
+        android:layout_height="wrap_content"/>
+</FrameLayout>
