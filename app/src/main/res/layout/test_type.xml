@@ -3,8 +3,8 @@
     android:id="@+id/test_id_ConstraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/view_debug_red"
-    android:text="sdsssssd">
+    android:background="@color/white"
+    android:text="AVV">
 
 
     <TextView
@@ -15,6 +15,6 @@
         android:text="LLLL)"
         android:layout_width="wrap_content"
         android:layout_gravity="end"
-        android:textColor="@color/white"
+        android:textColor="@color/view_debug_image_detail_title_bar_bg"
         android:layout_height="wrap_content"/>
 </FrameLayout>

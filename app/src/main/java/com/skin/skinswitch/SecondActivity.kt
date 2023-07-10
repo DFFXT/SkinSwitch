@@ -10,6 +10,7 @@ import com.example.skinswitch.R
 import com.skin.skincore.SkinManager
 import com.skin.skincore.collector.isNight
 import com.skin.skinswitch.const.AppConst
+import kotlinx.coroutines.GlobalScope
 
 class SecondActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

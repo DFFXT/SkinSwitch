@@ -6,6 +6,14 @@ import android.content.Context
 import com.example.viewdebug.ui.UIPage
 import com.example.viewdebug.ui.image.XmlParser
 import com.example.viewdebug.ui.image.XmlTextDialog
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * 复制到剪切板
@@ -34,5 +42,14 @@ internal fun tryShowXmlText(ctx: Context, id: Int, hostPage: UIPage) {
     } catch (e: Exception) {
         copyToClipboard(ctx, attrValue)
     }
+}
+
+internal val applicationJob = SupervisorJob()
+internal val applicationScope = CoroutineScope(applicationJob)
+
+internal fun launch(context: CoroutineContext = EmptyCoroutineContext,
+                    start: CoroutineStart = CoroutineStart.DEFAULT,
+                    block: suspend CoroutineScope.() -> Unit) {
+    applicationScope.launch(context, start, block)
 }
 

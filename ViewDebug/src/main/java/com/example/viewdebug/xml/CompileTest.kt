@@ -74,12 +74,12 @@ object CompileTest {
 
         Thread {
             val pm = ViewDebugInitializer.ctx.packageManager
-            val pack = PackAssetsFile()
+            val pack = PackAssetsFile(ViewDebugInitializer.ctx)
             val p = ViewDebugInitializer.ctx.externalCacheDir!!.absolutePath + "/222.apk"
             val info = pm.getPackageArchiveInfo(pack.getPackedApkPath(), PackageManager.GET_ACTIVITIES)
             val f = 0
            // pack.addLayoutFile("ssssss".byteInputStream(), "xxx")
-            pack.pack()
+            //pack.pack()
         }.start()
     }
 

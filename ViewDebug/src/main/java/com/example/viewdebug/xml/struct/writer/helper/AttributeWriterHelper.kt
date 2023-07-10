@@ -1,6 +1,6 @@
 package com.example.viewdebug.xml.struct.writer.helper
 
-import com.example.viewdebug.xml.AndroidXmlManager
+import com.example.viewdebug.xml.AndroidXmRuleManager
 import com.example.viewdebug.xml.struct.XmlCompiler
 import com.example.viewdebug.xml.struct.writer.Attribute
 import com.example.viewdebug.xml.struct.writer.helper.value.AttReferenceValueCompile
@@ -33,7 +33,7 @@ class AttributeWriterHelper(private val compiler: XmlCompiler) {
      * 编译属性值
      */
     fun compileAttributeResValue(tagName: String, attrName: String, attrValue: String, nsPrefix: String?): Attribute.ResValue? {
-        val result = AndroidXmlManager.getValue(tagName, attrName, attrValue, nsPrefix!!)
+        val result = AndroidXmRuleManager.getValue(tagName, attrName, attrValue, nsPrefix!!)
         if (result != null) {
             Logger.i("AttributeWriterHelper", "$tagName $attrName $attrValue type ${result.type}")
             var singleType = result.type

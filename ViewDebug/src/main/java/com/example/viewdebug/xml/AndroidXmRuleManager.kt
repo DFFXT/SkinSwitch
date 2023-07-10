@@ -3,9 +3,12 @@ package com.example.viewdebug.xml
 import android.content.Context
 import com.example.viewdebug.xml.struct.rule.RuleParse
 
-object AndroidXmlManager {
-    val parseAndroid = RuleParse("android")
-    val thirdParses = ArrayList<RuleParse>()
+/**
+ * 管理xml规则文件
+ */
+object AndroidXmRuleManager {
+    private val parseAndroid = RuleParse("android")
+    private val thirdParses = ArrayList<RuleParse>()
     fun init(ctx: Context) {
         parseAndroid.parse(ctx.assets.open("rules/android-attrs.xml"))
         val constraint = RuleParse("app")

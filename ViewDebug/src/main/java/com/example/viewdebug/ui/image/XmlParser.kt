@@ -40,7 +40,7 @@ class XmlParser {
                     for (i in 0 until it.attributeCount) {
                         builder.indent(it.depth)
                         val attrName = it.getAttributeName(i)
-                        builder.append(" $attrName=")
+                        builder.append("$attrName=")
                         val attrIdValue = it.getAttributeResourceValue(i, -1)
                         var attrValue = ""
                         if (attrIdValue != -1) {

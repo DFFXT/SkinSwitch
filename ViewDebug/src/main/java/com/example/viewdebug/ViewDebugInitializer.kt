@@ -11,7 +11,7 @@ import androidx.startup.Initializer
 import com.example.viewdebug.ui.skin.ViewDebugMergeResource
 import com.example.viewdebug.util.ViewDebugInfo
 import com.example.viewdebug.util.setViewDebugInfo
-import com.example.viewdebug.xml.AndroidXmlManager
+import com.example.viewdebug.xml.AndroidXmRuleManager
 import com.example.viewdebug.xml.CompileTest
 import com.skin.skincore.SkinManager
 import com.skin.skincore.asset.IAsset
@@ -61,7 +61,7 @@ class ViewDebugInitializer : Initializer<ViewDebugInitializer> {
             }
         })
         ViewDebugManager.init(context.applicationContext as Application)
-        AndroidXmlManager.init(ctx)
+        AndroidXmRuleManager.init(ctx)
         CompileTest.main()
         return this
     }
