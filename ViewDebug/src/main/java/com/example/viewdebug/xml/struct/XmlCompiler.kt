@@ -8,6 +8,8 @@ import com.example.viewdebug.xml.struct.writer.ChunkFileWriter
 import com.example.viewdebug.xml.struct.writer.ChunkNamespaceWriter
 import com.example.viewdebug.xml.struct.writer.ChunkStartTagWriter
 import com.example.viewdebug.xml.struct.writer.ChunkStringWriter
+import com.example.viewdebug.xml.struct.writer.ResourceLink
+import com.example.viewdebug.xml.struct.writer.ResourceLinkImpl
 import com.example.viewdebug.xml.struct.writer.helper.AttributeWriterHelper
 import com.skin.log.Logger
 import org.w3c.dom.Node
@@ -23,6 +25,7 @@ import javax.xml.parsers.DocumentBuilderFactory
  */
 class XmlCompiler(private val ctx: Context) {
     private val chunkFile = ChunkFileWriter()
+    private val resourceLink: ResourceLink = ResourceLinkImpl(ctx)
     private val attributeWriterHelper = AttributeWriterHelper(this)
     private val factory = DocumentBuilderFactory.newInstance()
     private val builder = factory.newDocumentBuilder()
@@ -70,12 +73,8 @@ class XmlCompiler(private val ctx: Context) {
         chunkFile.chunkString.addString(type, priority, string)
     }
 
-    fun addAttrNameString(attrName: String, nsPrefix: String) {
-        val priority = if (nsPrefix == "android") {
-            ctx.resources.getIdentifier(attrName, "attr", nsPrefix)
-        } else {
-            ctx.resources.getIdentifier(attrName, "attr", ctx.packageName)
-        }
+    private fun addAttrNameString(attrName: String, nsPrefix: String) {
+        val priority = resourceLink.getAttributeId(nsPrefix, attrName)
         addString(attrName, ChunkStringWriter.PRIORITY_TYPE_ATTR_NAME, priority)
     }
 
@@ -130,20 +129,20 @@ class XmlCompiler(private val ctx: Context) {
                     val attrName: String
 
                     // 特殊属性特殊处理
-                    when (attr.nodeName) {
+                    /*when (attr.nodeName) {
                         "android:id" -> {
                             // 当前是id，添加id索引
-                            tag.idIndex = ((tag.attributes.size.toShort() + 1).toShort())
+                            // tag.idIndex = ((tag.attributes.size.toShort() + 1).toShort())
                         }
                         "style" -> {
                             // 当前是style，添加style索引
-                            tag.styleIndex = ((tag.attributes.size.toShort() + 1).toShort())
+                            // tag.styleIndex = ((tag.attributes.size.toShort() + 1).toShort())
                         }
                         "class" -> {
                             // 当前是class，添加class索引
-                            tag.classIndex = ((tag.attributes.size.toShort() + 1).toShort())
+                            // tag.classIndex = ((tag.attributes.size.toShort() + 1).toShort())
                         }
-                    }
+                    }*/
                     if (attr.nodeName.contains(":")) {
                         val attrSplit = attr.nodeName.split(":")
                         attrName = attrSplit[1]
@@ -152,11 +151,7 @@ class XmlCompiler(private val ctx: Context) {
                         this.namespacePrefix = nsPrefix
 
                         // 设置 用于排序
-                        this.systemResourceId = if (nsPrefix == "android") {
-                            ViewDebugInitializer.ctx.resources.getIdentifier(attrName, "attr", "android")
-                        } else {
-                            ViewDebugInitializer.ctx.resources.getIdentifier(attrName, "attr", ViewDebugInitializer.ctx.packageName)
-                        }
+                        this.systemResourceId = resourceLink.getAttributeId(nsPrefix, attrName)
                         Logger.i("++++", "id = " + systemResourceId)
                         chunkFile.chunkSystemResourceId.resourceIds.add(systemResourceId)
                     } else {
@@ -212,9 +207,9 @@ class XmlCompiler(private val ctx: Context) {
                 // tag 暂时不算命名空间
                 this.namespaceUri = ""
                 this.comment = -1
-                this.idIndex = 0
-                this.classIndex = 0
-                this.styleIndex = 0
+                // this.idIndex = 0
+                /*this.classIndex = 0
+                this.styleIndex = 0*/
                 if (node.hasAttributes()) {
                     this.attrCount = node.attributes.length.toShort()
 
