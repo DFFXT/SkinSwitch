@@ -3,6 +3,8 @@ package com.example.viewdebug.util
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.widget.Toast
+import com.example.viewdebug.ViewDebugInitializer
 import com.example.viewdebug.ui.UIPage
 import com.example.viewdebug.ui.image.XmlParser
 import com.example.viewdebug.ui.image.XmlTextDialog
@@ -53,3 +55,7 @@ internal fun launch(context: CoroutineContext = EmptyCoroutineContext,
     applicationScope.launch(context, start, block)
 }
 
+
+internal fun String.shortToast() {
+    Toast.makeText(ViewDebugInitializer.ctx, this, Toast.LENGTH_SHORT).show()
+}

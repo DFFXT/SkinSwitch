@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--这个文件用来枚举一些自定义属性或者特殊属性-->
+<resources>
+    <!--style属性，特殊属性，没有前缀-->
+    <attr name = "style" format="reference"/>
+</resources>

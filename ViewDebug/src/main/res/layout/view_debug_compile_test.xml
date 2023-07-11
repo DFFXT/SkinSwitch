@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:text="ssss"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        style="@style/MayStyle"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

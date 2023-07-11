@@ -128,37 +128,48 @@ class XmlCompiler(private val ctx: Context) {
                 Attribute(Int.MAX_VALUE, chunkFile).apply {
                     var nsPrefix: String? = null
                     val attrName: String
+
+                    // 特殊属性特殊处理
+                    when (attr.nodeName) {
+                        "android:id" -> {
+                            // 当前是id，添加id索引
+                            tag.idIndex = ((tag.attributes.size.toShort() + 1).toShort())
+                        }
+                        "style" -> {
+                            // 当前是style，添加style索引
+                            tag.styleIndex = ((tag.attributes.size.toShort() + 1).toShort())
+                        }
+                        "class" -> {
+                            // 当前是class，添加class索引
+                            tag.classIndex = ((tag.attributes.size.toShort() + 1).toShort())
+                        }
+                    }
                     if (attr.nodeName.contains(":")) {
                         val attrSplit = attr.nodeName.split(":")
                         attrName = attrSplit[1]
                         this.name = attrName
                         nsPrefix = attrSplit[0]
                         this.namespacePrefix = nsPrefix
-                        // 当前是id，添加id资源
-                        if (attr.nodeName == "android:id") {
-                            tag.idIndex = ((tag.attributes.size.toShort() + 1).toShort())
-                        }
+
                         // 设置 用于排序
                         this.systemResourceId = if (nsPrefix == "android") {
                             ViewDebugInitializer.ctx.resources.getIdentifier(attrName, "attr", "android")
                         } else {
                             ViewDebugInitializer.ctx.resources.getIdentifier(attrName, "attr", ViewDebugInitializer.ctx.packageName)
                         }
+                        Logger.i("++++", "id = " + systemResourceId)
+                        chunkFile.chunkSystemResourceId.resourceIds.add(systemResourceId)
                     } else {
                         attrName = attr.nodeName
                         this.name = attrName
                         this.namespacePrefix = ""
                     }
                     // 从常量池获取，因为目前所有值都在这里
-                    val resValue = attributeWriterHelper.compileAttributeResValue(tagNode.nodeName, attrName, attr.nodeValue, nsPrefix)!!
-                    val pkg = if (nsPrefix == "android") {
-                        "android"
-                    } else {
-                        ctx.packageName
+                    val resValue = attributeWriterHelper.compileAttributeResValue(tagNode.nodeName, attrName, attr.nodeValue, nsPrefix)
+                    if (resValue == null) {
+                        throw Exception("无法解析：${tagNode.nodeName} $nsPrefix $attrName ${attr.nodeValue}")
                     }
-                    val attrId = ctx.resources.getIdentifier(attrName, "attr", pkg)
-                    Logger.i("++++", "id = " + attrId)
-                    chunkFile.chunkSystemResourceId.resourceIds.add(attrId)
+
                     // resValue.type
                     // this.value = if (!resValue.parentValue) -1 else resValue.data
                     this.resValue = resValue

@@ -33,13 +33,11 @@ class AttributeWriterHelper(private val compiler: XmlCompiler) {
      * 编译属性值
      */
     fun compileAttributeResValue(tagName: String, attrName: String, attrValue: String, nsPrefix: String?): Attribute.ResValue? {
-        val result = AndroidXmRuleManager.getValue(tagName, attrName, attrValue, nsPrefix!!)
+        val result = AndroidXmRuleManager.getValue(tagName, attrName, attrValue, nsPrefix)
         if (result != null) {
             Logger.i("AttributeWriterHelper", "$tagName $attrName $attrValue type ${result.type}")
             var singleType = result.type
             var realAttrValue = attrValue
-
-
 
             val compileType = if (attrValue.startsWith("@")) {
                 // 是引用类型

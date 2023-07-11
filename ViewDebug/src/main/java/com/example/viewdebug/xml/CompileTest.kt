@@ -1,6 +1,7 @@
 package com.example.viewdebug.xml
 
 import android.content.pm.PackageManager
+import com.example.viewdebug.R
 import com.example.viewdebug.ViewDebugInitializer
 import com.example.viewdebug.ui.image.XmlParser
 import com.example.viewdebug.xml.pack.PackAssetsFile
@@ -35,7 +36,8 @@ object CompileTest {
                 "        android:layout_height=\"wrap_content\"\n" +
                 "        android:text=\"ssss\"\n" +
                 "        app:layout_constraintStart_toStartOf=\"parent\"\n" +
-                "        app:layout_constraintTop_toTopOf=\"parent\"/>\n" +
+                "        app:layout_constraintTop_toTopOf=\"parent\"\n" +
+                "        style=\"@style/MayStyle\"/>\n" +
                 "\n" +
                 "</androidx.constraintlayout.widget.ConstraintLayout>"
 
@@ -57,8 +59,8 @@ object CompileTest {
         val b = ViewDebugInitializer.ctx.assets.open("view_debug_compile_test.xml").readBytes()
         val bf = ByteBuffer.wrap(b).order(ByteOrder.LITTLE_ENDIAN)
         stdFile.read(bf)
-        //val t = ViewDebugInitializer.ctx.assets.openXmlResourceParser("assets/test_write.xml")
-        val f = 0
+        val t = ViewDebugInitializer.ctx.assets.openXmlResourceParser("assets/test_write.xml")
+        val x = XmlParser().getXml(ViewDebugInitializer.ctx, t) {}
         /**
          * //12582945 shr 8 shl 8
         // 1-4位确定类型

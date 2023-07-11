@@ -389,8 +389,8 @@ class Attribute(var systemResourceId: Int, private val chunkFileWriter: ChunkFil
     lateinit var resValue: ResValue
     override fun write(data: ByteBuffer) {
         // todo 理论上应该进行范围判定
-        val nsUri = chunkFileWriter.chunkStartNamespace.find { it.prefix == namespacePrefix }!!.uri
-        data.putInt(chunkFileWriter.chunkString.getStringIndex(nsUri))
+        val nsUri = chunkFileWriter.chunkStartNamespace.find { it.prefix == namespacePrefix }?.uri
+        data.putInt(chunkFileWriter.chunkString.getStringIndex(nsUri ?: ""))
         data.putInt(chunkFileWriter.chunkString.getStringIndex(name))
         if (resValue.stringData == null) {
             data.putInt(value)
