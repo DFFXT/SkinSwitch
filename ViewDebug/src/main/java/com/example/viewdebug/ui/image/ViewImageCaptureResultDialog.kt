@@ -7,25 +7,23 @@ import android.view.ViewGroup
 import com.example.viewdebug.databinding.ViewDebugImageSetContainerBinding
 import com.example.viewdebug.rv.MultiTypeRecyclerAdapter
 import com.example.viewdebug.ui.UIPage
+import com.example.viewdebug.ui.dialog.BaseDialog
 import com.example.viewdebug.ui.image.parser.Parser
-import com.example.viewdebug.util.ViewDebugInfo
 import com.example.viewdebug.util.adjustOrientation
 import com.example.viewdebug.util.getViewDebugInfo
-import com.skin.skincore.collector.ViewUnion
 import com.skin.skincore.collector.getViewUnion
-import java.lang.ref.WeakReference
 
 /**
  * 显示拾取view相关信息
  */
 class ViewImageCaptureResultDialog(
     ctx: Context,
-    private val hostPage: UIPage,
+    hostPage: UIPage,
     private val attrIds: HashMap<Int, Pair<String, Parser>>,
-) {
+) : BaseDialog(hostPage) {
     private val imageItemHandler = ImageItemHandler(hostPage)
     private val rAdapter = MultiTypeRecyclerAdapter<Any>()
-    private val dialogBinding: ViewDebugImageSetContainerBinding
+    private lateinit var dialogBinding: ViewDebugImageSetContainerBinding
 
     companion object {
         private var mode = 0
@@ -33,17 +31,18 @@ class ViewImageCaptureResultDialog(
         private var MODE_VIEW = 1
     }
 
-    init {
 
+    override fun onCreateDialog(ctx: Context): View {
         dialogBinding =
             ViewDebugImageSetContainerBinding.inflate(
                 LayoutInflater.from(ctx),
-                hostPage.tabView.parent as ViewGroup,
+                host.tabView.parent as ViewGroup,
                 false,
             )
         adjustOrientation(dialogBinding.root)
-        dialogBinding.rvImage.adapter = rAdapter
         rAdapter.registerItemHandler(imageItemHandler)
+        dialogBinding.rvImage.adapter = rAdapter
+        return dialogBinding.root
     }
 
 
@@ -52,14 +51,15 @@ class ViewImageCaptureResultDialog(
     }
 
     fun show(title: String, capturedViews: List<View>) {
-        dialogBinding.tvHostName.text = title
+
         if (mode == MODE_IMAGE) {
             showModeImage(capturedViews)
         } else {
             showModeView(capturedViews)
         }
         if (rAdapter.itemCount != 0) {
-            hostPage.showDialog(dialogBinding.root)
+            show()
+            dialogBinding.tvHostName.text = title
         }
     }
 
@@ -98,10 +98,6 @@ class ViewImageCaptureResultDialog(
         }
 
         rAdapter.update(data)
-    }
-
-    fun close() {
-        hostPage.closeDialog(dialogBinding.root)
     }
 
 

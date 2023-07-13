@@ -14,6 +14,7 @@
         android:text="TextView"
         android:textSize="18dp"
         android:gravity="center"
+        android:background="@color/view_debug_red"
         android:textColor="@color/view_debug_black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

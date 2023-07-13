@@ -1,24 +1,45 @@
 package com.example.viewdebug.ui.dialog
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.view.View
 import com.example.viewdebug.ui.UIPage
 
 abstract class BaseDialog(protected val host: UIPage) {
-    var dialogView: View
+    lateinit var dialogView: View
         private set
 
+    var isShow: Boolean = false
+        private set
     init {
-        dialogView = onCreateDialog(host.tabView.context)
+        //create()
+    }
+    private fun create() {
+        if (!this::dialogView.isInitialized) {
+            dialogView = onCreateDialog(host.tabView.context)
+        }
     }
 
     abstract fun onCreateDialog(ctx: Context): View
 
     open fun show() {
-        host.showDialog(dialogView)
+        create()
+        host.showDialog(this)
+        isShow = true
     }
 
     open fun close() {
-        host.closeDialog(dialogView)
+        if (isShow) {
+            host.closeDialog(this)
+            isShow = false
+        }
     }
+
+
+    /**
+     * 是否点击外部关闭
+     */
+    open fun clickClose(): Boolean = true
+
+    open fun background(): Drawable? = null
 }

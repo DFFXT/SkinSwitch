@@ -10,6 +10,7 @@ import androidx.annotation.Keep
 import androidx.startup.Initializer
 import com.example.viewdebug.ui.skin.ViewDebugMergeResource
 import com.example.viewdebug.util.ViewDebugInfo
+import com.example.viewdebug.util.launch
 import com.example.viewdebug.util.setViewDebugInfo
 import com.example.viewdebug.xml.AndroidXmRuleManager
 import com.example.viewdebug.xml.CompileTest
@@ -20,6 +21,7 @@ import com.skin.skincore.parser.AttrParseListener
 import com.skin.skincore.provider.MergeResource
 import com.skin.skincore.provider.ResourceObjectCreator
 import com.skin.skincore.provider.ResourcesProviderManager
+import kotlinx.coroutines.Dispatchers
 import java.util.Collections
 
 /**
@@ -60,9 +62,13 @@ class ViewDebugInitializer : Initializer<ViewDebugInitializer> {
                 }
             }
         })
+        // ViewDebug初始化
         ViewDebugManager.init(context.applicationContext as Application)
-        AndroidXmRuleManager.init(ctx)
-        CompileTest.main()
+        // 编译初始化
+        launch(Dispatchers.IO) {
+            AndroidXmRuleManager.init(ctx)
+        }
+        // CompileTest.main()
         return this
     }
 

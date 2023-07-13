@@ -29,6 +29,7 @@ internal class ViewDetailInfoDialog(host: UIPage) : BaseDialog(host) {
     }
 
     fun show(target: View) {
+        show()
         addDescribe("Target", target::class.java.simpleName)
         // region 添加id信息
         if (target.id > 0) {
@@ -53,7 +54,6 @@ internal class ViewDetailInfoDialog(host: UIPage) : BaseDialog(host) {
         }
 
         applyReference()
-        show()
     }
 
     private val leftIds = LinkedList<Int>()

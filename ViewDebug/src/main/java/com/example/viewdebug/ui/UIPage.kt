@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.CallSuper
+import com.example.viewdebug.ui.dialog.BaseDialog
 import java.lang.ref.WeakReference
 
 abstract class UIPage {
@@ -41,35 +42,45 @@ abstract class UIPage {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    fun showDialog(dialog: View, dismissCallback: Runnable? = null) {
-        if (dialog.parent != null) return
-        val container = FrameLayout(dialog.context)
+    fun showDialog(dialog: BaseDialog, dismissCallback: Runnable? = null) {
+        val dialogView = dialog.dialogView
+        if (dialogView.parent != null) return
+        val container = FrameLayout(dialogView.context)
         container.layoutParams = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT,
         )
 
-        container.addView(dialog)
-        val lp = dialog.layoutParams as? FrameLayout.LayoutParams
+        container.addView(dialogView)
+        val lp = dialogView.layoutParams as? FrameLayout.LayoutParams
         if (lp != null) {
             lp.gravity = Gravity.CENTER
-            dialog.layoutParams = lp
+            dialogView.layoutParams = lp
         }
         contentView.addView(container)
-        container.setOnTouchListener { _, event ->
-            if (event.action == MotionEvent.ACTION_UP) {
-                dismissCallback?.run()
-                closeDialog(dialog)
+        if (dialog.clickClose()) {
+            container.setOnTouchListener { _, event ->
+                if (event.action == MotionEvent.ACTION_UP) {
+                    dismissCallback?.run()
+                    closeDialog(dialog)
+                }
+                return@setOnTouchListener true
             }
-            return@setOnTouchListener true
+        } else {
+            container.isClickable = true
+            container.isFocusable = true
+        }
+        val b = dialog.background()
+        if (b != null) {
+            container.background = b
         }
     }
 
-    fun closeDialog(dialog: View) {
-        if (dialog.parent != null) {
-            val p = dialog.parent as ViewGroup
+    fun closeDialog(dialog: BaseDialog) {
+        if (dialog.dialogView.parent != null) {
+            val p = dialog.dialogView.parent as ViewGroup
             contentView.removeView(p)
-            p.removeView(dialog)
+            p.removeView(dialog.dialogView)
         }
     }
 

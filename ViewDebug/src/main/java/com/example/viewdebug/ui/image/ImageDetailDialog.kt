@@ -49,6 +49,7 @@ internal class ImageDetailDialog(host: UIPage) : BaseDialog(host) {
     }
 
     fun show(resId: Int) {
+        show()
         val drawable = AppCompatResources.getDrawable(binding.root.context, resId) ?: return
         if (drawable.intrinsicWidth > 0) {
             binding.ivImage.imageResource(resId)
@@ -57,7 +58,7 @@ internal class ImageDetailDialog(host: UIPage) : BaseDialog(host) {
             binding.ivImage.backgroundResource(resId)
             binding.ivImage.imageResource(0)
         }
-        show()
+
     }
 
     private fun updateSelectedBg(view: View, index: Int) {
