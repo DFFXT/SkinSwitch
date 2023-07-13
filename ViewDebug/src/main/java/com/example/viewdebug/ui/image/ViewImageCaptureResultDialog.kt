@@ -1,7 +1,5 @@
 package com.example.viewdebug.ui.image
 
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -9,8 +7,11 @@ import android.view.ViewGroup
 import com.example.viewdebug.databinding.ViewDebugImageSetContainerBinding
 import com.example.viewdebug.rv.MultiTypeRecyclerAdapter
 import com.example.viewdebug.ui.UIPage
+import com.example.viewdebug.ui.image.parser.Parser
+import com.example.viewdebug.util.ViewDebugInfo
 import com.example.viewdebug.util.adjustOrientation
 import com.example.viewdebug.util.getViewDebugInfo
+import com.skin.skincore.collector.ViewUnion
 import com.skin.skincore.collector.getViewUnion
 import java.lang.ref.WeakReference
 
@@ -20,7 +21,7 @@ import java.lang.ref.WeakReference
 class ViewImageCaptureResultDialog(
     ctx: Context,
     private val hostPage: UIPage,
-    private val attrIds: HashMap<Int, String>,
+    private val attrIds: HashMap<Int, Pair<String, Parser>>,
 ) {
     private val imageItemHandler = ImageItemHandler(hostPage)
     private val rAdapter = MultiTypeRecyclerAdapter<Any>()
@@ -46,14 +47,8 @@ class ViewImageCaptureResultDialog(
     }
 
 
-
-    private fun copyToClipboard(ctx: Context, text: String) {
-        val clipboardManager = ctx.getSystemService(ClipboardManager::class.java)
-        clipboardManager.setPrimaryClip(ClipData.newPlainText("UI调试", text))
-    }
-
-    fun addAttribute(id: Int, name: String) {
-        attrIds.put(id, name)
+    fun addAttribute(id: Int, pair: Pair<String, Parser>) {
+        attrIds.put(id, pair)
     }
 
     fun show(title: String, capturedViews: List<View>) {
@@ -63,46 +58,51 @@ class ViewImageCaptureResultDialog(
         } else {
             showModeView(capturedViews)
         }
+        if (rAdapter.itemCount != 0) {
+            hostPage.showDialog(dialogBinding.root)
+        }
     }
 
     private fun showModeView(capturedViews: List<View>) {
-        capturedViews.map {
+        /*val data = capturedViews.map {
             ImageItemHandler.ViewItem(
                 WeakReference(it),
                 it.getViewUnion(),
                 it.getViewDebugInfo(),
             )
-        }
+        }*/
+        // rAdapter.update(data)
     }
 
     private fun showModeImage(capturedViews: List<View>) {
-        val data = ArrayList<ImageItemHandler.Item>()
+        val data = ArrayList<Item>()
         for (v in capturedViews) {
-            val u = v.getViewUnion() ?: continue
+            val u = v.getViewUnion()
             val debugInfo = v.getViewDebugInfo()
-            val layoutId = debugInfo?.layoutId ?: 0
-            val layoutInfo = if (layoutId == 0) {
-                // 没有布局信息，直接new的对象
-                "未知：" + v::class.java.name
-            } else {
-                v.context.resources.getResourceEntryName(layoutId) + ".xml"
-            }
-            for (attr in u) {
-                attrIds.forEach {
-                    if (it.key == attr.attributeId) {
-                        data.add(ImageItemHandler.Item(WeakReference(v), attr.resId, layoutId, layoutInfo, it.value))
-                    }
+            attrIds.forEach {
+                val attrInfo = it.value
+                val item = attrInfo.second.getItem(v, it.key, attrInfo.first, u, debugInfo)
+                if (item != null) {
+                    data.add(item)
                 }
             }
+            /*for (attr in u) {
+                val attrInfo = attrIds[attr.attributeId]
+                if (attrInfo != null) {
+                    val item = attrInfo.second.getItem(v, attr.attributeId, attrInfo.first, u, debugInfo)
+                    if (item != null) {
+                        data.add(item)
+                    }
+                }
+            }*/
         }
 
-        if (data.isNotEmpty()) {
-            rAdapter.update(data)
-            hostPage.showDialog(dialogBinding.root)
-        }
+        rAdapter.update(data)
     }
 
     fun close() {
         hostPage.closeDialog(dialogBinding.root)
     }
+
+
 }
