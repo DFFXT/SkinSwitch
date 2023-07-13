@@ -59,8 +59,8 @@ object CompileTest {
         val b = ViewDebugInitializer.ctx.assets.open("view_debug_compile_test.xml").readBytes()
         val bf = ByteBuffer.wrap(b).order(ByteOrder.LITTLE_ENDIAN)
         stdFile.read(bf)
-        val t = ViewDebugInitializer.ctx.assets.openXmlResourceParser("assets/test_write.xml")
-        val x = XmlParser().getXml(ViewDebugInitializer.ctx, t) {}
+        //val t = ViewDebugInitializer.ctx.assets.openXmlResourceParser("assets/test_write.xml")
+        //val x = XmlParser().getXml(ViewDebugInitializer.ctx, t) {}
         /**
          * //12582945 shr 8 shl 8
         // 1-4位确定类型

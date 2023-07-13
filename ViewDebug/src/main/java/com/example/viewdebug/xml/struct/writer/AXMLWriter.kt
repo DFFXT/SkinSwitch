@@ -357,19 +357,24 @@ class ChunkStartTagWriter(startPosition: Int, chunkFileWriter: ChunkFileWriter) 
     // chunkAttr 大小
     var attrSize: Short = 0x14.toShort()
     var attrCount: Short = 0
-    var idIndex: Short = 0
-    var classIndex: Short = 0
-    var styleIndex: Short = 0
+    private var idIndex: Short = 0
+    private var classIndex: Short = 0
+    private var styleIndex: Short = 0
+    // 经过解析正确axml，属性名称也是需要排序的，按照属性对应的id进行排序
     val attributes = ArrayList<Attribute>()
     override fun onWrite2(data: ByteBuffer) {
+        attributes.sortBy { it.systemResourceId }
         data.putShort(attrStart)
         data.putShort(attrSize)
         data.putShort(attributes.size.toShort())
+        idIndex = (attributes.indexOfFirst { it.name == "id" && it.namespacePrefix == "android" } + 1).toShort()
         data.putShort(idIndex)
+        classIndex = (attributes.indexOfFirst { it.name == "name" && it.namespacePrefix == "" } + 1).toShort()
         data.putShort(classIndex)
+        styleIndex = (attributes.indexOfFirst { it.name == "style" && it.namespacePrefix == "" } + 1).toShort()
         data.putShort(styleIndex)
 
-        attributes.sortBy { it.systemResourceId }
+
         attributes.forEach {
             it.write(data)
         }
@@ -381,6 +386,7 @@ class ChunkStartTagWriter(startPosition: Int, chunkFileWriter: ChunkFileWriter) 
  * @param systemResourceId 属性对应id，不参与write，只参与排序
  */
 class Attribute(var systemResourceId: Int, private val chunkFileWriter: ChunkFileWriter) : IWrite {
+    // 前缀
     var namespacePrefix: String = ""
     lateinit var name: String
 
@@ -390,6 +396,7 @@ class Attribute(var systemResourceId: Int, private val chunkFileWriter: ChunkFil
     override fun write(data: ByteBuffer) {
         // todo 理论上应该进行范围判定
         val nsUri = chunkFileWriter.chunkStartNamespace.find { it.prefix == namespacePrefix }?.uri
+        // 写入命名空间
         data.putInt(chunkFileWriter.chunkString.getStringIndex(nsUri ?: ""))
         data.putInt(chunkFileWriter.chunkString.getStringIndex(name))
         if (resValue.stringData == null) {
