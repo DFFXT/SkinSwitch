@@ -295,7 +295,10 @@ class ChunkString : BaseChunk() {
      * 单条字符串信息
      */
     class StringPool(private val isUTF8: Boolean) : IRead {
-        var len: Short = 0
+        // 字符串长度
+        var charLen: Byte = 0
+        // 字符串字节数量
+        var byteLen: Byte = 0
 
         // isUTF8 ? 1byte * byteLength : 2byte * charLength
         lateinit var chars: String
@@ -303,28 +306,22 @@ class ChunkString : BaseChunk() {
         // isUTF8 ? 1byte : 2byte
         var separator: Short = 0
         override fun read(data: ByteBuffer) {
-            // charLength = data.get()
-            // byteLength = data.get()
+            charLen = data.get()
+            byteLen = data.get()
             if (isUTF8) {
-                data.get()
-                val t = data.get().toShort()
-                len = (t and 0xFF.toShort())
                 println("read 1--> ${data.position()}")
-                val c = ByteArray(len.toInt()) {
+                val c = ByteArray(byteLen.toInt()) {
                     data.get()
                 }
                 chars = String(c)
                 println("read 2--> ${data.position()} $chars")
                 separator = data.get().toShort()
             } else {
-                val size = data.short
                 println("read 1--> ${data.position()}")
-                val c = ByteArray(size * 2) {
+                val c = ByteArray(charLen * 2) {
                     data.get()
                 }
                 chars = String(c)
-                val f = chars
-                println(chars)
                 println("read 2--> ${data.position()}")
                 separator = data.short
             }

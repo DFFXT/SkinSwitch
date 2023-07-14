@@ -263,9 +263,11 @@ class ChunkStringWriter(startPosition: Int) : BaseChunkWriter(startPosition) {
             // byteLength = data.get()
             val strByte = string.toByteArray()
             if (isUTF8) {
-                data.put(0)
-                // data.get()
-                data.put(strByte.size.toByte())
+                val len = strByte.size.toByte()
+                // 写入char size
+                data.put(string.length.toByte())
+                // 写入byte size
+                data.put(len)
                 println("-->write str start:${data.position()}")
                 data.put(strByte)
                 println("-->write str end:${data.position()}")
@@ -307,7 +309,6 @@ class ChunkSystemResourceIdWriter(startPosition: Int) : BaseChunkWriter(startPos
     override fun onWrite(data: ByteBuffer) {
         // 这里需要排序
         resourceIds.sorted().forEach {
-            log("???? $it")
             data.putInt(it)
         }
     }

@@ -23,22 +23,24 @@ object CompileTest {
     fun main(vararg args: String) {
         val str = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
                 "<androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\n" +
+                "    xmlns:tools=\"http://schemas.android.com/tools\"\n" +
                 "    android:layout_width=\"match_parent\"\n" +
-                "    android:layout_height=\"34dp\"\n" +
-                "    android:clickable=\"true\"\n" +
-                "    android:focusable=\"false\"\n" +
-                "    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\n" +
-                "    android:background=\"@color/view_debug_white\">\n" +
+                "    android:layout_height=\"wrap_content\"\n" +
+                "    tools:parentTag=\"androidx.constraintlayout.widget.ConstraintLayout\">\n" +
                 "\n" +
-                "    <TextView\n" +
+                "    <!--<TextView\n" +
                 "        android:id=\"@+id/search_src_text\"\n" +
-                "        android:layout_width=\"wrap_content\"\n" +
-                "        android:layout_height=\"wrap_content\"\n" +
-                "        android:text=\"ssss\"\n" +
+                "        style=\"@style/MayStyle\"\n" +
+                "        android:layout_width=\"80dp\"\n" +
+                "        android:layout_height=\"80dp\"\n" +
+                "        android:background=\"@color/view_debug_red\"\n" +
+                "        android:gravity=\"center\"\n" +
+                "        android:text=\"TextView\"\n" +
+                "        android:textColor=\"@color/view_debug_black\"\n" +
+                "        android:textSize=\"18dp\"\n" +
                 "        app:layout_constraintStart_toStartOf=\"parent\"\n" +
-                "        app:layout_constraintTop_toTopOf=\"parent\"\n" +
-                "        style=\"@style/MayStyle\"/>\n" +
-                "\n" +
+                "        app:layout_constraintTop_toTopOf=\"parent\" />-->\n" +
+                "    <include layout=\"@layout/layout_view_debug_ui_control\" />\n" +
                 "</androidx.constraintlayout.widget.ConstraintLayout>"
 
         val compiler = XmlCompiler(ViewDebugInitializer.ctx)
@@ -59,8 +61,11 @@ object CompileTest {
         val b = ViewDebugInitializer.ctx.assets.open("view_debug_compile_test.xml").readBytes()
         val bf = ByteBuffer.wrap(b).order(ByteOrder.LITTLE_ENDIAN)
         stdFile.read(bf)
-        //val t = ViewDebugInitializer.ctx.assets.openXmlResourceParser("assets/test_write.xml")
-        //val x = XmlParser().getXml(ViewDebugInitializer.ctx, t) {}
+        val t = ViewDebugInitializer.ctx.assets.openXmlResourceParser("assets/test_write.xml")
+        val x = XmlParser().getXml(ViewDebugInitializer.ctx, t) {}
+
+        val t1 = ViewDebugInitializer.ctx.assets.openXmlResourceParser("assets/view_debug_compile_test.xml")
+        val x1 = XmlParser().getXml(ViewDebugInitializer.ctx, t1) {}
         /**
          * //12582945 shr 8 shl 8
         // 1-4位确定类型

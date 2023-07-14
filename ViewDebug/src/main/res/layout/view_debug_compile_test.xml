@@ -1,23 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:clickable="true"
-    android:focusable="false"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/view_debug_white">
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
-    <TextView
+    <!--<TextView
         android:id="@+id/search_src_text"
+        style="@style/MayStyle"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:text="TextView"
-        android:textSize="18dp"
-        android:gravity="center"
         android:background="@color/view_debug_red"
+        android:gravity="center"
+        android:text="TextView"
         android:textColor="@color/view_debug_black"
+        android:textSize="18dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        style="@style/MayStyle"/>
-
+        app:layout_constraintTop_toTopOf="parent" />-->
+    <include layout="@layout/layout_view_debug_ui_control" />
 </androidx.constraintlayout.widget.ConstraintLayout>
