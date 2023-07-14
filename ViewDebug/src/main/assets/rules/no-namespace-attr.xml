@@ -3,4 +3,5 @@
 <resources>
     <!--style属性，特殊属性，没有前缀-->
     <attr name = "style" format="reference"/>
+    <attr name = "layout" format="reference"/>
 </resources>

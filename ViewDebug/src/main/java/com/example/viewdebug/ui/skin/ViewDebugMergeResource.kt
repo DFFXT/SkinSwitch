@@ -5,6 +5,7 @@ import android.content.res.Resources
 import android.content.res.XmlResourceParser
 import android.util.AttributeSet
 import com.example.viewdebug.ViewDebugInitializer
+import com.example.viewdebug.ui.image.XmlParser
 import com.example.viewdebug.xml.pack.PackAssetsFile
 import com.skin.skincore.asset.Asset
 import com.skin.skincore.asset.IAsset
@@ -25,7 +26,10 @@ class ViewDebugMergeResource(asset: IAsset, default: Resources, themeId: Int) :
         val parser = if (layoutInterceptorMapper.contains(id)) {
             val dir =
                 ViewDebugInitializer.ctx.externalCacheDir!!.absolutePath + File.separator + "layout"
-            interceptedAsset!!.openXmlResourceParser("assets/${PackAssetsFile.TYPE_LAYOUT}/$id.xml")
+            val p = interceptedAsset!!.openXmlResourceParser("assets/${PackAssetsFile.TYPE_LAYOUT}/$id.xml")
+            val p1 = interceptedAsset!!.openXmlResourceParser("assets/${PackAssetsFile.TYPE_LAYOUT}/$id.xml")
+            val t = XmlParser().getXml(ViewDebugInitializer.ctx, p1)
+            p
         } else {
             super.getLayout(id)
         }

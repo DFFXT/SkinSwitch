@@ -33,7 +33,7 @@ internal fun View.enableSelect() {
     background = d*/
 }
 
-internal class ViewDebugInfo(
+class ViewDebugInfo(
     val layoutId: Int?,
 ) {
     fun getLayoutName(res: Resources): String? {

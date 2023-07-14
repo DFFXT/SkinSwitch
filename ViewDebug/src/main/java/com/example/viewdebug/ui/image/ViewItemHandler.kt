@@ -18,25 +18,23 @@ import com.skin.skincore.collector.ViewUnion
 import java.lang.ref.WeakReference
 
 /**
- * 图片显示适配器
+ * View显示适配器
  */
-internal class ImageItemHandler(private val host: UIPage) : ItemHandle<Item>() {
+internal class ViewItemHandler(private val host: UIPage) : ItemHandle<ViewItemHandler.ViewItem>() {
 
-    var onAttributeNameClick: ((Item) -> Unit)? = null
-    var onLayoutNameClick: ((Item) -> Unit)? = null
-    var onImageClick: ((Item) -> Unit)? = null
-    var onItemClick: ((Item) -> Unit)? = null
+    var onAttributeNameClick: ((ViewItem) -> Unit)? = null
+    var onLayoutNameClick: ((ViewItem) -> Unit)? = null
+    var onImageClick: ((ViewItem) -> Unit)? = null
+    var onItemClick: ((ViewItem) -> Unit)? = null
 
     init {
-        this.onImageClick = click@{
-            if (it.id <= 0) return@click
+        /*this.onImageClick = {
             val dialog = ImageDetailDialog(host)
             dialog.show(it.id)
         }
         this.onLayoutNameClick = {
             copyToClipboard(host.tabView.context, it.layoutName)
-            // todo pkgName 有可能是android
-            tryShowXmlText(host.ctx, host.ctx.resources.getIdentifier(it.layoutName, "layout", host.ctx.packageName), host)
+            tryShowXmlText(host.ctx, it.layoutId, host)
         }
         this.onAttributeNameClick = {
             tryShowXmlText(host.ctx, it.id, host)
@@ -49,17 +47,18 @@ internal class ImageItemHandler(private val host: UIPage) : ItemHandle<Item>() {
             } else {
                 Toast.makeText(host.tabView.context, "对象已经消失", Toast.LENGTH_SHORT).show()
             }
-        }
+        }*/
     }
 
     inner class VH(val binding: ViewDebugLayoutImageItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("SetTextI18n")
-        fun bind(item: Item) {
-            binding.ivImage.imageResource(item.id)
-            binding.tvLayout.text = item.layoutName + ".xml"
-            binding.tvName.text = item.attribute
-
+        fun bind(item: ViewItem) {
+            /*binding.ivImage.imageResource(item.id)
+            binding.tvLayout.text = item.layoutName
+            binding.tvName.text =
+                item.name + ":@" + itemView.context.resources.getResourceTypeName(item.id) +
+                "/" + itemView.context.resources.getResourceEntryName(item.id)
             binding.tvName.setOnClickListener {
                 onAttributeNameClick?.invoke(item)
             }
@@ -71,12 +70,12 @@ internal class ImageItemHandler(private val host: UIPage) : ItemHandle<Item>() {
             }
             binding.root.setOnClickListener {
                 onItemClick?.invoke(item)
-            }
+            }*/
         }
     }
 
-    override fun handle(item: Item): Boolean {
-        return item is Item
+    override fun handle(item: ViewItem): Boolean {
+        return item is ViewItem
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -89,15 +88,15 @@ internal class ImageItemHandler(private val host: UIPage) : ItemHandle<Item>() {
         )
     }
 
-    override fun onBindView(item: Item, position: Int, vh: RecyclerView.ViewHolder) {
+    override fun onBindView(item: ViewItem, position: Int, vh: RecyclerView.ViewHolder) {
         vh as VH
         vh.bind(item)
     }
-}
 
-class Item(
-    val target: WeakReference<View>,
-    val id: Int,
-    val layoutName: String,
-    val attribute: String
-)
+    class ViewItem(
+        val target: WeakReference<View>,
+        val className: String,
+        val union: ViewUnion?,
+        val debugInf0: ViewDebugInfo?,
+    )
+}

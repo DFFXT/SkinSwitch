@@ -84,6 +84,7 @@ class XmlCompiler(private val ctx: Context) {
 
     private fun addNamespace(node: Node, findStr: Boolean) {
         val prefix = node.nodeName.substring("xmlns:".length)
+        if (prefix == "tools") return
         val uri = node.nodeValue
         if (findStr) {
             addOtherString(uri)
@@ -106,6 +107,7 @@ class XmlCompiler(private val ctx: Context) {
     }
 
     private fun addAttribute(tagNode: Node, attr: Node, findStr: Boolean) {
+        if (attr.nodeName.startsWith("tools:")) return
         if (findStr) {
             // 这里需要判断是否是引用类型
 
@@ -121,7 +123,6 @@ class XmlCompiler(private val ctx: Context) {
             }
         } else {
             // 忽略tools
-            if (attr.nodeName.startsWith("tools:")) return
             val tag = (chunkFile.chunkTags.last as ChunkStartTagWriter)
             tag.attributes.add(
                 Attribute(Int.MAX_VALUE, chunkFile).apply {

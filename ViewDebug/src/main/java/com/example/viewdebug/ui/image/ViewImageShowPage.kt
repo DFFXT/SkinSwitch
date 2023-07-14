@@ -10,6 +10,9 @@ import android.view.ViewGroup
 import com.example.viewdebug.R
 import com.example.viewdebug.ViewCapture
 import com.example.viewdebug.ui.UIPage
+import com.example.viewdebug.ui.image.parser.Parser
+import com.example.viewdebug.ui.image.parser.ReferenceParser
+import com.example.viewdebug.ui.image.parser.TextColorParser
 import com.example.viewdebug.util.enableSelect
 
 /**
@@ -18,21 +21,22 @@ import com.example.viewdebug.util.enableSelect
  * @param append 哪种方式设置属性id
  */
 class ViewImageShowPage(
-    private val captureAttrId: ArrayList<Pair<Int, String>> = ArrayList(),
+    private val captureAttrId: ArrayList<Pair<Int, Pair<String, Parser>>> = ArrayList(),
 ) :
     UIPage() {
 
     private val attribute by lazy {
-        val attrIds = HashMap<Int, String>()
-        attrIds.put(android.R.attr.background, "background")
-        attrIds.put(android.R.attr.src, "background")
-        attrIds.put(android.R.attr.foreground, "foreground")
-        attrIds.put(android.R.attr.drawableStart, "drawableStart")
-        attrIds.put(android.R.attr.drawableTop, "drawableTop")
-        attrIds.put(android.R.attr.drawableEnd, "drawableEnd")
-        attrIds.put(android.R.attr.drawableBottom, "drawableBottom")
-        attrIds.put(android.R.attr.thumb, "thumb")
-        attrIds.put(android.R.attr.button, "button")
+        val attrIds = HashMap<Int, Pair<String, Parser>>()
+        attrIds.put(android.R.attr.background, Pair("background", ReferenceParser))
+        attrIds.put(android.R.attr.src, Pair("src", ReferenceParser))
+        attrIds.put(android.R.attr.foreground, Pair("foreground", ReferenceParser))
+        attrIds.put(android.R.attr.drawableStart, Pair("drawableStart", ReferenceParser))
+        attrIds.put(android.R.attr.drawableTop, Pair("drawableTop", ReferenceParser))
+        attrIds.put(android.R.attr.drawableEnd, Pair("drawableEnd", ReferenceParser))
+        attrIds.put(android.R.attr.drawableBottom, Pair("drawableBottom", ReferenceParser))
+        attrIds.put(android.R.attr.thumb, Pair("thumb", ReferenceParser))
+        attrIds.put(android.R.attr.button, Pair("button", ReferenceParser))
+        attrIds.put(android.R.attr.text, Pair("text", TextColorParser))
         attrIds
     }
     private var dialog: ViewImageCaptureResultDialog? = null
@@ -81,8 +85,8 @@ class ViewImageShowPage(
         }
     }
 
-    fun addAttribute(id: Int, name: String) {
-        attribute[id] = name
+    fun addAttribute(id: Int, name: String, parser: Parser) {
+        attribute[id] = Pair(name, parser)
     }
 
     fun removeAttribute(id: Int) {
