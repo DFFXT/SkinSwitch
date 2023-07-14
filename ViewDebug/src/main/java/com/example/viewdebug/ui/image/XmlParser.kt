@@ -4,9 +4,12 @@ import android.content.Context
 import android.content.res.XmlResourceParser
 import android.text.Spannable
 import android.text.SpannableStringBuilder
+import android.text.TextPaint
+import android.text.style.CharacterStyle
 import android.text.style.ClickableSpan
 import android.util.Log
 import android.view.View
+import com.example.viewdebug.R
 import org.xmlpull.v1.XmlPullParser
 import java.util.LinkedList
 
@@ -51,16 +54,19 @@ class XmlParser {
                         }
 
                         builder.append("\"$attrValue\"")
+                        val start = builder.length - attrValue.length - 1
+                        val end = builder.length - 1
                         builder.setSpan(
                             object : ClickableSpan() {
+                                override fun updateDrawState(ds: TextPaint) {
+                                    ds.color = ctx.getColor(R.color.view_debug_image_detail_title_bar_bg)
+                                }
                                 override fun onClick(widget: View) {
                                     Log.i("XmlParser", "click $attrValue")
                                     click.invoke(attrValue)
                                 }
                             },
-                            builder.length - attrValue.length - 1,
-                            builder.length - 1,
-                            Spannable.SPAN_INCLUSIVE_EXCLUSIVE,
+                            start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE,
                         )
                     }
                     builder.append(">")
