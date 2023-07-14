@@ -74,7 +74,7 @@ class XmlCompiler(private val ctx: Context) {
     }
 
     private fun addAttrNameString(attrName: String, nsPrefix: String) {
-        val priority = resourceLink.getAttributeId(nsPrefix, attrName)
+        val priority = resourceLink.getAttributeId(nsPrefix, attrName) ?: Int.MAX_VALUE
         addString(attrName, ChunkStringWriter.PRIORITY_TYPE_ATTR_NAME, priority)
     }
 
@@ -151,7 +151,7 @@ class XmlCompiler(private val ctx: Context) {
                         this.namespacePrefix = nsPrefix
 
                         // 设置 用于排序
-                        this.systemResourceId = resourceLink.getAttributeId(nsPrefix, attrName)
+                        this.systemResourceId = resourceLink.getAttributeId(nsPrefix, attrName)!!
                         Logger.i("++++", "id = " + systemResourceId)
                         chunkFile.chunkSystemResourceId.resourceIds.add(systemResourceId)
                     } else {

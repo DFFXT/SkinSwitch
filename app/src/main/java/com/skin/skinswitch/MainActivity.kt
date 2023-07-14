@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
 
         var presentation: Presentation? = null
         findViewById<View>(R.id.view).setOnClickListener {
-            TestActivity.startActivity(this)
+            //TestActivity.startActivity(this)
             /*if (presentation != null) {
                 presentation?.dismiss()
                 presentation = null
