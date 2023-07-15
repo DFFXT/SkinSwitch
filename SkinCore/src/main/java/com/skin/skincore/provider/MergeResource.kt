@@ -64,7 +64,7 @@ open class MergeResource(
     }
 
     // region drawable、color重写
-    override fun getDrawable(id: Int, theme: Theme?): Drawable? {
+   /* override fun getDrawable(id: Int, theme: Theme?): Drawable? {
         try {
             if (useDefault) {
                 return ResourcesCompat.getDrawable(default, id, theme)
@@ -75,7 +75,7 @@ open class MergeResource(
         } catch (e: Throwable) {
             return default.getDrawable(id, theme)
         }
-    }
+    }*/
 
     override fun getDrawableForDensity(id: Int, density: Int, theme: Theme?): Drawable? {
         try {

@@ -7,7 +7,6 @@ import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.isVisible
 import com.example.viewdebug.databinding.ViewDebugXmlTextContainerBinding
 import com.example.viewdebug.ui.UIPage
@@ -36,7 +35,7 @@ class XmlTextDialog(
     private var loadingDialog: ViewDebugLoadingDialog? = null
     private var mode = 0
 
-    private var layoutId: Int = 0
+    private var resourceId: Int = 0
     private lateinit var originText: CharSequence
 
     override fun onCreateDialog(ctx: Context): View {
@@ -86,13 +85,15 @@ class XmlTextDialog(
             buffer.get(byteArray, 0, buffer.limit())
             // 打包
             val pack = PackAssetsFile(ctx)
-            pack.addLayoutFile(byteArray.inputStream(), layoutId.toString())
+            pack.addAXMLFile(byteArray.inputStream(), resourceId.toString())
             pack.pack()
             // 读入
             val assetManager = DefaultResourceLoader().createAssetManager(pack.getPackedApkPath(), ctx)
             if (assetManager != null) {
                 ViewDebugMergeResource.interceptedAsset = assetManager.second
-                ViewDebugMergeResource.layoutInterceptorMapper.add(layoutId)
+                val type = host.ctx.resources.getResourceTypeName(resourceId)
+                ViewDebugMergeResource.addInterceptor(type, resourceId)
+                ViewDebugMergeResource.layoutInterceptorMapper.add(resourceId)
             }
             return true
         } catch (e: Exception) {
@@ -115,7 +116,7 @@ class XmlTextDialog(
         show()
         val attrValue = ctx.resources.getResourceEntryName(layoutId)
         val title = ctx.resources.getResourceTypeName(layoutId) + "/" + attrValue
-        this.layoutId = layoutId
+        this.resourceId = layoutId
         this.originText = xml
         binding.tvName.text = title
         binding.tvText.setText(xml)

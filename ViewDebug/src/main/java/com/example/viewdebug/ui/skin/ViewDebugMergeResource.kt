@@ -3,6 +3,7 @@ package com.example.viewdebug.ui.skin
 import android.content.res.AssetManager
 import android.content.res.Resources
 import android.content.res.XmlResourceParser
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import com.example.viewdebug.ViewDebugInitializer
 import com.example.viewdebug.ui.image.XmlParser
@@ -21,14 +22,8 @@ class ViewDebugMergeResource(asset: IAsset, default: Resources, themeId: Int) :
     private val layoutMap = WeakHashMap<AttributeSet, Int>()
 
     override fun getLayout(id: Int): XmlResourceParser {
-        val name = ViewDebugInitializer.ctx.resources.getResourceEntryName(id)
-
         val parser = if (layoutInterceptorMapper.contains(id)) {
-            val dir =
-                ViewDebugInitializer.ctx.externalCacheDir!!.absolutePath + File.separator + "layout"
             val p = interceptedAsset!!.openXmlResourceParser("assets/${PackAssetsFile.TYPE_LAYOUT}/$id.xml")
-            val p1 = interceptedAsset!!.openXmlResourceParser("assets/${PackAssetsFile.TYPE_LAYOUT}/$id.xml")
-            val t = XmlParser().getXml(ViewDebugInitializer.ctx, p1)
             p
         } else {
             super.getLayout(id)
@@ -36,6 +31,14 @@ class ViewDebugMergeResource(asset: IAsset, default: Resources, themeId: Int) :
         layoutMap[parser] = id
 
         return parser
+    }
+
+    override fun getDrawableForDensity(id: Int, density: Int, theme: Theme?): Drawable? {
+        if (drawableInterceptorMapper.contains(id)) {
+            val parser = interceptedAsset!!.openXmlResourceParser("assets/${PackAssetsFile.TYPE_LAYOUT}/$id.xml")
+            return Drawable.createFromXml(this, parser)
+        }
+        return super.getDrawableForDensity(id, density, theme)
     }
 
     /**
@@ -47,6 +50,15 @@ class ViewDebugMergeResource(asset: IAsset, default: Resources, themeId: Int) :
 
     companion object {
         val layoutInterceptorMapper = HashSet<Int>()
+        private val drawableInterceptorMapper = HashSet<Int>()
         var interceptedAsset: AssetManager? = null
+
+        fun addInterceptor(type: String, value: Int) {
+            if (type == "layout") {
+                layoutInterceptorMapper.add(value)
+            } else if (type =="drawable") {
+                drawableInterceptorMapper.add(value)
+            }
+        }
     }
 }

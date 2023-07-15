@@ -1,12 +1,10 @@
 package com.example.viewdebug.xml.pack
 
 import android.content.Context
-import com.example.viewdebug.ViewDebugInitializer
 import com.skin.log.Logger
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
-import java.nio.ByteBuffer
 
 /**
  * 打包apk，在已有的apk上插入asset文件
@@ -31,7 +29,7 @@ class PackAssetsFile(private val ctx: Context) {
      * 将当前数据流写入apk的assets目录
      * @param name 文件名称，不带后缀
      */
-    suspend fun addLayoutFile(inputStream: InputStream, name: String) {
+    suspend fun addAXMLFile(inputStream: InputStream, name: String) {
         val dir =
             File(getApkUnZipFolder() + File.separator + "assets" + File.separator + TYPE_LAYOUT)
         if (!dir.exists()) {
