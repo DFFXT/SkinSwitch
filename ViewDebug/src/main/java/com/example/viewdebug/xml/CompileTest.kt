@@ -45,8 +45,8 @@ object CompileTest {
         val b = ViewDebugInitializer.ctx.assets.open("view_debug_circle_solid.xml").readBytes()
         val bf = ByteBuffer.wrap(b).order(ByteOrder.LITTLE_ENDIAN)
         stdFile.read(bf)
-        //val t = ViewDebugInitializer.ctx.assets.openXmlResourceParser("assets/test_write.xml")
-        //val x = XmlParser().getXml(ViewDebugInitializer.ctx, t) {}
+        val t = ViewDebugInitializer.ctx.assets.openXmlResourceParser("assets/test_write.xml")
+        val x = XmlParser().getXml(ViewDebugInitializer.ctx, t) {}
 
         val t1 = ViewDebugInitializer.ctx.assets.openXmlResourceParser("assets/view_debug_compile_test.xml")
         val x1 = XmlParser().getXml(ViewDebugInitializer.ctx, t1) {}
