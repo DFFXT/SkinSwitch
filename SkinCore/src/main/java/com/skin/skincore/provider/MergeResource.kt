@@ -4,6 +4,7 @@ import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.util.DisplayMetrics
 import androidx.core.content.res.ResourcesCompat
 import com.skin.skincore.asset.IAsset
@@ -63,19 +64,22 @@ open class MergeResource(
         theme.applyStyle(themeId, true)
     }
 
+    // 这里需要对每个getDrawable进行重写，因为低版本上各个方法没有收束到一个方法（至少25没有）
+    @Deprecated("Deprecated in Java", ReplaceWith("getDrawable(id, null)"))
+    override fun getDrawable(id: Int): Drawable? {
+        return getDrawable(id, null)
+    }
+
     // region drawable、color重写
-   /* override fun getDrawable(id: Int, theme: Theme?): Drawable? {
-        try {
-            if (useDefault) {
-                return ResourcesCompat.getDrawable(default, id, theme)
-            }
-            val name = this.getResourceEntryName(id)
-            val skinPackId = currentRes.getIdentifier(name, getResourceTypeName(id), pkg)
-            return currentRes.getDrawable(skinPackId, this.theme)
-        } catch (e: Throwable) {
-            return default.getDrawable(id, theme)
+    override fun getDrawable(id: Int, theme: Theme?): Drawable? {
+        // 经过分析sdk，Android 26上就解决了这个问题，25及以下需要额外适配
+        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            // 低版本上density不能为0，因为内部没有判断，导致0作为除数
+            getDrawableForDensity(id, default.displayMetrics.density.toInt(), theme)
+        } else {
+            getDrawableForDensity(id, 0 ,theme)
         }
-    }*/
+    }
 
     override fun getDrawableForDensity(id: Int, density: Int, theme: Theme?): Drawable? {
         try {
