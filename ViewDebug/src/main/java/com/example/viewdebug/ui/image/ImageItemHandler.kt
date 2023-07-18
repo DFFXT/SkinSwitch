@@ -10,11 +10,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.viewdebug.databinding.ViewDebugLayoutImageItemBinding
 import com.example.viewdebug.rv.ItemHandle
 import com.example.viewdebug.ui.UIPage
-import com.example.viewdebug.ui.skin.imageResource
-import com.example.viewdebug.util.ViewDebugInfo
 import com.example.viewdebug.util.copyToClipboard
 import com.example.viewdebug.util.tryShowXmlText
-import com.skin.skincore.collector.ViewUnion
 import com.skin.skincore.collector.setImageResourceSkinAble
 import java.lang.ref.WeakReference
 
