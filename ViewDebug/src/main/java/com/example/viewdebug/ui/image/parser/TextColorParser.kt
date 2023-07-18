@@ -22,6 +22,6 @@ object TextColorParser : Parser {
         } else {
             view::class.java.simpleName
         }
-        return Item(WeakReference(view), R.mipmap.view_debug_text_view_type_icon, layoutName, attrDescribe)
+        return Item(WeakReference(view), R.mipmap.view_debug_text_view_type_icon, layoutName, attrId, attrDescribe)
     }
 }

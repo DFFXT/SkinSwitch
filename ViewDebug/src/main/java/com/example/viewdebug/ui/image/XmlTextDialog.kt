@@ -18,9 +18,14 @@ import com.example.viewdebug.util.shortToast
 import com.example.viewdebug.xml.pack.PackAssetsFile
 import com.example.viewdebug.xml.struct.XmlCompiler
 import com.skin.log.Logger
+import com.skin.skincore.SkinManager
+import com.skin.skincore.apply.AttrApplyManager
+import com.skin.skincore.apply.base.BaseViewApply
 import com.skin.skincore.asset.DefaultResourceLoader
+import com.skin.skincore.reflex.getSkinTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.lang.ref.WeakReference
 
 class XmlTextDialog(
     private val ctx: Context,
@@ -37,6 +42,13 @@ class XmlTextDialog(
 
     private var resourceId: Int = 0
     private lateinit var originText: CharSequence
+    private var target: WeakReference<View>? = null
+    private var attributeId: Int? = null
+
+    // 资源类型
+    private val resourceType by lazy {
+        host.ctx.resources.getResourceTypeName(resourceId)
+    }
 
     override fun onCreateDialog(ctx: Context): View {
         binding.tvText.movementMethod = LinkMovementMethod.getInstance()
@@ -57,6 +69,17 @@ class XmlTextDialog(
                         } else {
                             onModeChange(0)
                             binding.tvText.clearFocus()
+                            if (resourceType == "drawable" || resourceType == "color") {
+                                // 触发属性更新
+                                target?.get()?.let {
+                                    AttrApplyManager.apply(
+                                        attributeId!!,
+                                        intArrayOf(BaseViewApply.EVENT_TYPE_THEME),
+                                        it, resourceId, resourceType, SkinManager.getResourceProvider(host.ctx), it.context.getSkinTheme()
+                                    )
+                                }
+
+                            }
                         }
                     }
                 }
@@ -91,8 +114,7 @@ class XmlTextDialog(
             val assetManager = DefaultResourceLoader().createAssetManager(pack.getPackedApkPath(), ctx)
             if (assetManager != null) {
                 ViewDebugMergeResource.interceptedAsset = assetManager.second
-                val type = host.ctx.resources.getResourceTypeName(resourceId)
-                ViewDebugMergeResource.addInterceptor(type, resourceId)
+                ViewDebugMergeResource.addInterceptor(resourceType, resourceId)
                 ViewDebugMergeResource.layoutInterceptorMapper.add(resourceId)
             }
             return true
@@ -112,8 +134,10 @@ class XmlTextDialog(
         loadingDialog?.close()
     }
 
-    fun show(layoutId: Int, xml: CharSequence) {
+    fun show(layoutId: Int, xml: CharSequence, attributeId: Int?, target: WeakReference<View>?) {
         show()
+        this.target = target
+        this.attributeId = attributeId
         val attrValue = ctx.resources.getResourceEntryName(layoutId)
         val title = ctx.resources.getResourceTypeName(layoutId) + "/" + attrValue
         this.resourceId = layoutId

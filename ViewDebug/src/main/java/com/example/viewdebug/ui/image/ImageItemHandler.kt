@@ -36,10 +36,10 @@ internal class ImageItemHandler(private val host: UIPage) : ItemHandle<Item>() {
         this.onLayoutNameClick = {
             copyToClipboard(host.tabView.context, it.layoutName)
             // todo pkgName 有可能是android
-            tryShowXmlText(host.ctx, host.ctx.resources.getIdentifier(it.layoutName, "layout", host.ctx.packageName), host)
+            tryShowXmlText(host.ctx, host.ctx.resources.getIdentifier(it.layoutName, "layout", host.ctx.packageName), host, null, null)
         }
         this.onAttributeNameClick = {
-            tryShowXmlText(host.ctx, it.id, host)
+            tryShowXmlText(host.ctx, it.id, host, it.attributeId, it.target)
         }
         this.onItemClick = {
             val target = it.target.get()
@@ -99,5 +99,6 @@ class Item(
     val target: WeakReference<View>,
     val id: Int,
     val layoutName: String,
+    val attributeId: Int,
     val attribute: String
 )
