@@ -11,10 +11,10 @@ import com.example.viewdebug.R
 import com.example.viewdebug.databinding.ViewDebugDialogDetailInfoBinding
 import com.example.viewdebug.ui.UIPage
 import com.example.viewdebug.ui.dialog.BaseDialog
-import com.example.viewdebug.ui.skin.textColor
 import com.example.viewdebug.util.adjustOrientation
 import com.example.viewdebug.util.fragmentViewLifecycleOwnerFragmentFiled
 import com.example.viewdebug.util.getViewDebugInfo
+import com.skin.skincore.collector.setTextColorSkinAble
 import java.util.LinkedList
 
 /**
@@ -66,12 +66,12 @@ internal class ViewDetailInfoDialog(host: UIPage) : BaseDialog(host) {
         val tvLabel = AppCompatTextView(host.tabView.context)
         tvLabel.text = label
         tvLabel.textSize = tvLabel.resources.getDimension(R.dimen.view_debug_common_text_size)
-        tvLabel.textColor(R.color.view_debug_black)
+        tvLabel.setTextColorSkinAble(R.color.view_debug_black)
         tvLabel.id = View.generateViewId()
         val tvValue = AppCompatTextView(host.tabView.context)
         tvValue.text = value
         tvValue.textSize = tvLabel.resources.getDimension(R.dimen.view_debug_common_text_size)
-        tvValue.textColor(R.color.view_debug_black)
+        tvValue.setTextColorSkinAble(R.color.view_debug_black)
         tvValue.id = View.generateViewId()
 
         binding.layoutContent.addView(tvLabel)

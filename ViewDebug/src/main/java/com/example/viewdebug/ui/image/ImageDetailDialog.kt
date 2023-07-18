@@ -9,9 +9,9 @@ import com.example.viewdebug.R
 import com.example.viewdebug.databinding.ViewDebugImageDetailBinding
 import com.example.viewdebug.ui.UIPage
 import com.example.viewdebug.ui.dialog.BaseDialog
-import com.example.viewdebug.ui.skin.backgroundResource
-import com.example.viewdebug.ui.skin.imageResource
 import com.example.viewdebug.util.adjustOrientation
+import com.skin.skincore.collector.setBackgroundResourceSkinAble
+import com.skin.skincore.collector.setImageResourceSkinAble
 
 /**
  * 图片详情
@@ -52,11 +52,11 @@ internal class ImageDetailDialog(host: UIPage) : BaseDialog(host) {
         show()
         val drawable = AppCompatResources.getDrawable(binding.root.context, resId) ?: return
         if (drawable.intrinsicWidth > 0) {
-            binding.ivImage.imageResource(resId)
-            binding.ivImage.backgroundResource(0)
+            binding.ivImage.setImageResourceSkinAble(resId)
+            binding.ivImage.setBackgroundResourceSkinAble(0)
         } else {
-            binding.ivImage.backgroundResource(resId)
-            binding.ivImage.imageResource(0)
+            binding.ivImage.setBackgroundResourceSkinAble(resId)
+            binding.ivImage.setImageResourceSkinAble(0)
         }
 
     }

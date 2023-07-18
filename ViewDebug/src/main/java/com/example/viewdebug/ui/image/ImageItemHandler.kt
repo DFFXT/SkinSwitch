@@ -15,6 +15,7 @@ import com.example.viewdebug.util.ViewDebugInfo
 import com.example.viewdebug.util.copyToClipboard
 import com.example.viewdebug.util.tryShowXmlText
 import com.skin.skincore.collector.ViewUnion
+import com.skin.skincore.collector.setImageResourceSkinAble
 import java.lang.ref.WeakReference
 
 /**
@@ -56,7 +57,7 @@ internal class ImageItemHandler(private val host: UIPage) : ItemHandle<Item>() {
         RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("SetTextI18n")
         fun bind(item: Item) {
-            binding.ivImage.imageResource(item.id)
+            binding.ivImage.setImageResourceSkinAble(item.id)
             binding.tvLayout.text = item.layoutName + ".xml"
             binding.tvName.text = item.attribute
 
