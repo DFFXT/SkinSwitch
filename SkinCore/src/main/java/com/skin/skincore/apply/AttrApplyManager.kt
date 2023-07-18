@@ -1,5 +1,6 @@
 package com.skin.skincore.apply
 
+import android.content.res.Resources
 import android.util.SparseArray
 import android.util.SparseBooleanArray
 import android.view.View
@@ -8,6 +9,7 @@ import com.skin.log.Logger
 import com.skin.skincore.OnThemeChangeListener
 import com.skin.skincore.SkinManager
 import com.skin.skincore.apply.base.BaseViewApply
+import com.skin.skincore.collector.ResType
 import com.skin.skincore.collector.ViewUnion
 import com.skin.skincore.parser.DefaultParser
 import com.skin.skincore.parser.ParseOutValue
@@ -17,7 +19,7 @@ import com.skin.skincore.reflex.getSkinTheme
 /**
  * 换肤执分发器
  */
-internal object AttrApplyManager {
+object AttrApplyManager {
     private val skinAttrStrategy = SparseBooleanArray()
     private val applySet: SparseArray<BaseViewApply<View>> = SparseArray()
 
@@ -62,14 +64,7 @@ internal object AttrApplyManager {
         }
         union.forEach {
             try {
-                applySet[it.attributeId]?.tryApply(
-                    eventType,
-                    view,
-                    it.resId,
-                    it.getResourceType(view.resources),
-                    provider,
-                    view.context.getSkinTheme()
-                )
+                apply(it.attributeId, eventType, view, it.resId, it.getResourceType(view.resources), provider, view.context.getSkinTheme())
             } catch (e: ClassCastException) {
                 Logger.e("AttrApplyManager", "not limit attribute range error")
                 e.printStackTrace()
@@ -78,9 +73,30 @@ internal object AttrApplyManager {
     }
 
     /**
+     * 触发属性更新
+     */
+    fun apply(
+        attributeId: Int, eventType: IntArray,
+        view: View,
+        resId: Int,
+        @ResType resType: String,
+        provider: IResourceProvider,
+        theme: Resources.Theme?
+    ) {
+        applySet[attributeId]?.tryApply(
+            eventType,
+            view,
+            resId,
+            resType,
+            provider,
+            theme
+        )
+    }
+
+    /**
      * 新增其他处理器
      */
-    fun <T : View> addViewApply(apply: BaseViewApply<T>) {
+    internal fun <T : View> addViewApply(apply: BaseViewApply<T>) {
         applySet.put(apply.supportAttribute, apply as BaseViewApply<View>)
         parser.addSupportAttr(apply.supportAttribute)
     }
