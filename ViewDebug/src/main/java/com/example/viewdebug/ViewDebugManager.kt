@@ -50,8 +50,8 @@ object ViewDebugManager {
             }
         }
 
-        override fun onActivityPaused(p0: Activity) {
-            super.onActivityPaused(p0)
+        override fun onActivityStopped(p0: Activity) {
+            super.onActivityStopped(p0)
             // 应用后台，隐藏
             if (p0 == currentActivity) {
                 uiControl.close()
