@@ -2,6 +2,7 @@
 package androidx.fragment.app
 
 import android.content.Context
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -79,7 +80,7 @@ internal class ViewDetailInfoDialog(host: UIPage) : BaseDialog(host) {
     private fun addDescribe(label: String, value: String, update: Update<View>? = null) {
         val tvLabel = AppCompatTextView(host.tabView.context)
         tvLabel.text = label
-        tvLabel.textSize = tvLabel.resources.getDimension(R.dimen.view_debug_common_text_size)
+        tvLabel.setTextSize(TypedValue.COMPLEX_UNIT_PX, tvLabel.resources.getDimension(R.dimen.view_debug_common_text_size))
         tvLabel.setTextColorSkinAble(R.color.view_debug_black)
         tvLabel.id = View.generateViewId()
 
@@ -89,7 +90,7 @@ internal class ViewDetailInfoDialog(host: UIPage) : BaseDialog(host) {
         tvValue.minWidth = 100
         tvValue.setPadding(0)
         tvValue.setText(value)
-        tvValue.textSize = tvLabel.resources.getDimension(R.dimen.view_debug_common_text_size)
+        tvValue.setTextSize(TypedValue.COMPLEX_UNIT_PX, tvLabel.resources.getDimension(R.dimen.view_debug_common_text_size))
         tvValue.setTextColorSkinAble(R.color.view_debug_black)
         tvValue.id = View.generateViewId()
 
