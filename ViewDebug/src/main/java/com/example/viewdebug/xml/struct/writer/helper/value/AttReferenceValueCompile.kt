@@ -2,6 +2,7 @@ package com.example.viewdebug.xml.struct.writer.helper.value
 
 import com.example.viewdebug.R
 import com.example.viewdebug.ViewDebugInitializer
+import com.example.viewdebug.xml.struct.FormatType
 import com.example.viewdebug.xml.struct.ReferenceType
 import com.example.viewdebug.xml.struct.XmlCompiler
 import com.example.viewdebug.xml.struct.writer.helper.ResourceType
@@ -12,7 +13,7 @@ import com.example.viewdebug.xml.struct.writer.helper.ResourceType
  * @id/xxx
  * @color/xxx
  */
-class AttReferenceValueCompile : AttrValueCompile("reference") {
+open class AttReferenceValueCompile : AttrValueCompile(FormatType.TYPE_REFERENCE) {
     /**
      * id模板，如果更新的布局中新增了id，ConstraintLayout布局中很常见，那么就用这些替换，最多支持15个新增id
      */
@@ -42,7 +43,7 @@ class AttReferenceValueCompile : AttrValueCompile("reference") {
     override fun compile(attrValue: String, compiler: XmlCompiler): CompiledAttrValue? {
         // 是引用类型
         val end = attrValue.indexOf('/')
-        if (end > 0) {
+        if (end > 0 && attrValue.startsWith("@")) {
             var valueRowType = attrValue.substring(1, end)
             // 资源类型见[ResourceFolderType]
             val valueRowValue = attrValue.substring(end + 1)
@@ -52,23 +53,27 @@ class AttReferenceValueCompile : AttrValueCompile("reference") {
                 valueRowType = ReferenceType.TYPE_ID
             }
             var id = ctx.resources.getIdentifier(valueRowValue, valueRowType, ctx.packageName)
-            if (id == 0 && valueRowType == ReferenceType.TYPE_ID) {
-                // 是新增的id
-                var reflexId = idMap[valueRowValue]
-                // 需要使用新的id
-                if (reflexId == null) {
-                    if (idIndex >= idTemplate.size) {
-                        throw Exception("increase new id over 15")
-                    } else {
-                        reflexId = idTemplate[idIndex]
-                        idMap[valueRowValue] = reflexId
-                        idIndex++
+            if (id == 0) {
+                if (valueRowType == ReferenceType.TYPE_ID) {
+                    // 是新增的id
+                    var reflexId = idMap[valueRowValue]
+                    // 需要使用新的id
+                    if (reflexId == null) {
+                        if (idIndex >= idTemplate.size) {
+                            throw Exception("increase new id over 15")
+                        } else {
+                            reflexId = idTemplate[idIndex]
+                            idMap[valueRowValue] = reflexId
+                            idIndex++
+                        }
                     }
+                    id = reflexId
+                } else {
+                    // 其它类型或者格式问题
+                    return null
                 }
-                id = reflexId
 
             }
-            // todo
             return CompiledAttrValue(ResourceType.TYPE_REFERENCE, id)
         }
         return null

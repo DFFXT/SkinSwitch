@@ -64,8 +64,7 @@ class AttrColorValueCompile : AttrValueCompile("color") {
                     CompiledAttrValue(ResourceType.TYPE_FIRST_COLOR_INT, value)
                 }
             }
-        } else {
-            return null
         }
+        return null
     }
 }

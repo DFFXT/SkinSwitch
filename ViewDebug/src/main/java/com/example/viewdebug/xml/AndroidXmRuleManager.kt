@@ -5,6 +5,10 @@ import com.example.viewdebug.xml.struct.rule.RuleParse
 
 /**
  * 管理xml规则文件
+ * todo 支持自定义属性
+ * 经观察，发现三方定义的属性都在build\intermediates\incremental\mergeDebugResources\merger.xml文件中
+ * 如果在编译过程中将该文件复制到assets目录，那么就能支持了
+ * 针对无法快速复制问题，推荐开发as插件，通过adb直接push到模拟器，模拟器通过监听文件来获取pc内容
  */
 object AndroidXmRuleManager {
     private val parseAndroid = RuleParse("android")

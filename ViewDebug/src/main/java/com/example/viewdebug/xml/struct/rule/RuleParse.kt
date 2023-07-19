@@ -3,6 +3,7 @@ package com.example.viewdebug.xml.struct.rule
 import com.skin.log.Logger
 import org.w3c.dom.Node
 import java.io.InputStream
+import java.util.LinkedList
 import javax.xml.parsers.DocumentBuilderFactory
 import kotlin.math.max
 
@@ -31,7 +32,6 @@ class RuleParse(val nsPrefix: String) {
             }
         }
 
-        val f = 0
     }
 
     private fun addNode(parent: String, node: Node) {
@@ -39,9 +39,9 @@ class RuleParse(val nsPrefix: String) {
             // 解析属性
             if (node.nodeName == "attr") {
                 parseAttr(parent, node)
-            } else if (node.nodeName == "declare-styleable") {
+            } else {
                 // 解析ViewGroup
-                val name = node.attributes.getNamedItem("name").nodeValue
+                val name = node.attributes.getNamedItem("name")?.nodeValue ?: ""
                 for (i in 0 until node.childNodes.length) {
                     addNode(name, node.childNodes.item(i))
                 }
@@ -51,18 +51,15 @@ class RuleParse(val nsPrefix: String) {
 
     private fun parseAttr(parent: String, node: Node) {
         val attr = node.attributes.getNamedItem("name").nodeValue
+        // 如果当前属性是以android:开头，那么属于引用，直接掠过
+        if (attr.startsWith("android:")) return
         val format = node.attributes.getNamedItem("format")?.nodeValue
         var desc = attrMap[attr]
         if (desc == null) {
-            desc = AttrDesc(parent, format)
+            desc = AttrDesc(parent)
             attrMap[attr] = desc
         }
-        if (format != null) {
-            if (desc.format != null && desc.format != format) {
-                Logger.e("RuleParse", "parseAttr warning  ${format} replaced ${desc.format}")
-            }
-            desc.format = format
-        }
+        desc.addFormat(format)
 
         if (node.hasChildNodes()) {
             for (i in 0 until node.childNodes.length) {
@@ -83,7 +80,8 @@ class RuleParse(val nsPrefix: String) {
                         val value = if (flagValue.startsWith("0x")) {
                             flagValue.substring(2, flagValue.length).toUInt(16)
                         } else {
-                            flagValue.toUInt(10)
+                            // 对于不是16进制的情况，则需要转换成int类型，负数无法转uint
+                            flagValue.toInt(10).toUInt()
                         }
                         desc.addFlag(flagName, value)
                     }
@@ -120,13 +118,21 @@ class RuleParse(val nsPrefix: String) {
     class AttrDesc(
         // 当前属性所属，""、ViewGroup_Layout、TextView_Layout、ConstraintLayout_Layout、XXView等
         @Deprecated("")
-        val parent: String,
-        var format: String?,
-
+        val parent: String
         ) {
-
+        val format: HashSet<String> = HashSet()
         private val enumMap: HashMap<String, String> = HashMap<String, String>()
         private val flagMap: HashMap<String, UInt> = HashMap()
+
+        fun addFormat(format: String?) {
+            format ?: return
+            if (format.contains("|")) {
+                val f = format.split("|")
+                this.format.addAll(f)
+            } else {
+                this.format.add(format)
+            }
+        }
         fun addEnum(key: String, value: String) {
             if (enumMap.contains(key)) {
                 if (enumMap[key] != value) {
@@ -192,7 +198,7 @@ class RuleParse(val nsPrefix: String) {
      * @param value 如果当前属性需要进行转换，比如：枚举、flag等，则会将结果返回，否则为null
      */
     data class ValueData(
-        val type: String?,
+        val type: HashSet<String>,
         val value: String?,
     )
 }

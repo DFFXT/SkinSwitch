@@ -1,6 +1,7 @@
 package com.example.viewdebug.xml.struct.writer.helper.value
 
 import android.util.TypedValue
+import com.example.viewdebug.xml.struct.FormatType
 import com.example.viewdebug.xml.struct.XmlCompiler
 
 /**
@@ -9,11 +10,15 @@ import com.example.viewdebug.xml.struct.XmlCompiler
  * specified as "false" or "true".
  * public static final int TYPE_INT_BOOLEAN = 0x12;
  */
-class AttrBooleanValueCompile : AttrValueCompile("boolean") {
-    override fun compile(attrValue: String, compiler: XmlCompiler): CompiledAttrValue {
-        val data = if (attrValue.equals("true", true)) {
-            1
-        } else 0
-        return CompiledAttrValue(TypedValue.TYPE_INT_BOOLEAN.toByte(), data)
+class AttrBooleanValueCompile : AttrValueCompile(FormatType.TYPE_BOOLEAN) {
+    override fun compile(attrValue: String, compiler: XmlCompiler): CompiledAttrValue? {
+
+        return if (attrValue.equals("true", true)) {
+            CompiledAttrValue(TypedValue.TYPE_INT_BOOLEAN.toByte(), 1)
+        } else if (attrValue.equals("false", true)) {
+            CompiledAttrValue(TypedValue.TYPE_INT_BOOLEAN.toByte(), 0)
+        } else {
+            null
+        }
     }
 }

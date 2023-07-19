@@ -1,6 +1,7 @@
 package com.example.viewdebug.xml.struct.writer.helper.value
 
 import com.example.viewdebug.xml.struct.XmlCompiler
+import com.example.viewdebug.xml.struct.writer.helper.ResourceType
 
 abstract class AttrValueCompile(val type: String) {
     /**
@@ -10,6 +11,7 @@ abstract class AttrValueCompile(val type: String) {
 }
 
 class CompiledAttrValue(
+    @ResourceType
     val type: Byte,
     val data: Int,
     // 当前数据为字符串
