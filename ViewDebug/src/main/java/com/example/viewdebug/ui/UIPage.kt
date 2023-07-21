@@ -78,6 +78,7 @@ abstract class UIPage {
 
     fun closeDialog(dialog: BaseDialog) {
         if (dialog.dialogView.parent != null) {
+            dialog.onClose()
             val p = dialog.dialogView.parent as ViewGroup
             contentView.removeView(p)
             p.removeView(dialog.dialogView)

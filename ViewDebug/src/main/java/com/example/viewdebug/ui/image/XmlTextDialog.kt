@@ -1,7 +1,5 @@
 package com.example.viewdebug.ui.image
 
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
@@ -9,10 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import com.example.viewdebug.databinding.ViewDebugXmlTextContainerBinding
+import com.example.viewdebug.remote.RemoteFileReceiver
 import com.example.viewdebug.ui.UIPage
 import com.example.viewdebug.ui.dialog.BaseDialog
 import com.example.viewdebug.ui.skin.ViewDebugMergeResource
 import com.example.viewdebug.util.adjustOrientation
+import com.example.viewdebug.util.copyToClipboard
 import com.example.viewdebug.util.launch
 import com.example.viewdebug.util.shortToast
 import com.example.viewdebug.xml.pack.PackAssetsFile
@@ -25,12 +25,13 @@ import com.skin.skincore.asset.DefaultResourceLoader
 import com.skin.skincore.reflex.getSkinTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.lang.ref.WeakReference
 
 class XmlTextDialog(
     private val ctx: Context,
     private val hostPage: UIPage,
-) : BaseDialog(hostPage) {
+) : BaseDialog(hostPage), RemoteFileReceiver.FileWatcher {
     private val binding = ViewDebugXmlTextContainerBinding.inflate(
         LayoutInflater.from(ctx),
         hostPage.tabView.parent as ViewGroup,
@@ -147,11 +148,21 @@ class XmlTextDialog(
         binding.tvName.setOnClickListener {
             copyToClipboard(ctx, title)
         }
-
+        RemoteFileReceiver.observe(this)
     }
 
-    private fun copyToClipboard(ctx: Context, text: String) {
-        val clipboardManager = ctx.getSystemService(ClipboardManager::class.java)
-        clipboardManager.setPrimaryClip(ClipData.newPlainText("UI调试", text))
+    override fun onClose() {
+        super.onClose()
+        RemoteFileReceiver.remove(this)
+    }
+
+    override fun onChange(path: String): Boolean {
+        val file = File(path)
+        if (file.exists() && path.endsWith(".xml")) {
+            val content = String(file.readBytes())
+            binding.tvText.setText(content)
+            return true
+        }
+        return false
     }
 }

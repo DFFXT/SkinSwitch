@@ -8,6 +8,8 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.Keep
 import androidx.startup.Initializer
+import com.example.viewdebug.dex.DexLoadManager
+import com.example.viewdebug.remote.RemoteFileReceiver
 import com.example.viewdebug.ui.skin.ViewDebugMergeResource
 import com.example.viewdebug.util.ViewDebugInfo
 import com.example.viewdebug.util.launch
@@ -67,7 +69,9 @@ class ViewDebugInitializer : Initializer<ViewDebugInitializer> {
         // 编译初始化
         launch(Dispatchers.IO) {
             AndroidXmRuleManager.init(ctx)
-             CompileTest.main()
+            CompileTest.main()
+            RemoteFileReceiver
+            DexLoadManager().init()
         }
         return this
     }

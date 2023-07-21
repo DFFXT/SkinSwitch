@@ -31,8 +31,11 @@ abstract class BaseDialog(protected val host: UIPage) {
     open fun close() {
         if (isShow) {
             host.closeDialog(this)
-            isShow = false
         }
+    }
+
+    open fun onClose() {
+        isShow = false
     }
 
 
