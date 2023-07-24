@@ -34,6 +34,7 @@ import java.util.Collections
 class ViewDebugInitializer : Initializer<ViewDebugInitializer> {
     override fun create(context: Context): ViewDebugInitializer {
         ctx = context.applicationContext as Application
+        DexLoadManager().init()
         if (!Settings.canDrawOverlays(context)) {
             // 没有显示浮窗权限
             // Toast.makeText(context, "没有出现在应用上层的权限，无法使用调试功能", Toast.LENGTH_SHORT).show()
@@ -69,9 +70,8 @@ class ViewDebugInitializer : Initializer<ViewDebugInitializer> {
         // 编译初始化
         launch(Dispatchers.IO) {
             AndroidXmRuleManager.init(ctx)
-            CompileTest.main()
+            //CompileTest.main()
             RemoteFileReceiver
-            DexLoadManager().init()
         }
         return this
     }

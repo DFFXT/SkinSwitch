@@ -28,6 +28,10 @@ class DexLoadManager{
             }
         })
         val rowDexPath = File(dexPath)
+        val parent = rowDexPath.parentFile!!
+        if(!parent.exists()) {
+            parent.mkdirs()
+        }
         if (!rowDexPath.exists()) {
             return
         }
