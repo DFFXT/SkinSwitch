@@ -14,6 +14,7 @@ import com.skin.skincore.parser.AttrParseInterceptor
 import com.skin.skincore.parser.AttrParseListener
 import com.skin.skincore.parser.ParseOutValue
 import com.skin.skincore.plug.SkinPackDeveloping
+import com.skin.skincore.plug.SpeedUpSwitchSkin
 import com.skin.skincore.provider.DefaultProviderFactory
 import com.skin.skincore.provider.IResourceProvider
 import com.skin.skincore.provider.ResourceProviderFactory
@@ -37,8 +38,9 @@ object SkinManager {
      * 对当前context进行初始化，凡是通过该context进行inflate的对象均进行view拦截
      * @param projectStyle 当前应用主题样式，值最好为androidManifest.xml中theme属性，可为0
      * @param providerFactory 资源提供器，一般继承[DefaultProviderFactory]
+     * @param delayDetachedView 是否延迟切换detached状态的View，比如RecyclerView缓存、remove了但仍待使用的view；默认不开启
      */
-    fun init(ctx: Application, projectStyle: Int, providerFactory: ResourceProviderFactory) {
+    fun init(ctx: Application, projectStyle: Int, providerFactory: ResourceProviderFactory, delayDetachedView: Boolean = false) {
         this.application = ctx
         this.projectStyle = projectStyle
         this.providerFactory = providerFactory
@@ -47,6 +49,9 @@ object SkinManager {
         SkinPackDeveloping.sinkPackInstall(ctx)
         makeContextSkinAble(ctx)
         ActivitiesCallback.register(ctx)
+        if (delayDetachedView) {
+            SpeedUpSwitchSkin().init()
+        }
     }
 
     /**
@@ -125,11 +130,12 @@ object SkinManager {
      * 切换白天黑夜
      */
     fun applyThemeNight(isNight: Boolean, context: Context? = null) {
-        Logger.d(TAG, "applyThemeNight $isNight $context")
+        Logger.d(TAG, "applyThemeNight start $isNight $context")
         this.isNight = isNight
         applyNightMode(isNight, context)
         forceRefreshView(context)
         dispatchSkinChange(theme, isNight, intArrayOf(BaseViewApply.EVENT_TYPE_THEME))
+        Logger.d(TAG, "applyThemeNight end $isNight $context")
     }
 
     /**
