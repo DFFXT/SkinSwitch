@@ -4,6 +4,7 @@ import com.example.viewdebug.ViewDebugInitializer
 import com.example.viewdebug.remote.RemoteFileReceiver
 import com.example.viewdebug.util.launch
 import com.example.viewdebug.util.shortToast
+import com.skin.log.Logger
 import dalvik.system.BaseDexClassLoader
 import dalvik.system.DexClassLoader
 import kotlinx.coroutines.Dispatchers
@@ -28,13 +29,14 @@ class DexLoadManager{
             }
         })
         val rowDexPath = File(dexPath)
-        val parent = rowDexPath.parentFile!!
-        if(!parent.exists()) {
-            parent.mkdirs()
+        if (rowDexPath.parentFile?.exists() != true){
+            rowDexPath.parentFile?.mkdirs()
         }
         if (!rowDexPath.exists()) {
+            Logger.i("DexLoadManager", "no dex file: $dexPath")
             return
         }
+        Logger.i("DexLoadManager", "dex file: $dexPath")
         // 对dex进行重命名，防止重复加载
         rowDexPath.renameTo(File(renamePath))
         // 有新的dex到来，直接加载

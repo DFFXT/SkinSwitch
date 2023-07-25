@@ -22,6 +22,8 @@ import com.skin.skincore.reflex.getSkinTheme
 object AttrApplyManager {
     private val skinAttrStrategy = SparseBooleanArray()
     private val applySet: SparseArray<BaseViewApply<View>> = SparseArray()
+    // 可蓝拦截换肤view
+    var onApplyInterceptor: AttrApplyInterceptor? = null
 
     // 属性解析器
     internal val parser by lazy { DefaultParser(applySet.keyIterator().asSequence().toHashSet()) }
@@ -50,7 +52,7 @@ object AttrApplyManager {
         SkinManager.setSkinAttrStrategy(ParseOutValue.SKIN_ATTR_UNDEFINE, true)
     }
 
-    fun apply(eventType: IntArray, view: View, union: ViewUnion, provider: IResourceProvider) {
+    internal fun triggerApply(eventType: IntArray, view: View, union: ViewUnion, provider: IResourceProvider) {
         // 如果有设置，则优先判断当前属性
         if (union.skinAttrValue != ParseOutValue.SKIN_ATTR_UNDEFINE) {
             if (!skinAttrStrategy.get(union.skinAttrValue)) return
@@ -58,6 +60,16 @@ object AttrApplyManager {
             // 如果没有设置，则使用继承属性，判断是否需要执行
             if (!skinAttrStrategy.get(union.skinInheritedValue)) return
         }
+        if (onApplyInterceptor?.onApply(view) == true) {
+            return
+        }
+        apply(eventType, view, union, provider)
+    }
+
+    /**
+     * 触发view换肤
+     */
+    fun apply(eventType: IntArray, view: View, union: ViewUnion, provider: IResourceProvider) {
         // 在应用属性变化时触发监听
         if (view is OnThemeChangeListener) {
             view.onThemeChanged(SkinManager.getCurrentTheme(), SkinManager.isNightMode(), eventType)
@@ -76,12 +88,13 @@ object AttrApplyManager {
      * 触发属性更新
      */
     fun apply(
-        attributeId: Int, eventType: IntArray,
+        attributeId: Int,
+        eventType: IntArray,
         view: View,
         resId: Int,
         @ResType resType: String,
         provider: IResourceProvider,
-        theme: Resources.Theme?
+        theme: Resources.Theme?,
     ) {
         applySet[attributeId]?.tryApply(
             eventType,
@@ -89,7 +102,7 @@ object AttrApplyManager {
             resId,
             resType,
             provider,
-            theme
+            theme,
         )
     }
 
@@ -110,5 +123,13 @@ object AttrApplyManager {
 
     private fun <T : View> addViewApplyInternal(apply: BaseViewApply<T>) {
         applySet.put(apply.supportAttribute, apply as BaseViewApply<View>)
+    }
+
+    interface AttrApplyInterceptor {
+        /**
+         * 换肤拦截
+         * false 不拦截；true拦截
+         */
+        fun onApply(view: View): Boolean
     }
 }

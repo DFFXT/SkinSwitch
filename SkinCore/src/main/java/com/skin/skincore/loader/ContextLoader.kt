@@ -65,7 +65,7 @@ internal class ContextLoader(
                         Logger.v(TAG_CREATE_VIEW, "listen view created ok:$view")
                         // view生成，如果是其它皮肤，则立即应用，因为background等属性是通过TypedArray来获取的
                         if (applyWhenCreate) {
-                            AttrApplyManager.apply(event, view, union, iResourceProvider)
+                            AttrApplyManager.triggerApply(event, view, union, iResourceProvider)
                         }
                     }
                 }
@@ -107,7 +107,7 @@ internal class ContextLoader(
             val v = viewRef.key
             val union = v.getViewUnion()
             if (union != null) {
-                AttrApplyManager.apply(eventType, v, union, iResourceProvider)
+                AttrApplyManager.triggerApply(eventType, v, union, iResourceProvider)
             }
         }
     }

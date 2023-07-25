@@ -70,7 +70,7 @@ class ViewDebugInitializer : Initializer<ViewDebugInitializer> {
         // 编译初始化
         launch(Dispatchers.IO) {
             AndroidXmRuleManager.init(ctx)
-            //CompileTest.main()
+            // CompileTest.main()
             RemoteFileReceiver
         }
         return this
