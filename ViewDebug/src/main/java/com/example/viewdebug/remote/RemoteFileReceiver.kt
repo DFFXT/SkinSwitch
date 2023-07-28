@@ -33,6 +33,7 @@ internal object RemoteFileReceiver {
         if (!file.exists()) {
             file.mkdirs()
         }
+        observe(SpecialFileListener())
         startWatch()
     }
 
@@ -46,18 +47,23 @@ internal object RemoteFileReceiver {
                         delay(1000)
                         val content = String(File(watchingConfigPath).readBytes())
                         val json = JSONObject(content)
-                        val receivePath = json.getString("file") ?: return@launch
-                        Logger.i("RemoteFileReceiver", receivePath)
-                        startWatch()
+                        val arr = json.getJSONArray("config")
                         val watchers = fileWatcher.reversed()
-                        // 只有一个能处理，拦截了后续监听则不处理
-                        withContext(Dispatchers.Main) {
-                            for (watcher in watchers) {
-                                if (watcher.onChange(receivePath)) {
-                                    break
+                        for(i in 0 until arr.length()) {
+                            val item = arr.getJSONObject(i)
+                            val receivePath = item.getString("file") ?: return@launch
+                            val fileType = item.getString("type")
+                            Logger.i("RemoteFileReceiver", receivePath)
+                            // 只有一个能处理，拦截了后续监听则不处理
+                            withContext(Dispatchers.Main) {
+                                for (watcher in watchers) {
+                                    if (watcher.onChange(receivePath, type = fileType)) {
+                                        break
+                                    }
                                 }
                             }
                         }
+                        startWatch()
                     }
 
                 }
@@ -75,6 +81,6 @@ internal object RemoteFileReceiver {
     }
 
     internal interface FileWatcher {
-        fun onChange(path: String): Boolean
+        fun onChange(path: String, type: String?): Boolean
     }
 }

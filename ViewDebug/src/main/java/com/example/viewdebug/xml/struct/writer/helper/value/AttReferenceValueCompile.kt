@@ -75,6 +75,8 @@ open class AttReferenceValueCompile : AttrValueCompile(FormatType.TYPE_REFERENCE
 
             }
             return CompiledAttrValue(ResourceType.TYPE_REFERENCE, id)
+        } else if (attrValue == "@null") {
+            return CompiledAttrValue(ResourceType.TYPE_REFERENCE, 0)
         }
         return null
     }

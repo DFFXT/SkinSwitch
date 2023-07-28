@@ -2,20 +2,17 @@ package com.example.viewdebug.xml.struct.reader
 
 import com.skin.log.Logger
 import java.nio.ByteBuffer
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.LinkedHashMap
-import kotlin.experimental.and
+import java.util.LinkedList
 
 /**
  * android xml格式是采用的小端存储
  * java 默认是大端存储，所以也是大端读取
  * 只有在多个字节的读取时才有区别，单个字节读取没有大小端的区别
  * 人在读取16进制数据时都是默认小端存储，即低位在右侧，大端是高位在右侧
- * 大端读取，从低位开始读，
- * 比如两个字节的short：4460,其二进制为0x1234,byteBuffer存储为[12,34]
- * 如果是小端方式读取(byteBuffer.getShort())，则读取正常，取值为0x1234=4460
- * 如果是大端端方式读取(byteBuffer.getShort())，则读取错误，取值为0x3412=13330
+ * 大端读取，从从左往右
+ * 比如两个字节的short：4660,其二进制为0x1234,byteBuffer存储为[18,52]
+ * 如果是小端方式读取(byteBuffer.getShort()， 从右往左读)，则读取错误，取值为0x3421=13330
+ * 如果是大端端方式读取(byteBuffer.getShort()，从左往右读)，则读取正确，取值为0x3412=4660
  * 所以，在读取多byte时，需确定存储方式，然后才能正确读取
  *
  */
@@ -60,10 +57,10 @@ abstract class BaseChunk : IRead {
     protected abstract fun onRead(data: ByteBuffer)
 
     override fun equals(other: Any?): Boolean {
-        if(other is BaseChunk) {
+        if (other is BaseChunk) {
             return (other.type == this.type
-                    &&other.headerSize == this.headerSize
-                    &&other.chunkSize == this.chunkSize)
+                    && other.headerSize == this.headerSize
+                    && other.chunkSize == this.chunkSize)
         }
         return super.equals(other)
     }
@@ -90,7 +87,7 @@ abstract class BaseTagChunk : BaseChunk() {
     override fun equals(other: Any?): Boolean {
         if (super.equals(other) && other is BaseTagChunk) {
             return (namespaceUri == other.namespaceUri
-                    &&name == other.name)
+                    && name == other.name)
         }
         return super.equals(other)
     }
@@ -221,7 +218,7 @@ class ChunkFile : BaseChunk() {
     }
 
     override fun equals(other: Any?): Boolean {
-        if(this === other) return true
+        if (this === other) return true
         if (other is ChunkFile) {
 
         }
@@ -296,9 +293,10 @@ class ChunkString : BaseChunk() {
      */
     class StringPool(private val isUTF8: Boolean) : IRead {
         // 字符串长度
-        var charLen: Byte = 0
+        var charLen: Int = 0
+
         // 字符串字节数量
-        var byteLen: Byte = 0
+        var byteLen: Int = 0
 
         // isUTF8 ? 1byte * byteLength : 2byte * charLength
         lateinit var chars: String
@@ -306,11 +304,15 @@ class ChunkString : BaseChunk() {
         // isUTF8 ? 1byte : 2byte
         var separator: Short = 0
         override fun read(data: ByteBuffer) {
-            charLen = data.get()
-            byteLen = data.get()
+            charLen = readLen(data)
+            byteLen = readLen(data)
+
             if (isUTF8) {
                 println("read 1--> ${data.position()}")
-                val c = ByteArray(byteLen.toInt()) {
+                if (byteLen > 0x7f) {
+                    data.short
+                }
+                val c = ByteArray(byteLen) {
                     data.get()
                 }
                 chars = String(c)
@@ -318,12 +320,24 @@ class ChunkString : BaseChunk() {
                 separator = data.get().toShort()
             } else {
                 println("read 1--> ${data.position()}")
-                val c = ByteArray(charLen * 2) {
+                val c = ByteArray(charLen.toInt() * 2) {
                     data.get()
                 }
                 chars = String(c)
                 println("read 2--> ${data.position()}")
                 separator = data.short
+            }
+        }
+        private fun readLen(data: ByteBuffer): Int {
+            val position = data.position()
+            return if (data.get() < 0) {
+                data.position(position)
+                // 读取长度，这里是高位在前，不能直接读取short，因为是小端存储(小端存储读取从右往左)，
+                val highByte = data.get().toUByte().toInt() shl 8
+                val lowByte = data.get().toUByte().toInt()
+                highByte or lowByte and 0x7fff
+            } else {
+                data.get().toInt()
             }
         }
 

@@ -156,7 +156,7 @@ class XmlTextDialog(
         RemoteFileReceiver.remove(this)
     }
 
-    override fun onChange(path: String): Boolean {
+    override fun onChange(path: String, type: String?): Boolean {
         val file = File(path)
         if (file.exists() && path.endsWith(".xml")) {
             val content = String(file.readBytes())

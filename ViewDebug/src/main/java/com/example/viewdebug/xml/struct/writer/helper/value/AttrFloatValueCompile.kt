@@ -12,9 +12,11 @@ class AttrFloatValueCompile : AttrValueCompile(FormatType.TYPE_FLOAT) {
         val float = attrValue.toFloatOrNull()
         return if (float != null) {
             // 将浮点数转换成整数
+            buffer.position(0)
             buffer.putFloat(float)
             buffer.position(0)
-            CompiledAttrValue(ResourceType.TYPE_FLOAT, buffer.int)
+            val intValue = buffer.int
+            CompiledAttrValue(ResourceType.TYPE_FLOAT, intValue)
         } else {
             null
         }

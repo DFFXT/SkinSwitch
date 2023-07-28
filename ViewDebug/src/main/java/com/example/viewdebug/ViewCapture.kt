@@ -27,6 +27,7 @@ internal class ViewCapture {
         captureInvisible: Boolean,
         out: LinkedList<View>,
     ) {
+        com.example.skincore.R.styleable.SkinAttr
         if (inRect(
                 rootView.left,
                 rootView.top,

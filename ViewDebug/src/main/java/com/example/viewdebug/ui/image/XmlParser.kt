@@ -46,7 +46,8 @@ class XmlParser {
                         builder.append("$attrName=")
                         val attrIdValue = it.getAttributeResourceValue(i, -1)
                         var attrValue = ""
-                        if (attrIdValue != -1) {
+                        // 存在@null的使用，导致attrIdValue=0
+                        if (attrIdValue > 0) {
                             attrValue = ctx.resources.getResourceTypeName(attrIdValue) + "/"
                             attrValue += ctx.resources.getResourceEntryName(attrIdValue)
                         } else {
