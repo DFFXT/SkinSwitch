@@ -146,7 +146,7 @@ class ChunkStringWriter(startPosition: Int) : BaseChunkWriter(startPosition) {
      * 发现属性名称是第一优先级
      *  属性名称内部根据对应的属性id小到大排序
      * 其它是第二优先级，
-     *  其它字符串内部根据ASCII排序，中午还不清楚，也应该是根据其每个的byte数值来排序
+     *  其它字符串内部根据ASCII排序，中文还不清楚，也应该是根据其每个的byte数值来排序
      */
     fun addString(type: Int, priority: Int, string: String) {
         if (!stringPools.contains(string)) {

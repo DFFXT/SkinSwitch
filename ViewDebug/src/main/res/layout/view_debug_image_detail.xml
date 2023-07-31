@@ -74,4 +74,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/layout_control_bar" />
 
+    <include layout="@layout/view_debug_compile_test"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,15 +1,14 @@
 package com.example.viewdebug.xml.struct
 
 import android.content.Context
-import com.example.viewdebug.ViewDebugInitializer
 import com.example.viewdebug.xml.struct.writer.Attribute
 import com.example.viewdebug.xml.struct.writer.ChunkEndTagWriter
 import com.example.viewdebug.xml.struct.writer.ChunkFileWriter
 import com.example.viewdebug.xml.struct.writer.ChunkNamespaceWriter
 import com.example.viewdebug.xml.struct.writer.ChunkStartTagWriter
 import com.example.viewdebug.xml.struct.writer.ChunkStringWriter
-import com.example.viewdebug.xml.struct.writer.ResourceLink
-import com.example.viewdebug.xml.struct.writer.ResourceLinkImpl
+import com.example.viewdebug.xml.struct.writer.link.ResourceLink
+import com.example.viewdebug.xml.struct.writer.link.ResourceLinkImpl
 import com.example.viewdebug.xml.struct.writer.helper.AttributeWriterHelper
 import com.skin.log.Logger
 import org.w3c.dom.Node

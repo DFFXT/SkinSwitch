@@ -33,6 +33,13 @@ class ViewDebugMergeResource(asset: IAsset, default: Resources, themeId: Int) :
         return parser
     }
 
+    override fun getXml(id: Int): XmlResourceParser {
+        if (layoutInterceptorMapper.contains(id) || drawableInterceptorMapper.contains(id)) {
+            return interceptedAsset!!.openXmlResourceParser("assets/${PackAssetsFile.TYPE_LAYOUT}/$id.xml")
+        }
+        return super.getXml(id)
+    }
+
     override fun getDrawableForDensity(id: Int, density: Int, theme: Theme?): Drawable? {
         if (drawableInterceptorMapper.contains(id)) {
             val parser = interceptedAsset!!.openXmlResourceParser("assets/${PackAssetsFile.TYPE_LAYOUT}/$id.xml")

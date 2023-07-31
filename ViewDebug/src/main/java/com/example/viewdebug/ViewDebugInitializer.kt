@@ -16,6 +16,7 @@ import com.example.viewdebug.util.launch
 import com.example.viewdebug.util.setViewDebugInfo
 import com.example.viewdebug.xml.AndroidXmRuleManager
 import com.example.viewdebug.xml.CompileTest
+import com.example.viewdebug.xml.pack.PackAssetsFile
 import com.skin.skincore.SkinManager
 import com.skin.skincore.asset.IAsset
 import com.skin.skincore.collector.ViewUnion
@@ -72,6 +73,7 @@ class ViewDebugInitializer : Initializer<ViewDebugInitializer> {
             AndroidXmRuleManager.init(ctx)
             // CompileTest.main()
             RemoteFileReceiver
+            PackAssetsFile.clearCachedXml(ctx)
         }
         return this
     }

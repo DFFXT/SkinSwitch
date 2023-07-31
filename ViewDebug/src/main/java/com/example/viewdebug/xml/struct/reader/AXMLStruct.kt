@@ -337,6 +337,7 @@ class ChunkString : BaseChunk() {
                 val lowByte = data.get().toUByte().toInt()
                 highByte or lowByte and 0x7fff
             } else {
+                data.position(position)
                 data.get().toInt()
             }
         }

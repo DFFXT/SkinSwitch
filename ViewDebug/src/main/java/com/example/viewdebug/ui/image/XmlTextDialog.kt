@@ -159,8 +159,12 @@ class XmlTextDialog(
     override fun onChange(path: String, type: String?): Boolean {
         val file = File(path)
         if (file.exists() && path.endsWith(".xml")) {
-            val content = String(file.readBytes())
-            binding.tvText.setText(content)
+            launch(Dispatchers.IO) {
+                val content = String(file.readBytes())
+                withContext(Dispatchers.Main) {
+                    binding.tvText.setText(content)
+                }
+            }
             return true
         }
         return false
