@@ -78,6 +78,7 @@ class XmlCompiler(private val ctx: Context) {
     }
 
     fun addOtherString(string: String) {
+        if (string.isEmpty()) return
         addString(string, ChunkStringWriter.PRIORITY_TYPE_ATTR_VALUE, 0)
     }
 
@@ -108,26 +109,28 @@ class XmlCompiler(private val ctx: Context) {
 
         if (attr.nodeName.contains(":")) {
             val attrSplit = attr.nodeName.split(":")
-            addOtherString(attrSplit[0])
-            addAttrNameString(attrSplit[1], attrSplit[0])
-            //addString(attr.nodeValue)
+            addAttribute(tagNode.nodeName, attrSplit[0], attrSplit[1], attr.nodeValue)
         } else {
-            // todo
-            // 没有前缀的属性
-            addOtherString(attr.nodeName)
+            addAttribute(tagNode.nodeName, "", attr.nodeName, attr.nodeValue)
+        }
+    }
+
+    private fun addAttribute(tagName: String, prefix: String, attributeName: String, value: String) {
+        if (prefix.isNotEmpty()) {
+            addOtherString(prefix)
+            addAttrNameString(attributeName, prefix)
+        } else {
+            addOtherString(attributeName)
         }
 
         // 忽略tools
         val tag = (chunkFile.chunkTags.last as ChunkStartTagWriter)
         tag.attributes.add(
             Attribute(Int.MAX_VALUE, chunkFile).apply {
-                var nsPrefix: String? = null
-                val attrName: String
-                if (attr.nodeName.contains(":")) {
-                    val attrSplit = attr.nodeName.split(":")
-                    attrName = attrSplit[1]
+                val nsPrefix: String = prefix
+                val attrName: String = attributeName
+                if (prefix.isNotEmpty()) {
                     this.name = attrName
-                    nsPrefix = attrSplit[0]
                     this.namespacePrefix = nsPrefix
 
                     // 设置 用于排序
@@ -135,25 +138,18 @@ class XmlCompiler(private val ctx: Context) {
                     Logger.i("++++", "id = " + systemResourceId)
                     chunkFile.chunkSystemResourceId.resourceIds.add(systemResourceId)
                 } else {
-                    attrName = attr.nodeName
                     this.name = attrName
                     this.namespacePrefix = ""
                 }
                 // 从常量池获取，因为目前所有值都在这里
-                val resValue = attributeWriterHelper.compileAttributeResValue(tagNode.nodeName, attrName, attr.nodeValue, nsPrefix)
+                val resValue = attributeWriterHelper.compileAttributeResValue(tagName, attrName, value, nsPrefix)
                 if (resValue == null) {
-                    throw Exception("无法解析：${tagNode.nodeName} $nsPrefix $attrName ${attr.nodeValue}")
+                    throw Exception("无法解析：${tagName} $nsPrefix $attrName ${value}")
                 }
-
-                // resValue.type
-                // this.value = if (!resValue.parentValue) -1 else resValue.data
                 this.resValue = resValue
-                Logger.v("sssss", resValue.data.toString() + "  ${attr.nodeName}  ${attr.nodeValue}")
-
-
+                Logger.v("sssss", resValue.data.toString() + "  ${prefix}:${attributeName}  $value")
             },
         )
-
     }
 
     private fun addStartTag(node: Node) {
@@ -185,10 +181,13 @@ class XmlCompiler(private val ctx: Context) {
                 attrs.forEach {
                     addAttribute(node, it)
                 }
+                // 适配特殊属性
+                fixSpecialAttribute(node)
             }
 
         }
     }
+
 
     private fun addEndTag(node: Node) {
         chunkFile.chunkTags.add(
@@ -199,5 +198,33 @@ class XmlCompiler(private val ctx: Context) {
                 this.comment = -1
             },
         )
+    }
+
+    /**
+     * 适配特殊属性
+     */
+    private fun fixSpecialAttribute(tagNode: Node) {
+
+        val tag = (chunkFile.chunkTags.last as ChunkStartTagWriter)
+        val ph = tag.attributes.find { it.name == "paddingHorizontal" && it.namespacePrefix == "android" }
+        if (ph != null) {
+            val phNode = tagNode.attributes.getNamedItem("android:paddingHorizontal")
+            if (tag.attributes.find { it.name == "paddingLeft" && it.namespacePrefix == "android" } == null) {
+                addAttribute(tag.name, "android", "paddingLeft", phNode.nodeValue)
+            }
+            if (tag.attributes.find { it.name == "paddingRight" && it.namespacePrefix == "android" } == null) {
+                addAttribute(tag.name, "android", "paddingRight", phNode.nodeValue)
+            }
+        }
+        val pv = tag.attributes.find { it.name == "paddingVertical" && it.namespacePrefix == "android" }
+        if (pv != null) {
+            val pvNode = tagNode.attributes.getNamedItem("android:paddingVertical")
+            if (tag.attributes.find { it.name == "paddingTop" && it.namespacePrefix == "android" } == null) {
+                addAttribute(tag.name, "android", "paddingTop", pvNode.nodeValue)
+            }
+            if (tag.attributes.find { it.name == "paddingBottom" && it.namespacePrefix == "android" } == null) {
+                addAttribute(tag.name, "android", "paddingBottom", pvNode.nodeValue)
+            }
+        }
     }
 }
