@@ -40,11 +40,11 @@ object SkinManager {
      * @param providerFactory 资源提供器，一般继承[DefaultProviderFactory]
      * @param delayDetachedView 是否延迟切换detached状态的View，比如RecyclerView缓存、remove了但仍待使用的view；默认不开启
      */
-    fun init(ctx: Application, projectStyle: Int, providerFactory: ResourceProviderFactory, delayDetachedView: Boolean = false) {
+    fun init(ctx: Application, projectStyle: Int, providerFactory: ResourceProviderFactory, isNight: Boolean = ctx.resources.isNight(), delayDetachedView: Boolean = false) {
         this.application = ctx
         this.projectStyle = projectStyle
         this.providerFactory = providerFactory
-        isNight = ctx.resources.isNight()
+        this.isNight = isNight
         ResourcesProviderManager.init(ctx, providerFactory)
         SkinPackDeveloping.sinkPackInstall(ctx)
         makeContextSkinAble(ctx)
@@ -179,7 +179,7 @@ object SkinManager {
         skinChangeListenerSet.remove(listener)
     }
 
-    private fun applyNightMode(isNight: Boolean, context: Context?) {
+    fun applyNightMode(isNight: Boolean, context: Context?) {
         // 更新当前MergeResource中的Resource
         loaderServer.applyNight(isNight, context)
         // 更新AssetLoader中已经加载的Resource

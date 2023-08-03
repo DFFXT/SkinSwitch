@@ -20,6 +20,7 @@ import com.example.viewdebug.ui.dialog.BaseDialog
 import com.example.viewdebug.ui.image.attribute.Update
 import com.example.viewdebug.ui.image.attribute.impl.ViewUpdateProviderManger
 import com.example.viewdebug.util.adjustOrientation
+import com.example.viewdebug.util.copyToClipboard
 import com.example.viewdebug.util.fragmentViewLifecycleOwnerFragmentFiled
 import com.example.viewdebug.util.getViewDebugInfo
 import com.example.viewdebug.util.setSize
@@ -104,6 +105,9 @@ internal class ViewDetailInfoDialog(host: UIPage) : BaseDialog(host) {
             tvValue.isClickable = false
             tvValue.isFocusable = false
             tvValue.background = null
+            tvValue.setOnClickListener {
+                copyToClipboard(it.context, value)
+            }
         } else {
             tvValue.setBackgroundResourceSkinAble(R.drawable.view_debug_bottom_line_1dp)
             addUpdateView(tvValue, update)

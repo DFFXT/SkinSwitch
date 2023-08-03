@@ -16,38 +16,41 @@ import java.util.LinkedList
  * 换肤提速
  * 对于不可见的view，延迟换肤，post一下再换肤
  */
-class SpeedUpSwitchSkin {
-    private val handler = Handler(Looper.getMainLooper())
-    // 需要延迟换肤的view
-    private val viewRef = LinkedList<WeakReference<View>>()
-    private val observer = object : OnThemeChangeListener {
+open class SpeedUpSwitchSkin : AttrApplyManager.AttrApplyInterceptor, OnThemeChangeListener {
+    protected val handler = Handler(Looper.getMainLooper())
 
-        override fun onThemeChanged(theme: Int, isNight: Boolean, eventType: IntArray) {
-            handler.post {
-                Logger.d("SkinFragmentSpeedUp", "onThemeChange delay start")
-                val event = intArrayOf(BaseViewApply.EVENT_TYPE_THEME)
-                for (ref in viewRef) {
-                    val v = ref.get() ?: continue
-                    val union = v.getViewUnion() ?: continue
-                    AttrApplyManager.apply(event, v, union, com.skin.skincore.SkinManager.getResourceProvider(v.context))
-                }
-                Logger.d("SkinFragmentSpeedUp", "onThemeChange delay finish ${viewRef.size}")
-                viewRef.clear()
+    // 需要延迟换肤的view
+    protected val viewRef = LinkedList<WeakReference<View>>()
+
+    fun init() {
+        SkinManager.addSkinChangeListener(this)
+        AttrApplyManager.onApplyInterceptor = this
+    }
+
+    override fun onThemeChanged(theme: Int, isNight: Boolean, eventType: IntArray) {
+        handler.post {
+            Logger.d("SkinFragmentSpeedUp", "onThemeChange delay start")
+            val event = intArrayOf(BaseViewApply.EVENT_TYPE_THEME)
+            for (ref in viewRef) {
+                val v = ref.get() ?: continue
+                val union = v.getViewUnion() ?: continue
+                AttrApplyManager.apply(event, v, union, SkinManager.getResourceProvider(v.context))
             }
+            Logger.d("SkinFragmentSpeedUp", "onThemeChange delay finish ${viewRef.size}")
+            viewRef.clear()
         }
     }
 
-    fun init() {
-        SkinManager.addSkinChangeListener(observer)
-        AttrApplyManager.onApplyInterceptor = object : AttrApplyManager.AttrApplyInterceptor {
-            override fun onApply(view: View): Boolean {
-                if (!view.isAttachedToWindow) {
-                    // 拦截未显示的view
-                    viewRef.add(WeakReference(view))
-                    return true
-                }
-                return false
-            }
+    override fun onApply(view: View, eventType: IntArray): Boolean {
+        if (delayApply(view, eventType)) {
+            // 拦截未显示的view，而且不是view刚创建
+            viewRef.add(WeakReference(view))
+            return true
         }
+        return false
+    }
+
+    protected open fun delayApply(view: View, eventType: IntArray): Boolean {
+        return !view.isAttachedToWindow
     }
 }

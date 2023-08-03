@@ -60,7 +60,7 @@ object AttrApplyManager {
             // 如果没有设置，则使用继承属性，判断是否需要执行
             if (!skinAttrStrategy.get(union.skinInheritedValue)) return
         }
-        if (onApplyInterceptor?.onApply(view) == true) {
+        if (onApplyInterceptor?.onApply(view, eventType) == true) {
             return
         }
         apply(eventType, view, union, provider)
@@ -129,7 +129,8 @@ object AttrApplyManager {
         /**
          * 换肤拦截
          * false 不拦截；true拦截
+         * @param eventType 事件类型[BaseViewApply.EVENT_TYPE_THEME]等
          */
-        fun onApply(view: View): Boolean
+        fun onApply(view: View, eventType: IntArray): Boolean
     }
 }
