@@ -6,7 +6,6 @@ import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.DisplayMetrics
-import androidx.core.content.res.ResourcesCompat
 import com.skin.skincore.asset.IAsset
 
 /**

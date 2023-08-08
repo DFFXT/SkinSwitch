@@ -63,6 +63,11 @@ object SkinManager {
     }
 
     /**
+     * 是否在view创建时就进行换肤流程
+     */
+    fun isApplyWhenCreate() = ContextLoader.applyWhenCreate
+
+    /**
      * 使对应context支持换肤
      */
     fun makeContextSkinAble(context: Context) {

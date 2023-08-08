@@ -116,7 +116,6 @@ class XmlTextDialog(
             if (assetManager != null) {
                 ViewDebugMergeResource.interceptedAsset = assetManager.second
                 ViewDebugMergeResource.addInterceptor(resourceType, resourceId)
-                ViewDebugMergeResource.layoutInterceptorMapper.add(resourceId)
             }
             return true
         } catch (e: Exception) {
