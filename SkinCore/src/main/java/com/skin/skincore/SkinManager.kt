@@ -184,7 +184,7 @@ object SkinManager {
         skinChangeListenerSet.remove(listener)
     }
 
-    fun applyNightMode(isNight: Boolean, context: Context?) {
+    private fun applyNightMode(isNight: Boolean, context: Context?) {
         // 更新当前MergeResource中的Resource
         loaderServer.applyNight(isNight, context)
         // 更新AssetLoader中已经加载的Resource
@@ -206,7 +206,7 @@ object SkinManager {
      * [ParseOutValue.SKIN_ATTR_UNDEFINE]
      * @param apply true 进行换肤、false不进行换肤
      */
-    fun setSkinAttrStrategy(skinAttrValue: Int, apply: Boolean) {
+    fun setSkinAttrStrategy(@ParseOutValue skinAttrValue: Int, apply: Boolean) {
         AttrApplyManager.setSkinAttrStrategy(skinAttrValue, apply)
     }
 

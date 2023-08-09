@@ -41,6 +41,11 @@ internal object RemoteFileReceiver {
         if (!file.exists()) {
             file.mkdirs()
         }
+        // 判断是否存在，FileObserver只能监听已存在的文件
+        val watchTarget = File(watchingConfigPath)
+        if (!watchTarget.exists()) {
+            watchTarget.createNewFile()
+        }
         specialWatchers.add(SpecialFileListener())
         defaultFileWatchers.add(DefaultXmlFileListener())
         defaultFileWatchers.add(DefaultFileListener())

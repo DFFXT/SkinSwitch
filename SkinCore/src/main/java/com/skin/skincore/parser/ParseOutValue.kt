@@ -1,6 +1,6 @@
 package com.skin.skincore.parser
 
-class ParseOutValue {
+annotation class ParseOutValue {
     companion object {
         // false
         const val SKIN_ATTR_FALSE = 0
