@@ -5,8 +5,9 @@ import com.skin.skincore.asset.IAsset
 
 /**
  * 默认的资源构造提供者
+ * 如果要提供外部皮肤包则需要重新[getSkinFolder]和[getSkinName]
  */
-abstract class DefaultProviderFactory : ResourceProviderFactory {
+open class DefaultProviderFactory : ResourceProviderFactory {
     override fun getResourceProvider(ctx: Context, theme: Int, asset: IAsset, defaultProvider: IResourceProvider): IResourceProvider {
         return ThemeResourceProvider(asset, ctx.resources, defaultProvider)
     }
@@ -16,4 +17,8 @@ abstract class DefaultProviderFactory : ResourceProviderFactory {
     }
 
     override fun getDefaultProvider(ctx: Context) = DefaultResourceProvider(ctx)
+
+    override fun getSkinFolder(): String  = ""
+
+    override fun getSkinName(theme: Int): String  = ""
 }

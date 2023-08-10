@@ -1,4 +1,4 @@
-package com.example.viewdebug.xml.struct.writer
+package com.example.viewdebug.xml.struct.writer.link
 
 /**
  * 提供xml文本到系统资源的链接

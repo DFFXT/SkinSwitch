@@ -2,6 +2,8 @@ package com.example.viewdebug.xml
 
 import android.content.Context
 import com.example.viewdebug.xml.struct.rule.RuleParse
+import com.skin.log.Logger
+import java.io.File
 
 /**
  * 管理xml规则文件
@@ -12,26 +14,31 @@ import com.example.viewdebug.xml.struct.rule.RuleParse
  */
 object AndroidXmRuleManager {
     private val parseAndroid = RuleParse("android")
-    private val thirdParses = ArrayList<RuleParse>()
+    private val thirdParses = RuleParse("app")
     fun init(ctx: Context) {
         parseAndroid.parse(ctx.assets.open("rules/android-attrs.xml"))
 
-        val constraint = RuleParse("app")
-        constraint.parse(ctx.assets.open("rules/constraint-values.xml"))
-        val custom = RuleParse("")
-        custom.parse(ctx.assets.open("rules/no-namespace-attr.xml"))
-        thirdParses.add(constraint)
-        thirdParses.add(custom)
+        thirdParses.parse(ctx.assets.open("rules/constraint-values.xml"))
+        thirdParses.parse(ctx.assets.open("rules/no-namespace-attr.xml"))
+    }
+
+    /**
+     * 添加其它规则
+     */
+    fun addRuleFile(filePath: String) {
+        val file = File(filePath)
+        if (file.exists()) {
+            thirdParses.parse(file.inputStream())
+        } else {
+            Logger.e("AndroidXmRuleManager", "FileNotFound $filePath")
+        }
     }
 
     fun getValue(tagName: String, attrName: String, attrValue: String, nsPrefix: String?): RuleParse.ValueData? {
-        if (parseAndroid.nsPrefix == nsPrefix) {
-            return parseAndroid.getValue(tagName, attrName, attrValue)
+        return if (parseAndroid.nsPrefix == nsPrefix) {
+            parseAndroid.getValue(tagName, attrName, attrValue)
         } else {
-            for (parser in thirdParses) {
-                return parser.getValue(tagName, attrName, attrValue) ?: continue
-            }
+            thirdParses.getValue(tagName, attrName, attrValue)
         }
-        return null
     }
 }

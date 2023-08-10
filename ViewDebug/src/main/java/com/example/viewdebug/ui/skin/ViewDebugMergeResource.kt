@@ -5,13 +5,12 @@ import android.content.res.Resources
 import android.content.res.XmlResourceParser
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import com.example.viewdebug.ViewDebugInitializer
-import com.example.viewdebug.ui.image.XmlParser
 import com.example.viewdebug.xml.pack.PackAssetsFile
-import com.skin.skincore.asset.Asset
+import com.skin.log.Logger
+import com.skin.skincore.SkinManager
 import com.skin.skincore.asset.IAsset
+import com.skin.skincore.plug.SpeedUpSwitchSkin
 import com.skin.skincore.provider.MergeResource
-import java.io.File
 import java.util.WeakHashMap
 
 /**
@@ -31,6 +30,13 @@ class ViewDebugMergeResource(asset: IAsset, default: Resources, themeId: Int) :
         layoutMap[parser] = id
 
         return parser
+    }
+
+    override fun getXml(id: Int): XmlResourceParser {
+        if (layoutInterceptorMapper.contains(id) || drawableInterceptorMapper.contains(id)) {
+            return interceptedAsset!!.openXmlResourceParser("assets/${PackAssetsFile.TYPE_LAYOUT}/$id.xml")
+        }
+        return super.getXml(id)
     }
 
     override fun getDrawableForDensity(id: Int, density: Int, theme: Theme?): Drawable? {
@@ -56,8 +62,19 @@ class ViewDebugMergeResource(asset: IAsset, default: Resources, themeId: Int) :
         fun addInterceptor(type: String, value: Int) {
             if (type == "layout") {
                 layoutInterceptorMapper.add(value)
-            } else if (type =="drawable") {
+            } else if (type == "drawable") {
                 drawableInterceptorMapper.add(value)
+                // 如果没有开启创建即换肤，则开启，否则不生效，需要触发换肤才生效
+                if (!SkinManager.isApplyWhenCreate()) {
+                    Logger.e("ViewDebugMergeResource", "applyWhenCreate has not open, now auto open")
+                    SkinManager.applyWhenCreate(true)
+
+                }
+                // 不允许拦截刚创建的view
+                if (SpeedUpSwitchSkin.canInterceptOnCreatedView) {
+                    Logger.e("ViewDebugMergeResource", "canInterceptOnCreatedView has open, now close")
+                    SpeedUpSwitchSkin.canInterceptOnCreatedView = false
+                }
             }
         }
     }

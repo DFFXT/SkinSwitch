@@ -23,32 +23,21 @@ object CompileTest {
     fun main(vararg args: String) {
         val str = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
                 "<androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\n" +
-                "    android:id=\"@+id/test_id_ConstraintLayout\"\n" +
                 "    android:layout_width=\"match_parent\"\n" +
-                "    android:layout_height=\"match_parent\"\n" +
-                "    android:background=\"@color/white\"\n" +
-                "    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\n" +
-                "    android:text=\"AVV\">\n" +
+                "    android:layout_height=\"match_parent\">\n" +
                 "\n" +
                 "\n" +
-                "    <TextView\n" +
-                "        android:id=\"@+id/tv_ssss\"\n" +
-                "        android:text=\"8\\n8\\n88\"\n" +
-                "        android:scaleX=\"3\"\n" +
-                "        android:layout_width=\"wrap_content\"\n" +
+                "    <LinearLayout\n" +
+                "        android:paddingLeft=\"20dp\"\n" +
+                "        android:paddingTop=\"20dp\"\n" +
+                "        android:paddingRight=\"20dp\"\n" +
+                "        android:paddingBottom=\"20dp\"\n" +
+                "        android:layout_width=\"match_parent\"\n" +
                 "        android:layout_height=\"wrap_content\"\n" +
-                "        android:backgroundTint=\"@color/view_debug_red\"\n" +
-                "        android:background=\"@drawable/view_debug_circle_stroke_1dp\"\n" +
-                "        style=\"@style/MayStyle\"/>\n" +
-                "   <!-- <TextView\n" +
-                "        android:text=\"LLLL)\"\n" +
-                "        android:layout_width=\"wrap_content\"\n" +
-                "        android:layout_gravity=\"end\"\n" +
-                "        app:layout_constraintStart_toEndOf=\"@id/tv_ssss\"\n" +
-                "        android:textColor=\"@color/view_debug_image_detail_title_bar_bg\"\n" +
-                "        android:layout_height=\"wrap_content\"/>-->\n" +
+                "        android:paddingHorizontal=\"20dp\"\n" +
+                "        android:paddingVertical=\"20dp\"\n" +
+                "        />\n" +
                 "</androidx.constraintlayout.widget.ConstraintLayout>"
-
         val compiler = XmlCompiler(ViewDebugInitializer.ctx)
         val buffer = compiler.compile(str.byteInputStream())
         val reader = ChunkFile()
@@ -64,7 +53,7 @@ object CompileTest {
 
 
         val stdFile = ChunkFile()
-        val b = ViewDebugInitializer.ctx.assets.open("test_type.xml").readBytes()
+        val b = ViewDebugInitializer.ctx.assets.open("view_debug_compile_test.xml").readBytes()
         val bf = ByteBuffer.wrap(b).order(ByteOrder.LITTLE_ENDIAN)
         stdFile.read(bf)
         val t = ViewDebugInitializer.ctx.assets.openXmlResourceParser("assets/test_write.xml")

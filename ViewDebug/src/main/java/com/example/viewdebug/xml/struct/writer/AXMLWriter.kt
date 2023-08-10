@@ -146,7 +146,7 @@ class ChunkStringWriter(startPosition: Int) : BaseChunkWriter(startPosition) {
      * 发现属性名称是第一优先级
      *  属性名称内部根据对应的属性id小到大排序
      * 其它是第二优先级，
-     *  其它字符串内部根据ASCII排序，中午还不清楚，也应该是根据其每个的byte数值来排序
+     *  其它字符串内部根据ASCII排序，中文还不清楚，也应该是根据其每个的byte数值来排序
      */
     fun addString(type: Int, priority: Int, string: String) {
         if (!stringPools.contains(string)) {
@@ -208,7 +208,7 @@ class ChunkStringWriter(startPosition: Int) : BaseChunkWriter(startPosition) {
         }
         println("开始保存string ${data.position()}")
         var i = 0
-        sortedStringPool.forEach {
+        sortedStringPool.forEachIndexed { index, it ->
             log("write string start start ${data.position()}")
             it.write(data)
             log("write string ${it.string}")
@@ -261,13 +261,35 @@ class ChunkStringWriter(startPosition: Int) : BaseChunkWriter(startPosition) {
         override fun write(data: ByteBuffer) {
             // charLength = data.get()
             // byteLength = data.get()
+            /**
+             * 经分析：
+             * 长度<128
+             * length:1字节
+             * byteSize:1字节
+             * 长度>=128:
+             * length:2字节，其中前一个字节为80(根据进位得来)
+             * 长度>=256:
+             * length:2字节，其中前一个字节81(根据进位得来)
+             *
+             * 举例：
+             * 129 --> 8081(1000,0000,1000,0001)
+             * 260 --> 8104(1000,0001,0000,0100)
+             * 推测逻辑：
+             *     如果第一个字节<128，则说明字符串长度小于128
+             *     如果第一个字节>=128，则说明字符串长度大于等于128
+             *         如果是第二种情况，则读取两个字节，short or 011111111111111，将高位置为0
+             *
+             */
             val strByte = string.toByteArray()
             if (isUTF8) {
-                val len = strByte.size.toByte()
+                val len = strByte.size
+
                 // 写入char size
-                data.put(string.length.toByte())
+                writeLen(data, string.length)
+                //data.put(string.length.toByte())
                 // 写入byte size
-                data.put(len)
+                writeLen(data, len)
+                //data.put(len)
                 println("-->write str start:${data.position()}")
                 data.put(strByte)
                 println("-->write str end:${data.position()}")
@@ -280,12 +302,30 @@ class ChunkStringWriter(startPosition: Int) : BaseChunkWriter(startPosition) {
                 data.putShort(0)
             }
         }
+        private fun writeLen(data: ByteBuffer, len: Int) {
+            if (len > 0x7F) {
+                val value = (0x8000 or len)
+                // 这里写入长度是高位在左侧
+                data.put(((value shr 8) and 0xff).toByte())
+                data.put((value and 0xff).toByte())
+            } else {
+                data.put(len.toByte())
+            }
+        }
 
         fun getChunkSize(): Int {
+            val byteSize = string.toByteArray().size
+            var extra = 0
+            if (byteSize > 0x7f) {
+                extra += 1
+            }
+            if (string.length > 0x7f) {
+                extra += 1
+            }
             return if (isUTF8) {
-                string.toByteArray().size + extra_size_utf8
+                byteSize + extra_size_utf8 + extra
             } else {
-                string.toByteArray().size + extra_size_not_utf8
+                byteSize + extra_size_not_utf8 + extra
             }
         }
     }

@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:text="我来了啊1"
-    android:layout_height="wrap_content">
+    android:background="@color/main_color"
+    android:layout_height="match_parent">
 
 
-
-</TextView>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="140dp"
+        android:text="1444"
+        android:background="@color/view_debug_red"
+        android:paddingVertical="20dp"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>

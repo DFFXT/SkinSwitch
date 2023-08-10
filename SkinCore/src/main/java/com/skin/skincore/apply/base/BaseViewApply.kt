@@ -21,7 +21,7 @@ abstract class BaseViewApply<T : View>(
         const val EVENT_TYPE_ANY = 0
 
         // view第一次创建
-        internal const val EVENT_TYPE_CREATE = 2
+        const val EVENT_TYPE_CREATE = 2
 
         // 皮肤切换
         const val EVENT_TYPE_THEME = 1

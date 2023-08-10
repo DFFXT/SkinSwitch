@@ -13,10 +13,22 @@ class PackAssetsFile(private val ctx: Context) {
 
     companion object {
         const val TYPE_LAYOUT = "layout"
-    }
 
-    private fun getApkUnZipFolder() =
-        ctx.externalCacheDir!!.absolutePath + File.separator + "apk"
+        /**
+         * 清除编译缓存
+         */
+        fun clearCachedXml(ctx: Context) {
+            val dir = File(getApkUnZipFolder(ctx), "assets")
+            if (dir.exists()) {
+                dir.listFiles()?.forEach {
+                    it.deleteRecursively()
+                }
+            }
+        }
+
+        private fun getApkUnZipFolder(ctx: Context) =
+            ctx.externalCacheDir!!.absolutePath + File.separator + "apk"
+    }
 
     /**
      * 生成的apk地址
@@ -31,7 +43,7 @@ class PackAssetsFile(private val ctx: Context) {
      */
     suspend fun addAXMLFile(inputStream: InputStream, name: String) {
         val dir =
-            File(getApkUnZipFolder() + File.separator + "assets" + File.separator + TYPE_LAYOUT)
+            File(getApkUnZipFolder(ctx) + File.separator + "assets" + File.separator + TYPE_LAYOUT)
         if (!dir.exists()) {
             dir.mkdirs()
         }
@@ -43,16 +55,16 @@ class PackAssetsFile(private val ctx: Context) {
      * 打包生成apk（生成压缩包）
      */
     suspend fun pack() {
-        Logger.i("PackAssetsFile", "apk: ${getPackedApkPath()}   apkFolder: ${getApkUnZipFolder()}")
+        Logger.i("PackAssetsFile", "apk: ${getPackedApkPath()}   apkFolder: ${getApkUnZipFolder(ctx)}")
         checkApkResources()
-        IOUtil.zip(getPackedApkPath(), File(getApkUnZipFolder()))
+        IOUtil.zip(getPackedApkPath(), File(getApkUnZipFolder(ctx)))
     }
 
     /**
      * 检测是否存在apk资源，没有的话会进行资源拷贝
      */
     private fun checkApkResources() {
-        val apkFolder = getApkUnZipFolder()
+        val apkFolder = getApkUnZipFolder(ctx)
         val dir = File(apkFolder, "androidManifest.xml")
         if (!dir.exists()) {
             val buffer = ByteArray(1024 * 1024)
@@ -68,7 +80,7 @@ class PackAssetsFile(private val ctx: Context) {
     }
 
     private fun fileCopy(basePath: String, path: String, toDir: String, buffer: ByteArray) {
-        val children =  ctx.assets.list(basePath + File.separator +path)
+        val children = ctx.assets.list(basePath + File.separator + path)
 
         if (children.isNullOrEmpty()) {
             // 有可能是文件

@@ -116,7 +116,6 @@ class XmlTextDialog(
             if (assetManager != null) {
                 ViewDebugMergeResource.interceptedAsset = assetManager.second
                 ViewDebugMergeResource.addInterceptor(resourceType, resourceId)
-                ViewDebugMergeResource.layoutInterceptorMapper.add(resourceId)
             }
             return true
         } catch (e: Exception) {
@@ -156,11 +155,15 @@ class XmlTextDialog(
         RemoteFileReceiver.remove(this)
     }
 
-    override fun onChange(path: String): Boolean {
+    override fun onChange(path: String, type: String?): Boolean {
         val file = File(path)
         if (file.exists() && path.endsWith(".xml")) {
-            val content = String(file.readBytes())
-            binding.tvText.setText(content)
+            launch(Dispatchers.IO) {
+                val content = String(file.readBytes())
+                withContext(Dispatchers.Main) {
+                    binding.tvText.setText(content)
+                }
+            }
             return true
         }
         return false

@@ -20,7 +20,7 @@ class DexLoadManager{
     private val renamePath = ViewDebugInitializer.ctx.externalCacheDir!!.absolutePath + "/view-debug/view-debug-apply.dex"
     fun init() {
         RemoteFileReceiver.observe(object : RemoteFileReceiver.FileWatcher {
-            override fun onChange(path: String): Boolean {
+            override fun onChange(path: String, type: String?): Boolean {
                 if (path == dexPath) {
                     // 提示是否加载
                     return true
