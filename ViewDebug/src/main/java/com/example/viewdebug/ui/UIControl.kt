@@ -4,11 +4,14 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.PixelFormat
 import android.os.Build
+import android.provider.Settings
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.ViewGroup
 import android.view.WindowManager
 import com.example.viewdebug.databinding.LayoutViewDebugUiControlBinding
 import com.example.viewdebug.databinding.ViewDebugLayoutMainContentBinding
+import com.skin.log.Logger
 import java.lang.ref.WeakReference
 
 /**
@@ -29,11 +32,17 @@ class UIControl(private val ctx: Context) {
 
     private var hostActivity: WeakReference<Activity>? = null
 
+    private var config: UiControlConfig = UiControlConfig()
+
     // 是否显示
     var isShown = false
         private set
 
     fun show() {
+        if (!Settings.canDrawOverlays(ctx)) {
+            Logger.e("UIControl", "no overlay permission")
+            return
+        }
         if (isShown) return
         // 添加内容区域
         var contentLp = contentBinding.root.layoutParams
@@ -50,6 +59,7 @@ class UIControl(private val ctx: Context) {
             lp = getLayoutParams()
             lp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
         }
+        tryUpdate(lp)
         wm.addView(uiControlBinding.root, lp)
         isShown = true
     }
@@ -85,6 +95,10 @@ class UIControl(private val ctx: Context) {
      * 切换为当前显示的page并移除其他page
      */
     private fun switchPage(delegate: UIPage) {
+        if (!Settings.canDrawOverlays(ctx)) {
+            Logger.e("UIControl", "no overlay permission")
+            return
+        }
         if (!delegate.isOnShow) {
             contentBinding.layoutContent.addView(delegate.createContentView(ctx))
             delegate.onShow()
@@ -144,6 +158,24 @@ class UIControl(private val ctx: Context) {
             set(lp, flag or 0x00000040)
         }
         return lp
+    }
+
+    /**
+     * 更新看控制栏位置
+     */
+    fun updatePosition(uiControlConfig: UiControlConfig) {
+        this.config = uiControlConfig
+        tryUpdate(uiControlBinding.root.layoutParams)
+    }
+
+    private fun tryUpdate(lp: ViewGroup.LayoutParams?) {
+        if (lp !is WindowManager.LayoutParams) return
+        lp.gravity = config.gravity
+        lp.x = config.offsetX
+        lp.y = config.offsetY
+        if (uiControlBinding.root.isAttachedToWindow) {
+            wm.updateViewLayout(uiControlBinding.root, lp)
+        }
     }
 
     /**

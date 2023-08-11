@@ -7,6 +7,7 @@ import com.example.viewdebug.listener.ActivityStackCallback
 import com.example.viewdebug.ui.EmptyPage
 import com.example.viewdebug.ui.UIControl
 import com.example.viewdebug.ui.UIPage
+import com.example.viewdebug.ui.UiControlConfig
 import com.example.viewdebug.ui.image.ViewDebugImageManager
 import java.lang.ref.WeakReference
 import java.util.LinkedList
@@ -78,4 +79,12 @@ object ViewDebugManager {
         // app 持有不用销毁
         uiControl.destroy()
     }*/
+
+
+    /**
+     * 更新控制栏显示图标
+     */
+    fun updatePosition(uiControlConfig: UiControlConfig) {
+        uiControl.updatePosition(uiControlConfig)
+    }
 }

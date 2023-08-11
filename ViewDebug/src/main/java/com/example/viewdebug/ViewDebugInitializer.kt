@@ -39,7 +39,7 @@ class ViewDebugInitializer : Initializer<ViewDebugInitializer> {
         if (!Settings.canDrawOverlays(context)) {
             // 没有显示浮窗权限
             // Toast.makeText(context, "没有出现在应用上层的权限，无法使用调试功能", Toast.LENGTH_SHORT).show()
-            return this
+            //return this
         }
         // 替换换肤框架的MergeResource对象
         ResourcesProviderManager.replaceResourceObjectCreator(object : ResourceObjectCreator {
