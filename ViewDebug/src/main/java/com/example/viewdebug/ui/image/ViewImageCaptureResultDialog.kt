@@ -8,6 +8,8 @@ import com.example.viewdebug.databinding.ViewDebugImageSetContainerBinding
 import com.example.viewdebug.rv.MultiTypeRecyclerAdapter
 import com.example.viewdebug.ui.UIPage
 import com.example.viewdebug.ui.dialog.BaseDialog
+import com.example.viewdebug.ui.image.itemHanlder.ImageItemHandler
+import com.example.viewdebug.ui.image.itemHanlder.Item
 import com.example.viewdebug.ui.image.parser.Parser
 import com.example.viewdebug.util.adjustOrientation
 import com.example.viewdebug.util.getViewDebugInfo
@@ -42,6 +44,9 @@ class ViewImageCaptureResultDialog(
         adjustOrientation(dialogBinding.root)
         rAdapter.registerItemHandler(imageItemHandler)
         dialogBinding.rvImage.adapter = rAdapter
+        dialogBinding.ivClose.setOnClickListener {
+            close()
+        }
         return dialogBinding.root
     }
 

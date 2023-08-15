@@ -64,7 +64,8 @@ internal fun View.setViewDebugInfo(info: ViewDebugInfo) {
 internal fun adjustOrientation(rootView: View) {
     val ctx = rootView.context
     if (ctx.resources.displayMetrics.widthPixels > ctx.resources.displayMetrics.heightPixels) {
-        rootView.setSize(width = ctx.resources.displayMetrics.widthPixels / 2)
+        rootView.setSize(width = (ctx.resources.displayMetrics.widthPixels * 0.7).toInt())
+        // rootView.minimumWidth = (ctx.resources.displayMetrics.widthPixels * 0.77f).toInt()
     } else {
         rootView.minimumWidth = (ctx.resources.displayMetrics.widthPixels * 0.8f).toInt()
     }

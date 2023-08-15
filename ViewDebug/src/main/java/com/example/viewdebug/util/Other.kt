@@ -28,7 +28,7 @@ internal fun copyToClipboard(ctx: Context, text: String) {
 /**
  * 显示xml弹窗
  */
-internal fun tryShowXmlText(ctx: Context, id: Int, hostPage: UIPage, attributeId: Int?, target: WeakReference<View>?) {
+internal fun tryShowXmlText(ctx: Context, id: Int, hostPage: UIPage, attributeId: Int?, target: WeakReference<View>?): Boolean {
     val attrValue = ctx.resources.getResourceEntryName(id)
     try {
         val parsedValue = XmlParser().getXmlText(ctx, id) { text ->
@@ -41,9 +41,11 @@ internal fun tryShowXmlText(ctx: Context, id: Int, hostPage: UIPage, attributeId
         }
         val dialog = XmlTextDialog(ctx, hostPage)
         dialog.show(id, parsedValue, attributeId, target)
+        return true
     } catch (e: Exception) {
         copyToClipboard(ctx, attrValue)
     }
+    return false
 }
 
 internal val applicationJob = SupervisorJob()

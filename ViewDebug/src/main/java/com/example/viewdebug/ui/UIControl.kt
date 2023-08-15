@@ -20,7 +20,9 @@ import java.lang.ref.WeakReference
 class UIControl(private val ctx: Context) {
     // 顶部控制区域
     private val uiControlBinding by lazy {
-        LayoutViewDebugUiControlBinding.inflate(LayoutInflater.from(ctx))
+        val binding = LayoutViewDebugUiControlBinding.inflate(LayoutInflater.from(ctx))
+        TouchDragWrapper(binding.root, binding.root)
+        binding
     }
 
     // 内容区域

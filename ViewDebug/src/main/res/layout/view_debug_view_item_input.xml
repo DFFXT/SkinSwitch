@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <EditText
+        android:id="@+id/tv_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="40dp"
+        android:minWidth="50dp"
+        android:background="@drawable/view_debug_bottom_line_1dp"
+        android:textColor="@color/view_debug_common_text_color"
+        android:textSize="@dimen/view_debug_common_text_size"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="sffff">
+
+    </EditText>
+
+    <ImageView
+        android:id="@+id/iv_submit"
+        android:layout_width="wrap_content"
+        android:layout_height="28dp"
+        android:layout_marginStart="5dp"
+        android:adjustViewBounds="true"
+        android:src="@mipmap/view_debug_icon_attribute_update"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintStart_toEndOf="@id/tv_name"
+        app:layout_constraintTop_toTopOf="@id/tv_name" />
+</androidx.constraintlayout.widget.ConstraintLayout>

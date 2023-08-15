@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tv_name"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="end"
+    android:textSize="@dimen/view_debug_common_text_size"
+    android:layout_marginStart="5dp"
+    android:layout_marginEnd="5dp"
+    android:textColor="@color/view_debug_common_text_color"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:text="sffff">
+
+</TextView>

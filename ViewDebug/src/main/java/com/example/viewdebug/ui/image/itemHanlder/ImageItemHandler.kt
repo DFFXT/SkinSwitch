@@ -1,4 +1,4 @@
-package com.example.viewdebug.ui.image
+package com.example.viewdebug.ui.image.itemHanlder
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.viewdebug.databinding.ViewDebugLayoutImageItemBinding
 import com.example.viewdebug.rv.ItemHandle
 import com.example.viewdebug.ui.UIPage
+import com.example.viewdebug.ui.image.ImageDetailDialog
 import com.example.viewdebug.util.copyToClipboard
 import com.example.viewdebug.util.tryShowXmlText
 import com.skin.skincore.collector.setImageResourceSkinAble
@@ -37,7 +38,10 @@ internal class ImageItemHandler(private val host: UIPage) : ItemHandle<Item>() {
             tryShowXmlText(host.ctx, host.ctx.resources.getIdentifier(it.layoutName, "layout", host.ctx.packageName), host, null, null)
         }
         this.onAttributeNameClick = {
-            tryShowXmlText(host.ctx, it.id, host, it.attributeId, it.target)
+            if (!tryShowXmlText(host.ctx, it.id, host, it.attributeId, it.target)) {
+                // 不显示xml内容，则进入详情页
+                this.onItemClick?.invoke(it)
+            }
         }
         this.onItemClick = {
             val target = it.target.get()

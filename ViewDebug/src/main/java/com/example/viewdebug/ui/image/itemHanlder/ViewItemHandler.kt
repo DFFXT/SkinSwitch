@@ -1,4 +1,4 @@
-package com.example.viewdebug.ui.image
+package com.example.viewdebug.ui.image.itemHanlder
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
