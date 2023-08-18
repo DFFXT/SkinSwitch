@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.CallSuper
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.viewdebug.ui.dialog.BaseDialog
 import java.lang.ref.WeakReference
 
@@ -45,16 +46,19 @@ abstract class UIPage {
     fun showDialog(dialog: BaseDialog, dismissCallback: Runnable? = null) {
         val dialogView = dialog.dialogView
         if (dialogView.parent != null) return
-        val container = FrameLayout(dialogView.context)
+        val container = dialog.parent
         container.layoutParams = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT,
         )
 
         container.addView(dialogView)
-        val lp = dialogView.layoutParams as? FrameLayout.LayoutParams
+        val lp = dialogView.layoutParams as? ConstraintLayout.LayoutParams
         if (lp != null) {
-            lp.gravity = Gravity.CENTER
+            lp.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
+            lp.topToTop = ConstraintLayout.LayoutParams.PARENT_ID
+            lp.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
+            lp.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID
             dialogView.layoutParams = lp
         }
         contentView.addView(container)

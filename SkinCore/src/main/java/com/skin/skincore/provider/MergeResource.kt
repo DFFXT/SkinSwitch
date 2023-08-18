@@ -17,7 +17,7 @@ import com.skin.skincore.asset.IAsset
 open class MergeResource(
     var asset: IAsset,
     val default: Resources,
-    private var themeId: Int,
+    private val themeId: IntArray,
 ) : Resources(
     default.assets,
     default.displayMetrics,
@@ -43,24 +43,28 @@ open class MergeResource(
     /**
      * 设置主题样式
      */
-    open fun applyThemeStyle(themeId: Int) {
-        this.themeId = themeId
+    open fun applyThemeStyle(themeIds: IntArray) {
+        // this.themeId = themeId
         // FIX 获取style必须要确定包名
         // com.incall.navi.bl:style/ActivityTranslucent
         // android:style/Theme.DeviceDefault.Light.DarkActionBar
-        if (themeId == 0) return
-        val themeName = if (default.getResourcePackageName(themeId) != pkg) {
-            // 一般是android包名
-            default.getResourceName(themeId)
-        } else {
-            // 项目包名，则不保留包名
-            default.getResourceEntryName(themeId)
-        }
-        val skinThemeId = res.getIdentifier(themeName, default.getResourceTypeName(themeId), pkg)
-        asset.applyTheme(skinThemeId)
+        themeIds.forEach { themeId ->
+            if (themeId == 0) return@forEach
+            var pkgName: String = pkg
+            val themeName = if (default.getResourcePackageName(themeId) != pkg) {
+                pkgName = "android"
+                // 一般是android包名
+                default.getResourceEntryName(themeId)
+            } else {
+                // 项目包名，则不保留包名
+                default.getResourceEntryName(themeId)
+            }
+            val skinThemeId = res.getIdentifier(themeName, default.getResourceTypeName(themeId), pkgName)
+            asset.applyTheme(skinThemeId)
 
-        val theme = newTheme()
-        theme.applyStyle(themeId, true)
+            /*val theme = newTheme()
+            theme.applyStyle(themeId, true)*/
+        }
     }
 
     // 这里需要对每个getDrawable进行重写，因为低版本上各个方法没有收束到一个方法（至少25没有）
@@ -76,7 +80,7 @@ open class MergeResource(
             // 低版本上density不能为0，因为内部没有判断，导致0作为除数
             getDrawableForDensity(id, default.displayMetrics.density.toInt(), theme)
         } else {
-            getDrawableForDensity(id, 0 ,theme)
+            getDrawableForDensity(id, 0, theme)
         }
     }
 
@@ -151,6 +155,6 @@ open class MergeResource(
         this.asset = asset
         useDefault = false
         // currentRes = res
-        applyThemeStyle(themeId)
+        // applyThemeStyle(themeId)
     }
 }

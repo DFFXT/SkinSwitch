@@ -45,10 +45,10 @@ class ViewDebugInitializer : Initializer<ViewDebugInitializer> {
         ResourcesProviderManager.replaceResourceObjectCreator(object : ResourceObjectCreator {
             override fun createResourceObject(
                 asset: IAsset,
-                default: Resources,
-                themeId: Int,
+                defaultContext: Context,
+                themeIds: IntArray,
             ): MergeResource {
-                return ViewDebugMergeResource(asset, default, themeId)
+                return ViewDebugMergeResource(asset, defaultContext.resources, themeIds)
             }
         })
         // 新增View解析监听

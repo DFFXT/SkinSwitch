@@ -34,11 +34,11 @@ class ViewImageCaptureResultDialog(
     }
 
 
-    override fun onCreateDialog(ctx: Context): View {
+    override fun onCreateDialog(ctx: Context, parent: ViewGroup): View {
         dialogBinding =
             ViewDebugImageSetContainerBinding.inflate(
                 LayoutInflater.from(ctx),
-                host.tabView.parent as ViewGroup,
+                parent,
                 false,
             )
         adjustOrientation(dialogBinding.root)

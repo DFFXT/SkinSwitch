@@ -27,8 +27,8 @@ import java.lang.ref.WeakReference
 internal class ViewDetailInfoDialog(host: UIPage) : BaseDialog(host) {
     private lateinit var binding: ViewDebugDialogDetailInfoBinding
     private lateinit var targetRef: WeakReference<View>
-    override fun onCreateDialog(ctx: Context): View {
-        binding = ViewDebugDialogDetailInfoBinding.inflate(LayoutInflater.from(host.tabView.context), host.tabView.parent as ViewGroup, false)
+    override fun onCreateDialog(ctx: Context, parent: ViewGroup): View {
+        binding = ViewDebugDialogDetailInfoBinding.inflate(LayoutInflater.from(host.tabView.context), parent, false)
         adjustOrientation(binding.root)
         binding.rvList.adapter = adapter
         adapter.registerItemHandler(ViewInfoItemHandler())

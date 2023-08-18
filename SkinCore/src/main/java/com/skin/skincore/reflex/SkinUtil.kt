@@ -120,3 +120,52 @@ fun Context.getSkinTheme(): Theme? {
     }
     return theme
 }
+
+internal val resourcesImplFiled: Field by lazy {
+    val filed = Resources::class.java.getDeclaredField("mResourcesImpl")
+    filed.isAccessible = true
+    filed
+}
+
+internal val customContextThemeFiled: Field by lazy {
+    val field = androidx.appcompat.view.ContextThemeWrapper::class.java.getDeclaredField("mTheme")
+    field.isAccessible = true
+    field
+}
+
+internal val contextThemeFiled: Field? by lazy {
+    val field = ContextThemeWrapper::class.java.getDeclaredField("mTheme")
+    field.isAccessible = true
+    field
+}
+
+internal val contextThemeId: Field by lazy {
+    val field = ContextThemeWrapper::class.java.getDeclaredField("mThemeResource")
+    field.isAccessible = true
+    field
+}
+
+internal val customContextThemeId: Field by lazy {
+    val field = androidx.appcompat.view.ContextThemeWrapper::class.java.getDeclaredField("mThemeResource")
+    field.isAccessible = true
+    field
+}
+
+internal val themeKey: Method by lazy {
+    val method = Theme::class.java.getDeclaredMethod("getKey")
+    method.isAccessible = true
+    method
+}
+
+internal fun Theme.getResourcesKey(): IntArray {
+    val themeKey = themeKey.invoke(this)
+    val field = Class.forName("android.content.res.Resources\$ThemeKey").getDeclaredField("mResId")
+    field.isAccessible = true
+    return field.get(themeKey) as IntArray
+}
+
+internal val resourceClassLoader: Field by lazy {
+    val field = Resources::class.java.getDeclaredField("mClassLoader")
+    field.isAccessible = true
+    field
+}

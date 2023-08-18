@@ -16,8 +16,8 @@ import java.util.WeakHashMap
 /**
  * view debug专用的resource对象
  */
-class ViewDebugMergeResource(asset: IAsset, default: Resources, themeId: Int) :
-    MergeResource(asset, default, themeId) {
+class ViewDebugMergeResource(asset: IAsset, default: Resources, themeIds: IntArray) :
+    MergeResource(asset, default, themeIds) {
     private val layoutMap = WeakHashMap<AttributeSet, Int>()
 
     override fun getLayout(id: Int): XmlResourceParser {

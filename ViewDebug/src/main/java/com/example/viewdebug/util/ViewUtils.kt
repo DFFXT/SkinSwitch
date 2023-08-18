@@ -4,6 +4,8 @@ import android.content.res.Resources
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.updateLayoutParams
 import com.example.viewdebug.R
 
 internal fun View.setSize(width: Int? = null, height: Int? = null) {
@@ -67,6 +69,9 @@ internal fun adjustOrientation(rootView: View) {
         rootView.setSize(width = (ctx.resources.displayMetrics.widthPixels * 0.7).toInt())
         // rootView.minimumWidth = (ctx.resources.displayMetrics.widthPixels * 0.77f).toInt()
     } else {
+        rootView.updateLayoutParams<ConstraintLayout.LayoutParams> {
+            matchConstraintMinWidth = (ctx.resources.displayMetrics.widthPixels * 0.8f).toInt()
+        }
         rootView.minimumWidth = (ctx.resources.displayMetrics.widthPixels * 0.8f).toInt()
     }
 }

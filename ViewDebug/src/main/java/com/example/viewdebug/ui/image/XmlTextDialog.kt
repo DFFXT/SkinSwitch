@@ -32,11 +32,7 @@ class XmlTextDialog(
     private val ctx: Context,
     private val hostPage: UIPage,
 ) : BaseDialog(hostPage), RemoteFileReceiver.FileWatcher {
-    private val binding = ViewDebugXmlTextContainerBinding.inflate(
-        LayoutInflater.from(ctx),
-        hostPage.tabView.parent as ViewGroup,
-        false,
-    )
+    private lateinit var binding: ViewDebugXmlTextContainerBinding
 
     private var loadingDialog: ViewDebugLoadingDialog? = null
     private var mode = 0
@@ -51,9 +47,14 @@ class XmlTextDialog(
         host.ctx.resources.getResourceTypeName(resourceId)
     }
 
-    override fun onCreateDialog(ctx: Context): View {
+    override fun onCreateDialog(ctx: Context, parent: ViewGroup): View {
+        binding = ViewDebugXmlTextContainerBinding.inflate(
+            LayoutInflater.from(ctx),
+            parent,
+            false,
+        )
         binding.tvText.movementMethod = LinkMovementMethod.getInstance()
-        adjustOrientation(binding.container)
+        adjustOrientation(binding.root)
         binding.ivXmlTextOperate.setOnClickListener {
             if (mode == 0) {
                 binding.tvText.requestFocus()

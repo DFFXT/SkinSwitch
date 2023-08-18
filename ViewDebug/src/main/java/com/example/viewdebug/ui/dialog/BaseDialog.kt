@@ -3,9 +3,14 @@ package com.example.viewdebug.ui.dialog
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.viewdebug.ui.UIPage
 
 abstract class BaseDialog(protected val host: UIPage) {
+
+    lateinit var parent: ViewGroup
     lateinit var dialogView: View
         private set
 
@@ -16,11 +21,12 @@ abstract class BaseDialog(protected val host: UIPage) {
     }
     private fun create() {
         if (!this::dialogView.isInitialized) {
-            dialogView = onCreateDialog(host.tabView.context)
+            parent = ConstraintLayout(host.ctx)
+            dialogView = onCreateDialog(host.tabView.context, parent)
         }
     }
 
-    abstract fun onCreateDialog(ctx: Context): View
+    abstract fun onCreateDialog(ctx: Context, parent: ViewGroup): View
 
     open fun show() {
         create()

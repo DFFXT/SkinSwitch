@@ -1,21 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/test_id_ConstraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    app:skin="false"
     android:background="@color/white"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:text="AVV">
 
 
     <TextView
-        android:text="8888"
+        android:id="@+id/tv_ssss"
+        android:text="5555"
+        android:scaleX="1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/view_debug_red"
+        android:background="@drawable/view_debug_circle_stroke_1dp"
         style="@style/MayStyle"/>
-    <TextView
+   <!-- <TextView
         android:text="LLLL)"
         android:layout_width="wrap_content"
         android:layout_gravity="end"
+        app:layout_constraintStart_toEndOf="@id/tv_ssss"
         android:textColor="@color/view_debug_image_detail_title_bar_bg"
-        android:layout_height="wrap_content"/>
-</FrameLayout>
+        android:layout_height="wrap_content"/>-->
+</androidx.constraintlayout.widget.ConstraintLayout>

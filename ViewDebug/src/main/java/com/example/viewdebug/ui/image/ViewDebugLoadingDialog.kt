@@ -11,7 +11,7 @@ import com.example.viewdebug.ui.UIPage
 import com.example.viewdebug.ui.dialog.BaseDialog
 
 class ViewDebugLoadingDialog(host: UIPage) : BaseDialog(host) {
-    override fun onCreateDialog(ctx: Context): View {
+    override fun onCreateDialog(ctx: Context, parent: ViewGroup): View {
         return ProgressBar(ctx).apply {
             val size = ctx.resources.getDimensionPixelSize(R.dimen.view_debug_common_loading_size)
             layoutParams = ViewGroup.LayoutParams(size ,size)

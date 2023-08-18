@@ -26,8 +26,8 @@ internal class ImageDetailDialog(host: UIPage) : BaseDialog(host) {
 
     // 当前选择的背景sample对象
     private var currentSelectedView: View? = null
-    override fun onCreateDialog(ctx: Context): View {
-        binding = ViewDebugImageDetailBinding.inflate(LayoutInflater.from(ctx), host.tabView.parent as ViewGroup, false)
+    override fun onCreateDialog(ctx: Context, parent: ViewGroup): View {
+        binding = ViewDebugImageDetailBinding.inflate(LayoutInflater.from(ctx), parent, false)
         binding.root.apply {
             val width = ctx.resources.displayMetrics.widthPixels
             val height = ctx.resources.displayMetrics.heightPixels
