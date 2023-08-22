@@ -68,3 +68,46 @@ Android 换肤框架
 </code></pre>
 
 
+
+-----------------------------------------------------------------------------------
+更方便的使用：
+在AndroidManifest.xml中加入以下代码，代码功能为：禁止com.example.viewdebug.ViewDebugInitializer自动初始化，用ViewDebugStarter（需要自己实现）替代
+```xml
+<provider
+    android:name="androidx.startup.InitializationProvider"
+    android:authorities="${applicationId}.androidx-startup"
+    android:exported="false"
+    tools:node="merge">
+    <meta-data
+        android:name="com.example.viewdebug.ViewDebugInitializer"
+        android:value="androidx.startup"
+        tools:node="remove"/>
+    <meta-data
+        android:name="com.skin.skinswitch.ViewDebugStarter"
+        android:value="androidx.startup"
+        tools:node="merge"/>
+</provider>
+```
+ViewDebugStarter实现，IBuildIdentification接口返回构建时间，则支持在同一个buildId中，远程推送的dex文件可重复加载，
+```kotlin
+class ViewDebugStarter : Initializer<ViewDebugStarter> {
+    override fun create(context: Context): ViewDebugStarter {
+        // dex设置版本接口，buildTime在gradle中赋值，必须在ViewDebugInitializer初始化之前赋值
+        DexLoadManager.setBuildIdentification(object : IBuildIdentification {
+            override fun getBuildId(): String {
+                return BuildConfig.buildTime.toString()
+            }
+        })
+        // 这里手动初始化ViewDebugInitializer
+        AppInitializer.getInstance(context).initializeComponent(ViewDebugInitializer::class.java)
+        return this
+    }
+
+    override fun dependencies(): MutableList<Class<out Initializer<*>>> {
+        return Collections.emptyList()
+    }
+}
+```
+
+
+
