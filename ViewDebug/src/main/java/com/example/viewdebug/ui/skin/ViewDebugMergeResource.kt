@@ -1,6 +1,7 @@
 package com.example.viewdebug.ui.skin
 
 import android.content.res.AssetManager
+import android.content.res.ColorStateList
 import android.content.res.Resources
 import android.content.res.XmlResourceParser
 import android.graphics.drawable.Drawable
@@ -32,6 +33,9 @@ class ViewDebugMergeResource(asset: IAsset, default: Resources, themeIds: IntArr
         return parser
     }
 
+    /**
+     * 拦截布局
+     */
     override fun getXml(id: Int): XmlResourceParser {
         if (layoutInterceptorMapper.contains(id) || drawableInterceptorMapper.contains(id)) {
             return interceptedAsset!!.openXmlResourceParser("assets/${PackAssetsFile.TYPE_LAYOUT}/$id.xml")
@@ -39,13 +43,29 @@ class ViewDebugMergeResource(asset: IAsset, default: Resources, themeIds: IntArr
         return super.getXml(id)
     }
 
+    /**
+     * 拦截drawable
+     */
     override fun getDrawableForDensity(id: Int, density: Int, theme: Theme?): Drawable? {
         if (drawableInterceptorMapper.contains(id)) {
             val parser = interceptedAsset!!.openXmlResourceParser("assets/${PackAssetsFile.TYPE_LAYOUT}/$id.xml")
-            return Drawable.createFromXml(this, parser)
+            return Drawable.createFromXml(this, parser, theme)
         }
         return super.getDrawableForDensity(id, density, theme)
     }
+
+
+    /**
+     * 拦截颜色
+     */
+    override fun getColorStateList(id: Int, theme: Theme?): ColorStateList {
+        if (colorInterceptorMapper.contains(id)) {
+            val parser = interceptedAsset!!.openXmlResourceParser("assets/${PackAssetsFile.TYPE_LAYOUT}/$id.xml")
+            return ColorStateList.createFromXml(this, parser, theme)
+        }
+        return super.getColorStateList(id, theme)
+    }
+
 
     /**
      * 获取对应的布局id
@@ -55,8 +75,9 @@ class ViewDebugMergeResource(asset: IAsset, default: Resources, themeIds: IntArr
     }
 
     companion object {
-        val layoutInterceptorMapper = HashSet<Int>()
+        private val layoutInterceptorMapper = HashSet<Int>()
         private val drawableInterceptorMapper = HashSet<Int>()
+        private val colorInterceptorMapper = HashSet<Int>()
         var interceptedAsset: AssetManager? = null
 
         fun addInterceptor(type: String, value: Int) {
@@ -64,17 +85,24 @@ class ViewDebugMergeResource(asset: IAsset, default: Resources, themeIds: IntArr
                 layoutInterceptorMapper.add(value)
             } else if (type == "drawable") {
                 drawableInterceptorMapper.add(value)
-                // 如果没有开启创建即换肤，则开启，否则不生效，需要触发换肤才生效
-                if (!SkinManager.isApplyWhenCreate()) {
-                    Logger.e("ViewDebugMergeResource", "applyWhenCreate has not open, now auto open")
-                    SkinManager.applyWhenCreate(true)
+                setApplyWhenCreate()
+            } else if (type == "color") {
+                colorInterceptorMapper.add(value)
+                setApplyWhenCreate()
+            }
+        }
 
-                }
-                // 不允许拦截刚创建的view
-                if (SpeedUpSwitchSkin.canInterceptOnCreatedView) {
-                    Logger.e("ViewDebugMergeResource", "canInterceptOnCreatedView has open, now close")
-                    SpeedUpSwitchSkin.canInterceptOnCreatedView = false
-                }
+        private fun setApplyWhenCreate() {
+            // 如果没有开启创建即换肤，则开启，否则不生效，需要触发换肤才生效
+            if (!SkinManager.isApplyWhenCreate()) {
+                Logger.e("ViewDebugMergeResource", "applyWhenCreate has not open, now auto open")
+                SkinManager.applyWhenCreate(true)
+
+            }
+            // 不允许拦截刚创建的view
+            if (SpeedUpSwitchSkin.canInterceptOnCreatedView) {
+                Logger.e("ViewDebugMergeResource", "canInterceptOnCreatedView has open, now close")
+                SpeedUpSwitchSkin.canInterceptOnCreatedView = false
             }
         }
     }

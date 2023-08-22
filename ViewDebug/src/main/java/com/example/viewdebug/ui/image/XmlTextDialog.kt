@@ -9,6 +9,7 @@ import androidx.core.view.isVisible
 import com.example.viewdebug.databinding.ViewDebugXmlTextContainerBinding
 import com.example.viewdebug.remote.RemoteFileReceiver
 import com.example.viewdebug.ui.UIPage
+import com.example.viewdebug.ui.XmlManager
 import com.example.viewdebug.ui.dialog.BaseDialog
 import com.example.viewdebug.ui.skin.ViewDebugMergeResource
 import com.example.viewdebug.util.adjustOrientation
@@ -28,7 +29,10 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.lang.ref.WeakReference
 
-class XmlTextDialog(
+/**
+ * xml编辑编译弹窗
+ */
+internal class XmlTextDialog(
     private val ctx: Context,
     private val hostPage: UIPage,
 ) : BaseDialog(hostPage), RemoteFileReceiver.FileWatcher {
@@ -63,7 +67,7 @@ class XmlTextDialog(
             } else if (mode == 1) {
                 showLoading()
                 launch(Dispatchers.IO) {
-                    val compileResult = saveChange()
+                    val compileResult = XmlManager.compileXmlAndApply(ctx, binding.tvText.text.toString().byteInputStream(), resourceId, resourceType)
                     withContext(Dispatchers.Main) {
                         closeLoading()
                         if (!compileResult) {
@@ -156,9 +160,9 @@ class XmlTextDialog(
         RemoteFileReceiver.remove(this)
     }
 
-    override fun onChange(path: String, type: String?): Boolean {
-        val file = File(path)
-        if (file.exists() && path.endsWith(".xml")) {
+    override fun onChange(fileInfo: RemoteFileReceiver.FileWatcher.FileInfo): Boolean {
+        val file = File(fileInfo.path)
+        if (file.exists() && fileInfo.path.endsWith(".xml")) {
             launch(Dispatchers.IO) {
                 val content = String(file.readBytes())
                 withContext(Dispatchers.Main) {

@@ -62,6 +62,7 @@ object ViewDebugManager {
     private lateinit var app: Application
     private val uiControl by lazy { UIControl(app) }
     fun init(app: Application) {
+        if (this::app.isInitialized) return
         this.app = app
         app.registerActivityLifecycleCallbacks(activityLifecycleCallbacks)
     }

@@ -22,22 +22,9 @@ object CompileTest {
     @JvmStatic
     fun main(vararg args: String) {
         val str = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\n" +
-                "    android:layout_width=\"match_parent\"\n" +
-                "    android:layout_height=\"match_parent\">\n" +
-                "\n" +
-                "\n" +
-                "    <LinearLayout\n" +
-                "        android:paddingLeft=\"20dp\"\n" +
-                "        android:paddingTop=\"20dp\"\n" +
-                "        android:paddingRight=\"20dp\"\n" +
-                "        android:paddingBottom=\"20dp\"\n" +
-                "        android:layout_width=\"match_parent\"\n" +
-                "        android:layout_height=\"wrap_content\"\n" +
-                "        android:paddingHorizontal=\"20dp\"\n" +
-                "        android:paddingVertical=\"20dp\"\n" +
-                "        />\n" +
-                "</androidx.constraintlayout.widget.ConstraintLayout>"
+                "<shape xmlns:android=\"http://schemas.android.com/apk/res/android\" android:shape=\"rectangle\">\n" +
+                "    <solid android:color=\"?attr/colorPrimary\"/>\n" +
+                "</shape>"
         val compiler = XmlCompiler(ViewDebugInitializer.ctx)
         val buffer = compiler.compile(str.byteInputStream())
         val reader = ChunkFile()

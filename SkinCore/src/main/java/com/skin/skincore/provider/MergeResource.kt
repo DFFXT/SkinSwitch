@@ -129,6 +129,7 @@ open class MergeResource(
     }
 
     // region 同步Configuration，确保皮肤包和默认资源使用的是同一种配置
+    @Deprecated("")
     override fun updateConfiguration(config: Configuration?, metrics: DisplayMetrics?) {
         super.updateConfiguration(Configuration(config), metrics)
         default.updateConfiguration(Configuration(config), metrics)

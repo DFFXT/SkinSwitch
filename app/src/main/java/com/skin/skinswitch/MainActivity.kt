@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.RadioButton
 import androidx.appcompat.app.AppCompatActivity
 import com.example.skinswitch.R
+import com.skin.log.Logger
 import com.skin.skincore.SkinManager
 import com.skin.skincore.collector.isNight
 import com.skin.skinswitch.const.AppConst
@@ -60,6 +61,7 @@ class MainActivity : AppCompatActivity() {
 
         var presentation: Presentation? = null
         findViewById<View>(R.id.view).setOnClickListener {
+            Logger.i("sss", "click")
             TestActivity.startActivity(this)
             /*if (presentation != null) {
                 presentation?.dismiss()

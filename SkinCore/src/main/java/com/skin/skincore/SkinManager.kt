@@ -223,4 +223,19 @@ object SkinManager {
     fun addViewAttrParseListener(listener: AttrParseListener) {
         loaderServer.addAttrParseListener(listener)
     }
+
+    /**
+     * 获取拦截的所有view
+     * 可通过[getViewUion]获取属性
+     */
+    fun getAllViews(): List<View> {
+        val viewContainers = loaderServer.getAllContextLoader().map { it.viewContainer }
+        val views = ArrayList<View>()
+        viewContainers.forEach {
+            it.iterator().forEach {
+                views.add(it.key)
+            }
+        }
+        return views
+    }
 }

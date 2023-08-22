@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.skin.log.Logger
 
 class TestActivity : AppCompatActivity() {
 
@@ -14,6 +15,7 @@ class TestActivity : AppCompatActivity() {
        /* val p2 = findViewById<View>(R.id.test_id_View)
         val p3 = findViewById<View>(R.id.test_id_View1)*/
 
+        Logger.d("sss", "newactivity")
         val f = 0
     }
 

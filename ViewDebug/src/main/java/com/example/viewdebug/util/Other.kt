@@ -9,10 +9,17 @@ import com.example.viewdebug.ViewDebugInitializer
 import com.example.viewdebug.ui.UIPage
 import com.example.viewdebug.ui.image.XmlParser
 import com.example.viewdebug.ui.image.XmlTextDialog
+import com.example.viewdebug.ui.skin.ViewDebugMergeResource
+import com.example.viewdebug.xml.pack.PackAssetsFile
+import com.example.viewdebug.xml.struct.XmlCompiler
+import com.skin.log.Logger
+import com.skin.skincore.asset.DefaultResourceLoader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.InputStream
 import java.lang.ref.WeakReference
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
@@ -63,3 +70,13 @@ internal fun launch(
 internal fun String.shortToast() {
     Toast.makeText(ViewDebugInitializer.ctx, this, Toast.LENGTH_SHORT).show()
 }
+
+internal fun String.makeAsDir(): File {
+    val dir = File(this)
+    if (!dir.exists()) {
+        dir.mkdirs()
+    }
+    return dir
+}
+
+

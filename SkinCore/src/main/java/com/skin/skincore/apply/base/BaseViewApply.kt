@@ -57,10 +57,10 @@ abstract class BaseViewApply<T : View>(
     ) {
         // 事件匹配
         if ((
-            this.eventType == EVENT_TYPE_ANY || // 匹配任意事件
-                eventType.contains(this.eventType) || // 匹配当前事件
-                eventType.contains(EVENT_TYPE_CREATE) && isApplyWhenCreate() // 匹配创建事件
-            ) &&
+                    this.eventType == EVENT_TYPE_ANY || // 匹配任意事件
+                            eventType.contains(this.eventType) || // 匹配当前事件
+                            eventType.contains(EVENT_TYPE_CREATE) && isApplyWhenCreate() // 匹配创建事件
+                    ) &&
             // 类型匹配
             (cls == null || cls.isInstance(view))
         ) {

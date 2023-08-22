@@ -20,12 +20,15 @@ android {
 
     buildTypes {
         release {
-            buildConfigField("int", "age", "1")
+            buildConfigField("long", "buildTime", "${System.currentTimeMillis()}")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+        }
+        debug {
+            buildConfigField("long", "buildTime", "${System.currentTimeMillis()}")
         }
     }
     compileOptions {
@@ -38,13 +41,14 @@ android {
 }
 
 dependencies {
-    implementation(project(":App:SkinCore"))
+    implementation(project(":SkinCore"))
     implementation(project(":ViewDebug"))
     implementation("androidx.core:core-ktx:1.6.0")
     implementation("androidx.appcompat:appcompat:1.3.0")
     implementation("com.google.android.material:material:1.4.0")
     implementation("androidx.constraintlayout:constraintlayout:2.0.4")
     testImplementation("junit:junit:4.13.2")
+    implementation("androidx.startup:startup-runtime:1.0.0")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
     implementation("com.squareup.leakcanary:leakcanary-android:2.9.1")

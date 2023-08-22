@@ -82,6 +82,13 @@ internal class ContextLoaderServer {
     }
 
     /**
+     * 获取所有的loader
+     */
+    fun getAllContextLoader(): List<ContextLoader> {
+        return ArrayList(loaderContainer)
+    }
+
+    /**
      * 该context是否在换肤支持中
      */
     fun containsContext(context: Context): Boolean {

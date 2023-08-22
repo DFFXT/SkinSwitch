@@ -35,12 +35,12 @@ import java.util.Collections
 class ViewDebugInitializer : Initializer<ViewDebugInitializer> {
     override fun create(context: Context): ViewDebugInitializer {
         ctx = context.applicationContext as Application
-        DexLoadManager().init()
         if (!Settings.canDrawOverlays(context)) {
             // 没有显示浮窗权限
             // Toast.makeText(context, "没有出现在应用上层的权限，无法使用调试功能", Toast.LENGTH_SHORT).show()
             //return this
         }
+        DexLoadManager.init(ctx)
         // 替换换肤框架的MergeResource对象
         ResourcesProviderManager.replaceResourceObjectCreator(object : ResourceObjectCreator {
             override fun createResourceObject(
@@ -72,7 +72,7 @@ class ViewDebugInitializer : Initializer<ViewDebugInitializer> {
         launch(Dispatchers.IO) {
             AndroidXmRuleManager.init(ctx)
             // CompileTest.main()
-            RemoteFileReceiver
+            RemoteFileReceiver.init()
             PackAssetsFile.clearCachedXml(ctx)
         }
         return this

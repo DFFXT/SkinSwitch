@@ -16,7 +16,6 @@ dependencyResolutionManagement {
 }
 rootProject.name = "SkinSwitch"
 include ':app'
-include ':App:SkinCore'
-project(":App:SkinCore").projectDir = new File(settingsDir, "SkinCore")
+include ':SkinCore'
 include ':skinPack-cartoon'
 include ':ViewDebug'

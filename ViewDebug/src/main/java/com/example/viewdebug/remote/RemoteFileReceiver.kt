@@ -1,8 +1,10 @@
 package com.example.viewdebug.remote
 
+import android.content.Context
 import android.os.FileObserver
 import com.example.viewdebug.ViewDebugInitializer
 import com.example.viewdebug.util.launch
+import com.example.viewdebug.util.makeAsDir
 import com.skin.log.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -21,8 +23,8 @@ import java.util.LinkedList
  */
 internal object RemoteFileReceiver {
     private var fileObserver: FileObserver? = null
-    private val watchBase = ViewDebugInitializer.ctx.externalCacheDir!!.absolutePath + File.separator + "view-debug"
-    private val watchingReceivePath = watchBase + File.separator + "receive"
+    private val watchBase = getBasePath(ViewDebugInitializer.ctx)
+    private val watchingReceivePath = getReceivePath(ViewDebugInitializer.ctx)
 
     // 配置文件
     private val watchingConfigPath = watchBase + File.separator + "view-debug-config.json"
@@ -36,11 +38,8 @@ internal object RemoteFileReceiver {
     // 默认的文件接收处理器
     private val defaultFileWatchers = LinkedList<FileWatcher>()
 
-    init {
-        val file = File(watchingReceivePath)
-        if (!file.exists()) {
-            file.mkdirs()
-        }
+    fun  init() {
+        watchingReceivePath.makeAsDir()
         // 判断是否存在，FileObserver只能监听已存在的文件
         val watchTarget = File(watchingConfigPath)
         if (!watchTarget.exists()) {
@@ -69,19 +68,21 @@ internal object RemoteFileReceiver {
                             val item = arr.getJSONObject(i)
                             val receivePath = item.getString("file") ?: return@launch
                             val fileType = item.getString("type")
+                            val id = item.getString("id")
+                            val fileInfo = FileWatcher.FileInfo(receivePath, fileType, id)
                             Logger.i("RemoteFileReceiver", receivePath)
                             // 只有一个能处理，拦截了后续监听则不处理
                             withContext(Dispatchers.Main) {
                                 var resolved = false
                                 for (watcher in specialWatchers) {
-                                    if (watcher.onChange(receivePath, type = fileType)) {
+                                    if (watcher.onChange(fileInfo)) {
                                         resolved = true
                                         break
                                     }
                                 }
                                 if (!resolved) {
                                     for (watcher in watchers) {
-                                        if (watcher.onChange(receivePath, type = fileType)) {
+                                        if (watcher.onChange(fileInfo)) {
                                             resolved = true
                                             break
                                         }
@@ -91,7 +92,7 @@ internal object RemoteFileReceiver {
                                 if (!resolved) {
                                     // 未解决，尝试使用默认处理器
                                     for (watcher in defaultFileWatchers) {
-                                        if (watcher.onChange(receivePath, type = fileType)) {
+                                        if (watcher.onChange(fileInfo)) {
                                             break
                                         }
                                     }
@@ -115,7 +116,31 @@ internal object RemoteFileReceiver {
         fileWatcher.remove(watcher)
     }
 
+    fun getBasePath(ctx: Context): String {
+        return ctx.externalCacheDir!!.absolutePath + File.separator + "view-debug"
+    }
+
+    fun getReceivePath(ctx: Context): String {
+        return getBasePath(ctx) + File.separator + "receive"
+    }
+
+    fun clearReceiveCache() {
+        File(watchingReceivePath).deleteRecursively()
+    }
+
     internal interface FileWatcher {
-        fun onChange(path: String, type: String?): Boolean
+        fun onChange(fileInfo: FileInfo): Boolean
+
+        class FileInfo(val path: String, val type: String?, val id: String?)
+
+        companion object {
+            const val TYPE_LAYOUT = "layout"
+            const val TYPE_DRAWABLE = "drawable"
+            const val TYPE_COLOR = "color"
+            const val TYPE_ANIM = "anim"
+            const val TYPE_FILE = "file"
+            const val TYPE_DEX = "dex"
+            const val TYPE_RULES = "rules"
+        }
     }
 }
