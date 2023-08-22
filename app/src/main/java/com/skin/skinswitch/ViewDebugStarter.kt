@@ -9,8 +9,6 @@ import com.example.viewdebug.ViewDebugInitializer
 import com.example.viewdebug.dex.DexLoadManager
 import com.example.viewdebug.dex.IBuildIdentification
 import java.util.Collections
-
-
 @Keep
 class ViewDebugStarter : Initializer<ViewDebugStarter> {
     override fun create(context: Context): ViewDebugStarter {
@@ -20,6 +18,7 @@ class ViewDebugStarter : Initializer<ViewDebugStarter> {
                 return BuildConfig.buildTime.toString()
             }
         })
+        // 这里手动初始化ViewDebugInitializer
         AppInitializer.getInstance(context).initializeComponent(ViewDebugInitializer::class.java)
         return this
     }
@@ -27,5 +26,4 @@ class ViewDebugStarter : Initializer<ViewDebugStarter> {
     override fun dependencies(): MutableList<Class<out Initializer<*>>> {
         return Collections.emptyList()
     }
-
 }
