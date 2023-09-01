@@ -6,6 +6,7 @@ import android.content.res.Resources
 import android.content.res.XmlResourceParser
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import com.example.viewdebug.xml.pack.PackAssetsFile
 import com.skin.log.Logger
 import com.skin.skincore.SkinManager
@@ -19,7 +20,8 @@ import java.util.WeakHashMap
  */
 class ViewDebugMergeResource(asset: IAsset, default: Resources, themeIds: IntArray) :
     MergeResource(asset, default, themeIds) {
-    private val layoutMap = WeakHashMap<AttributeSet, Int>()
+    private val layoutInflaterClass = LayoutInflater::class.java.name
+    private val layoutMap = WeakHashMap<AttributeSet, LayoutInfo>()
 
     override fun getLayout(id: Int): XmlResourceParser {
         val parser = if (layoutInterceptorMapper.contains(id)) {
@@ -28,7 +30,7 @@ class ViewDebugMergeResource(asset: IAsset, default: Resources, themeIds: IntArr
         } else {
             super.getLayout(id)
         }
-        layoutMap[parser] = id
+        layoutMap[parser] = LayoutInfo(id, Throwable().stackTrace)
 
         return parser
     }
@@ -70,9 +72,11 @@ class ViewDebugMergeResource(asset: IAsset, default: Resources, themeIds: IntArr
     /**
      * 获取对应的布局id
      */
-    fun getLayoutId(attributeSet: AttributeSet): Int? {
+    fun getLayoutInfo(attributeSet: AttributeSet): LayoutInfo? {
         return layoutMap[attributeSet]
     }
+
+    class LayoutInfo(val layoutId: Int, val invokeTrace: Array<StackTraceElement>)
 
     companion object {
         private val layoutInterceptorMapper = HashSet<Int>()

@@ -12,10 +12,12 @@ import com.example.viewdebug.databinding.ViewDebugDialogDetailInfoBinding
 import com.example.viewdebug.rv.MultiTypeRecyclerAdapter
 import com.example.viewdebug.ui.UIPage
 import com.example.viewdebug.ui.dialog.BaseDialog
+import com.example.viewdebug.ui.image.PlaintTextDialog
 import com.example.viewdebug.ui.image.attribute.Update
 import com.example.viewdebug.ui.image.attribute.impl.ViewUpdateProviderManger
 import com.example.viewdebug.ui.image.itemHanlder.ViewInfoInputItemHandler
 import com.example.viewdebug.ui.image.itemHanlder.ViewInfoItemHandler
+import com.example.viewdebug.ui.image.itemHanlder.ViewInfoItemTraceHandler
 import com.example.viewdebug.util.adjustOrientation
 import com.example.viewdebug.util.fragmentViewLifecycleOwnerFragmentFiled
 import com.example.viewdebug.util.getViewDebugInfo
@@ -36,11 +38,14 @@ internal class ViewDetailInfoDialog(host: UIPage) : BaseDialog(host) {
             ViewInfoInputItemHandler().apply {
                 this.updateClick = { item, arg ->
                     targetRef.get()?.let { target ->
-                        item.update?.update(target, arg)
+                        (item.extra as Update<View>).update(target, arg)
                     }
                 }
             },
         )
+        adapter.registerItemHandler(ViewInfoItemTraceHandler {
+            PlaintTextDialog(host).show(it.extra as String)
+        })
         val lm = binding.rvList.layoutManager as GridLayoutManager
         lm.spanSizeLookup = object : SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
@@ -60,28 +65,31 @@ internal class ViewDetailInfoDialog(host: UIPage) : BaseDialog(host) {
     fun show(target: View) {
         this.targetRef = WeakReference(target)
         show()
-        addDescribe("Target", target::class.java.simpleName)
+        addDescribe(Item.TYPE_COMMON,"Target", target::class.java.simpleName)
         // region 添加id信息
         if (target.id > 0) {
             val idName = target.resources.getResourceName(target.id)
-            addDescribe("id", idName)
+            addDescribe(Item.TYPE_COMMON,"id", idName)
         }
         // endregion
-        addDescribe("Owner(Activity)", target.context::class.java.simpleName)
+        addDescribe(Item.TYPE_COMMON,"Owner(Activity)", target.context::class.java.simpleName)
         // region 添加fragment信息
         ViewTreeLifecycleOwner.get(target)?.let {
             try {
                 if (it is FragmentViewLifecycleOwner) {
                     val fragmentName = fragmentViewLifecycleOwnerFragmentFiled.get(it)::class.java.name
-                    addDescribe("Owner(Fragment)", fragmentName)
+                    addDescribe(Item.TYPE_COMMON,"Owner(Fragment)", fragmentName)
                 }
             } catch (_: Exception) {
             }
         }
         // endregion
-        target.getViewDebugInfo()?.getLayoutTypeAndName(target.resources)?.let {
-            addDescribe("Owner(layout)", it)
+        val debugInfo = target.getViewDebugInfo()
+        if (debugInfo != null) {
+            addDescribe(Item.TYPE_COMMON,"Owner(layout)", debugInfo.getLayoutTypeAndName(target.resources) ?: "")
+            addDescribe(Item.TYPE_TRACE_JUMP,"", "查看布局生成调用栈", debugInfo.getMainInvokeTrace())
         }
+
 
         addAttributeUpdate(target)
         adapter.update(data)
@@ -90,18 +98,24 @@ internal class ViewDetailInfoDialog(host: UIPage) : BaseDialog(host) {
     /**
      * 添加详细信息
      */
-    private fun addDescribe(label: String, value: String, update: Update<View>? = null) {
-        data.add(Item(label, null))
-        data.add(Item(value, update))
+    private fun addDescribe(type: Int, label: String, value: String, extra: Any? = null) {
+        data.add(Item(Item.TYPE_COMMON, label, null))
+        data.add(Item(type, value, extra))
     }
 
     private fun addAttributeUpdate(target: View) {
         val m = ViewUpdateProviderManger()
         val provider = m.getProvider(target)
         provider?.update?.forEach {
-            addDescribe(it.key, it.value.getValue(target), it.value)
+            addDescribe(Item.TYPE_UPDATE, it.key, it.value.getValue(target), it.value)
         }
     }
 
-    class Item(val name: String, val update: Update<View>?)
+    class Item(val type: Int, val name: String,val extra: Any?) {
+        companion object {
+            const val TYPE_COMMON = 0
+            const val TYPE_UPDATE = 1
+            const val TYPE_TRACE_JUMP = 2
+        }
+    }
 }

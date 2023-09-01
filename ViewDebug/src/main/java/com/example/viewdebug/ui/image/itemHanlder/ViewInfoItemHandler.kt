@@ -11,9 +11,9 @@ import com.example.viewdebug.databinding.ViewDebugViewItemInputBinding
 import com.example.viewdebug.rv.ItemHandle
 import com.example.viewdebug.util.copyToClipboard
 
-internal class ViewInfoItemHandler : ItemHandle<ViewDetailInfoDialog.Item>() {
+internal open class ViewInfoItemHandler : ItemHandle<ViewDetailInfoDialog.Item>() {
     override fun handle(item: ViewDetailInfoDialog.Item): Boolean {
-        return item.update == null
+        return item.type == ViewDetailInfoDialog.Item.TYPE_COMMON
     }
 
     override fun onBindView(item: ViewDetailInfoDialog.Item, position: Int, vh: RecyclerView.ViewHolder) {
@@ -44,7 +44,7 @@ internal class ViewInfoItemHandler : ItemHandle<ViewDetailInfoDialog.Item>() {
         return R.layout.view_debug_view_item_info
     }
 
-    private class VH(val binding: ViewDebugViewItemInfoBinding) : RecyclerView.ViewHolder(binding.root) {
+    protected class VH(val binding: ViewDebugViewItemInfoBinding) : RecyclerView.ViewHolder(binding.root) {
 
     }
 

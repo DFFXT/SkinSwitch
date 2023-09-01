@@ -62,7 +62,10 @@ class ViewDebugInitializer : Initializer<ViewDebugInitializer> {
                 val res = view.resources
                 // 设置调试信息
                 if (res is ViewDebugMergeResource) {
-                    view.setViewDebugInfo(ViewDebugInfo(res.getLayoutId(attributeSet)))
+                    val info = res.getLayoutInfo(attributeSet)
+                    if (info != null) {
+                        view.setViewDebugInfo(ViewDebugInfo(info.layoutId, info.invokeTrace))
+                    }
                 }
             }
         })

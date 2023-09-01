@@ -12,7 +12,7 @@ import com.example.viewdebug.util.copyToClipboard
 internal class ViewInfoInputItemHandler : ItemHandle<ViewDetailInfoDialog.Item>() {
     var updateClick: ((ViewDetailInfoDialog.Item, String) -> Unit)? = null
     override fun handle(item: ViewDetailInfoDialog.Item): Boolean {
-        return item.update != null
+        return item.type == ViewDetailInfoDialog.Item.TYPE_UPDATE
     }
 
     override fun onBindView(item: ViewDetailInfoDialog.Item, position: Int, vh: RecyclerView.ViewHolder) {
