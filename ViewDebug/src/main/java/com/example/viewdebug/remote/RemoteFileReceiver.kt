@@ -68,8 +68,8 @@ internal object RemoteFileReceiver {
                             val item = arr.getJSONObject(i)
                             val receivePath = item.getString("file") ?: return@launch
                             val fileType = item.getString("type")
-                            val id = item.getString("id")
-                            val fileInfo = FileWatcher.FileInfo(receivePath, fileType, id)
+                            val originPath = item.getString("originPath")
+                            val fileInfo = FileWatcher.FileInfo(receivePath, fileType, originPath)
                             Logger.i("RemoteFileReceiver", receivePath)
                             // 只有一个能处理，拦截了后续监听则不处理
                             withContext(Dispatchers.Main) {
@@ -131,7 +131,12 @@ internal object RemoteFileReceiver {
     internal interface FileWatcher {
         fun onChange(fileInfo: FileInfo): Boolean
 
-        class FileInfo(val path: String, val type: String?, val id: String?)
+        /**
+         * @param path 接收文件路径
+         * @param type 文件类型[TYPE_FILE]
+         * @param originPath 文件对应远程文件路径
+         */
+        class FileInfo(val path: String, val type: String?, val originPath: String?)
 
         companion object {
             const val TYPE_LAYOUT = "layout"

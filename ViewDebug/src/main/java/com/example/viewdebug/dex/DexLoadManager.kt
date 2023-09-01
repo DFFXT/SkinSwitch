@@ -2,7 +2,8 @@ package com.example.viewdebug.dex
 
 import android.app.Application
 import android.content.Context
-import com.example.viewdebug.ViewDebugInitializer
+import com.example.viewdebug.R
+import com.example.viewdebug.dex.DexLoadManager.setBuildIdentification
 import com.example.viewdebug.remote.RemoteFileReceiver
 import com.example.viewdebug.util.launch
 import com.example.viewdebug.util.makeAsDir
@@ -52,7 +53,13 @@ object DexLoadManager {
         RemoteFileReceiver.observe(object : RemoteFileReceiver.FileWatcher {
             override fun onChange(fileInfo: RemoteFileReceiver.FileWatcher.FileInfo): Boolean {
                 if (fileInfo.type == RemoteFileReceiver.FileWatcher.TYPE_DEX) {
-
+                    val originPath = fileInfo.originPath ?: return false
+                    // 获取远程文件路径
+                    val remoteFileName = File(originPath).name
+                    launch(Dispatchers.Main) {
+                        context.getString(R.string.view_debug_file_receive_tip, File(remoteFileName).name).shortToast()
+                    }
+                    // 返回false，走默认提示
                     return true
                 }
                 return false
