@@ -3,11 +3,8 @@ package com.skin.skinswitch
 import android.app.Application
 import android.content.res.Resources
 import android.view.View
-import android.view.ViewGroup
 import com.example.skinswitch.R
-import com.example.viewdebug.ViewDebugManager
 import com.skin.skincore.SkinManager
-import com.skin.skincore.apply.AttrSrcApply
 import com.skin.skincore.apply.base.BaseViewApply
 import com.skin.skincore.provider.DefaultProviderFactory
 import com.skin.skincore.provider.IResourceProvider

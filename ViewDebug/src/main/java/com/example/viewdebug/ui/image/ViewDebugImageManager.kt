@@ -1,7 +1,7 @@
 package com.example.viewdebug.ui.image
 
 import android.annotation.SuppressLint
-import com.example.viewdebug.ui.UIPage
+import com.fxf.debugwindowlibaray.ui.UIPage
 import com.example.viewdebug.ui.image.parser.Parser
 
 /**

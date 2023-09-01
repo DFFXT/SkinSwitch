@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import com.example.viewdebug.R
-import com.example.viewdebug.ui.UIPage
+import com.fxf.debugwindowlibaray.ui.UIPage
 import com.example.viewdebug.ui.dialog.BaseDialog
 
 class ViewDebugLoadingDialog(host: UIPage) : BaseDialog(host) {

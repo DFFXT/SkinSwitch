@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import com.example.viewdebug.databinding.ViewDebugXmlTextContainerBinding
 import com.example.viewdebug.remote.RemoteFileReceiver
-import com.example.viewdebug.ui.UIPage
+import com.fxf.debugwindowlibaray.ui.UIPage
 import com.example.viewdebug.ui.XmlManager
 import com.example.viewdebug.ui.dialog.BaseDialog
 import com.example.viewdebug.ui.skin.ViewDebugMergeResource

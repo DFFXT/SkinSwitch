@@ -151,17 +151,28 @@ internal val customContextThemeId: Field by lazy {
     field
 }
 
-internal val themeKey: Method by lazy {
-    val method = Theme::class.java.getDeclaredMethod("getKey")
-    method.isAccessible = true
-    method
+internal val themeKey: Method? by lazy {
+    try {
+        val method = Theme::class.java.getDeclaredMethod("getKey")
+        method.isAccessible = true
+        return@lazy method
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+    return@lazy null
 }
 
 internal fun Theme.getResourcesKey(): IntArray {
-    val themeKey = themeKey.invoke(this)
-    val field = Class.forName("android.content.res.Resources\$ThemeKey").getDeclaredField("mResId")
-    field.isAccessible = true
-    return field.get(themeKey) as IntArray
+    try {
+        val themeKey = themeKey?.invoke(this)
+        val field = Class.forName("android.content.res.Resources\$ThemeKey").getDeclaredField("mResId")
+        field.isAccessible = true
+        return field.get(themeKey) as IntArray
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+    return IntArray(0)
+
 }
 
 internal val resourceClassLoader: Field by lazy {

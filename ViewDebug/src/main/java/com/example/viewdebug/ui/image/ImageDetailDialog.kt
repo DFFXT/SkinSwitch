@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
 import com.example.viewdebug.R
 import com.example.viewdebug.databinding.ViewDebugImageDetailBinding
-import com.example.viewdebug.ui.UIPage
+import com.fxf.debugwindowlibaray.ui.UIPage
 import com.example.viewdebug.ui.dialog.BaseDialog
 import com.example.viewdebug.util.adjustOrientation
 import com.skin.skincore.collector.setBackgroundResourceSkinAble

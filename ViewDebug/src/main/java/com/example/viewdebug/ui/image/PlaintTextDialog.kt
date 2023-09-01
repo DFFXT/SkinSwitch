@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.viewdebug.databinding.ViewDebugLayoutPlainTextBinding
 import com.example.viewdebug.rv.MultiTypeRecyclerAdapter
-import com.example.viewdebug.ui.UIPage
+import com.fxf.debugwindowlibaray.ui.UIPage
 import com.example.viewdebug.ui.dialog.BaseDialog
 import com.example.viewdebug.ui.image.itemHanlder.ItemPlainTextHandler
 import com.example.viewdebug.util.adjustOrientation

@@ -13,10 +13,12 @@ import com.skin.skincore.reflex.contextThemeFiled
 import com.skin.skincore.reflex.contextThemeId
 import com.skin.skincore.reflex.customContextThemeFiled
 import com.skin.skincore.reflex.customContextThemeId
+import com.skin.skincore.reflex.getCurrentThemeId
 import com.skin.skincore.reflex.getResourcesKey
 import com.skin.skincore.reflex.resourceClassLoader
 import com.skin.skincore.reflex.resourcesImplFiled
 import com.skin.skincore.reflex.themeWrapperResourcesFiled
+import java.lang.reflect.Field
 
 /**
  * 将Context的resource替换为MergeResource，如果已经是了，则切换为皮肤包资源
@@ -43,7 +45,12 @@ internal fun Context.updateResource(asset: IAsset) {
     } else {
 
         // 获取当前theme设置过的主题
-        val keys = this.theme.getResourcesKey()
+        var keys  = this.theme.getResourcesKey()
+        if (keys.isEmpty()) {
+            // android 28上无法反射Theme.getKey方法，只能走老办法
+            setResourceDefault(filed, target, asset)
+            return
+        }
         // 资源设置
         val mergeResource = ResourcesProviderManager.resourceObjectCreator.createResourceObject(
             asset,
@@ -81,4 +88,19 @@ internal fun Context.updateResource(asset: IAsset) {
         }
 
     }
+}
+
+/**
+ * 替换resource对象
+ */
+private fun Context.setResourceDefault(filed: Field, target: Context, asset: IAsset) {
+    // 资源设置
+    filed.set(
+        target,
+        ResourcesProviderManager.resourceObjectCreator.createResourceObject(
+            asset,
+            this,
+            intArrayOf(getCurrentThemeId()),
+        )
+    )
 }

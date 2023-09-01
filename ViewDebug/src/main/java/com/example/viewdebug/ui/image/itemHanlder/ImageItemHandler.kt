@@ -9,7 +9,7 @@ import androidx.fragment.app.ViewDetailInfoDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.example.viewdebug.databinding.ViewDebugLayoutImageItemBinding
 import com.example.viewdebug.rv.ItemHandle
-import com.example.viewdebug.ui.UIPage
+import com.fxf.debugwindowlibaray.ui.UIPage
 import com.example.viewdebug.ui.image.ImageDetailDialog
 import com.example.viewdebug.util.copyToClipboard
 import com.example.viewdebug.util.tryShowXmlText

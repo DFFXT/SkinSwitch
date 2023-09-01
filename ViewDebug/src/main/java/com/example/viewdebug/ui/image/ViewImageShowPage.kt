@@ -9,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.viewdebug.R
 import com.example.viewdebug.ViewCapture
-import com.example.viewdebug.ui.UIPage
+import com.fxf.debugwindowlibaray.ui.UIPage
 import com.example.viewdebug.ui.image.parser.Parser
 import com.example.viewdebug.ui.image.parser.ReferenceParser
 import com.example.viewdebug.ui.image.parser.TextColorParser
@@ -45,20 +45,10 @@ class ViewImageShowPage(
 
     override fun enableFocus(): Boolean = true
 
-    override fun onCreateTabView(ctx: Context): View {
-        return View(ctx).apply {
-            val size =
-                ctx.resources.getDimensionPixelSize(R.dimen.view_debug_control_ui_status_bar_height)
-            layoutParams = ViewGroup.LayoutParams(size, size)
-            setBackgroundResource(R.mipmap.view_debug_image_layer_pick)
-            backgroundTintList = ColorStateList.valueOf(Color.WHITE)
-            // enablePress()
-            enableSelect()
-        }
-    }
+    override fun getTabIcon(): Int = R.mipmap.view_debug_image_layer_pick
 
     @SuppressLint("ClickableViewAccessibility")
-    override fun onCreateContentView(ctx: Context): View {
+    override fun onCreateContentView(ctx: Context, parent: ViewGroup): View {
         return View(ctx).apply {
             layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,

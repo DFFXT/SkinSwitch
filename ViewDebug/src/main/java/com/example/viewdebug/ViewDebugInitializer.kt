@@ -2,7 +2,6 @@ package com.example.viewdebug
 
 import android.app.Application
 import android.content.Context
-import android.content.res.Resources
 import android.provider.Settings
 import android.util.AttributeSet
 import android.view.View
@@ -10,13 +9,14 @@ import androidx.annotation.Keep
 import androidx.startup.Initializer
 import com.example.viewdebug.dex.DexLoadManager
 import com.example.viewdebug.remote.RemoteFileReceiver
+import com.example.viewdebug.ui.image.ViewImageShowPage
 import com.example.viewdebug.ui.skin.ViewDebugMergeResource
 import com.example.viewdebug.util.ViewDebugInfo
 import com.example.viewdebug.util.launch
 import com.example.viewdebug.util.setViewDebugInfo
 import com.example.viewdebug.xml.AndroidXmRuleManager
-import com.example.viewdebug.xml.CompileTest
 import com.example.viewdebug.xml.pack.PackAssetsFile
+import com.fxf.debugwindowlibaray.ViewDebugManager
 import com.skin.skincore.SkinManager
 import com.skin.skincore.asset.IAsset
 import com.skin.skincore.collector.ViewUnion
@@ -71,6 +71,7 @@ class ViewDebugInitializer : Initializer<ViewDebugInitializer> {
         })
         // ViewDebug初始化
         ViewDebugManager.init(context.applicationContext as Application)
+        ViewDebugManager.addPage(ViewImageShowPage())
         // 编译初始化
         launch(Dispatchers.IO) {
             AndroidXmRuleManager.init(ctx)

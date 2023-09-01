@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import com.example.viewdebug.databinding.ViewDebugDialogDetailInfoBinding
 import com.example.viewdebug.rv.MultiTypeRecyclerAdapter
-import com.example.viewdebug.ui.UIPage
+import com.fxf.debugwindowlibaray.ui.UIPage
 import com.example.viewdebug.ui.dialog.BaseDialog
 import com.example.viewdebug.ui.image.PlaintTextDialog
 import com.example.viewdebug.ui.image.attribute.Update

@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.viewdebug.databinding.ViewDebugLayoutImageItemBinding
 import com.example.viewdebug.rv.ItemHandle
-import com.example.viewdebug.ui.UIPage
+import com.fxf.debugwindowlibaray.ui.UIPage
 import com.example.viewdebug.util.ViewDebugInfo
 import com.skin.skincore.collector.ViewUnion
 import java.lang.ref.WeakReference
