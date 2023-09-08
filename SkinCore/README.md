@@ -5,7 +5,7 @@ Android 换肤框架
   // 视情况添加，如果有guava依赖冲突则添加
   implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
   // 换肤框架
-  implementation 'com.github.DFFXT.SkinSwitch:SkinCore:0.18.1.8'
+  implementation 'com.github.DFFXT.SkinSwitch:SkinCore:0.19.2.5'
 </code></pre>
 
 
