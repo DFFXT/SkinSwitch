@@ -9,8 +9,11 @@ import androidx.annotation.Keep
 import androidx.startup.Initializer
 import com.example.viewdebug.dex.DexLoadManager
 import com.example.viewdebug.remote.RemoteFileReceiver
-import com.example.viewdebug.ui.image.ViewImageShowPage
+import com.example.viewdebug.ui.WindowControlManager
+import com.example.viewdebug.ui.page.ViewImageShowPage
+import com.example.viewdebug.ui.page.info.ModifyListPage
 import com.example.viewdebug.ui.skin.ViewDebugMergeResource
+import com.example.viewdebug.ui.skin.ViewDebugResourceManager
 import com.example.viewdebug.util.ViewDebugInfo
 import com.example.viewdebug.util.launch
 import com.example.viewdebug.util.setViewDebugInfo
@@ -70,8 +73,7 @@ class ViewDebugInitializer : Initializer<ViewDebugInitializer> {
             }
         })
         // ViewDebug初始化
-        ViewDebugManager.init(context.applicationContext as Application)
-        ViewDebugManager.addPage(ViewImageShowPage())
+        WindowControlManager.init(context.applicationContext as Application)
         // 编译初始化
         launch(Dispatchers.IO) {
             AndroidXmRuleManager.init(ctx)

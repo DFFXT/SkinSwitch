@@ -28,9 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="30dp"
             android:layout_marginEnd="20dp"
-            android:gravity="center"
-            android:textColor="@color/view_debug_white"
-            android:textSize="@dimen/view_debug_big_text_size"
+            style="@style/ViewDebugTitle"
             app:layout_constraintTop_toTopOf="parent"
             android:text="@string/view_debug_image_detail_title" />
 

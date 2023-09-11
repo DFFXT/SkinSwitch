@@ -7,7 +7,7 @@
     android:clickable="true"
     android:focusable="true"
     android:background="@color/view_debug_image_set_bg"
-    android:elevation="5dp">
+    android:elevation="@dimen/view_debug_elevation">
 
     <View
         android:layout_width="match_parent"

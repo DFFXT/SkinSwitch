@@ -13,9 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/view_debug_control_ui_status_bar_height"
         android:text="@string/view_debug_view_detal_title"
-        android:gravity="center_vertical"
-        android:textColor="@color/view_debug_white"
-        android:textSize="@dimen/view_debug_big_text_size"
+        style="@style/ViewDebugTitle"
         android:paddingHorizontal="@dimen/view_debug_common_padding"
         android:background="@color/view_debug_image_detail_title_bar_bg"
         app:layout_constraintTop_toTopOf="parent" />

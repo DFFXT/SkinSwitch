@@ -6,8 +6,8 @@ import android.content.Context
 import android.view.View
 import android.widget.Toast
 import com.example.viewdebug.ViewDebugInitializer
-import com.example.viewdebug.ui.image.XmlParser
-import com.example.viewdebug.ui.image.XmlTextDialog
+import com.example.viewdebug.ui.page.XmlParser
+import com.example.viewdebug.ui.page.XmlTextDialog
 import com.fxf.debugwindowlibaray.ui.UIPage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart

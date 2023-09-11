@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/view_debug_white"
+        android:elevation="@dimen/view_debug_elevation"
+        app:layout_constraintStart_toStartOf="@id/rv_list"
+        app:layout_constraintEnd_toEndOf="@id/rv_list"
+        app:layout_constraintTop_toTopOf="@id/view_debug_title_bar"
+        app:layout_constraintBottom_toBottomOf="@id/rv_list"/>
+    <TextView
+        android:id="@+id/view_debug_title_bar"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/view_debug_control_ui_status_bar_height"
+        android:background="@color/view_debug_image_detail_title_bar_bg"
+        android:elevation="@dimen/view_debug_elevation"
+        android:text="@string/view_debug_modify_list_detal_title"
+        style="@style/ViewDebugTitle"
+
+        app:layout_constraintBottom_toTopOf="@id/rv_list"
+        app:layout_constraintEnd_toEndOf="@id/rv_list"
+        app:layout_constraintStart_toStartOf="@id/rv_list"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/view_debug_common_rect_stroke_1dp"
+        android:backgroundTint="@color/view_debug_image_detail_title_bar_bg"
+        android:elevation="@dimen/view_debug_elevation"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/view_debug_common_padding"
+        android:paddingBottom="10dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/view_debug_title_bar"
+        app:layout_constraintVertical_bias="0"
+        tools:layout_width="200dp"
+        tools:listitem="@layout/view_debug_item_modify_item" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

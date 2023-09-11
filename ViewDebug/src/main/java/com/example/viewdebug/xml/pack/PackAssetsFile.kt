@@ -12,7 +12,7 @@ import java.io.InputStream
 class PackAssetsFile(private val ctx: Context) {
 
     companion object {
-        const val TYPE_LAYOUT = "layout"
+        const val FOLDER = "compiledXml"
 
         /**
          * 清除编译缓存
@@ -43,7 +43,7 @@ class PackAssetsFile(private val ctx: Context) {
      */
     suspend fun addAXMLFile(inputStream: InputStream, name: String) {
         val dir =
-            File(getApkUnZipFolder(ctx) + File.separator + "assets" + File.separator + TYPE_LAYOUT)
+            File(getApkUnZipFolder(ctx) + File.separator + "assets" + File.separator + FOLDER)
         if (!dir.exists()) {
             dir.mkdirs()
         }

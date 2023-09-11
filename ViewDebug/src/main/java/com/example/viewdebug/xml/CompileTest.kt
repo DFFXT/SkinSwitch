@@ -1,21 +1,15 @@
 package com.example.viewdebug.xml
 
 import android.content.pm.PackageManager
-import com.example.viewdebug.R
 import com.example.viewdebug.ViewDebugInitializer
-import com.example.viewdebug.ui.image.XmlParser
+import com.example.viewdebug.ui.page.XmlParser
 import com.example.viewdebug.xml.pack.PackAssetsFile
 import com.example.viewdebug.xml.struct.XmlCompiler
 import com.example.viewdebug.xml.struct.reader.ChunkFile
-import com.example.viewdebug.xml.struct.writer.helper.ExternalFunction
-import com.example.viewdebug.xml.struct.writer.helper.value.AttrDimensionValueCompile
 import com.skin.log.Logger
-import java.io.ByteArrayInputStream
 import java.io.File
-import java.net.URI
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import java.nio.file.FileSystems
 
 object CompileTest {
 

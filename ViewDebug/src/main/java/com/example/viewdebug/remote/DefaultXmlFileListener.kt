@@ -2,7 +2,7 @@ package com.example.viewdebug.remote
 
 import com.example.viewdebug.R
 import com.example.viewdebug.ViewDebugInitializer
-import com.example.viewdebug.ui.XmlManager
+import com.example.viewdebug.xml.XmlManager
 import com.example.viewdebug.util.launch
 import com.example.viewdebug.util.shortToast
 import com.skin.log.Logger

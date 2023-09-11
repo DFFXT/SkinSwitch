@@ -99,6 +99,16 @@ object DexLoadManager {
     }
 
     /**
+     * 获取当前应用的dex文件名称
+     */
+    fun getAppliedDexList(): List<String> {
+        val result = ArrayList<String>()
+        result.addAll(dexFolder.list { dir, name -> name.endsWith(".dex") } ?: emptyArray())
+        result.addAll(dexTmpFolder.list { dir, name -> name.endsWith(".dex") } ?: emptyArray())
+        return result
+    }
+
+    /**
      * 设置版本id接口
      * 如果设置了该接口，则重启应用后，如果[IBuildIdentification.getBuildId]的值不变则一直使用缓存的dex
      */
