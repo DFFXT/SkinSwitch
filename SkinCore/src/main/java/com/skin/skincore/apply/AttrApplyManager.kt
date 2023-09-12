@@ -22,7 +22,8 @@ import com.skin.skincore.reflex.getSkinTheme
 object AttrApplyManager {
     private val skinAttrStrategy = SparseBooleanArray()
     private val applySet: SparseArray<BaseViewApply<View>> = SparseArray()
-    // 可蓝拦截换肤view
+
+    // 可拦截换肤view
     var onApplyInterceptor: AttrApplyInterceptor? = null
 
     // 属性解析器

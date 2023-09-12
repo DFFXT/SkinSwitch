@@ -3,7 +3,6 @@ package com.example.viewdebug.ui.skin
 import android.content.res.AssetManager
 import com.skin.log.Logger
 import com.skin.skincore.SkinManager
-import com.skin.skincore.plug.SpeedUpSwitchSkin
 
 /**
  * 应用资源变更管理
@@ -66,11 +65,6 @@ object ViewDebugResourceManager {
             Logger.e("ViewDebugMergeResource", "applyWhenCreate has not open, now auto open")
             SkinManager.applyWhenCreate(true)
 
-        }
-        // 不允许拦截刚创建的view
-        if (SpeedUpSwitchSkin.canInterceptOnCreatedView) {
-            Logger.e("ViewDebugMergeResource", "canInterceptOnCreatedView has open, now close")
-            SpeedUpSwitchSkin.canInterceptOnCreatedView = false
         }
     }
 

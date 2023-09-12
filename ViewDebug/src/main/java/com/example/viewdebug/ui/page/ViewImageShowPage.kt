@@ -2,10 +2,12 @@ package com.example.viewdebug.ui.page
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import com.example.viewdebug.R
 import com.example.viewdebug.ViewCapture
 import com.fxf.debugwindowlibaray.ui.UIPage
@@ -43,6 +45,12 @@ class ViewImageShowPage(
 
     override fun enableFocus(): Boolean = true
 
+    override fun onCreateTabView(ctx: Context, parent: ViewGroup): View {
+        return super.onCreateTabView(ctx, parent).apply {
+            this as ImageView
+            imageTintList = ColorStateList.valueOf(Color.WHITE)
+        }
+    }
     override fun getTabIcon(): Int = R.mipmap.view_debug_image_layer_pick
 
     @SuppressLint("ClickableViewAccessibility")

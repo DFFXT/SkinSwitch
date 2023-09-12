@@ -1,9 +1,12 @@
 package com.example.viewdebug.ui.page.info
 
 import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.viewdebug.R
@@ -31,6 +34,13 @@ class ModifyListPage : UIPage(), ViewDebugResourceManager.OnResourceChanged {
     }
 
     override fun getTabIcon(): Int = R.mipmap.view_debug_modify_list
+
+    override fun onCreateTabView(ctx: Context, parent: ViewGroup): View {
+        return super.onCreateTabView(ctx, parent).apply {
+            this as ImageView
+            imageTintList = ColorStateList.valueOf(Color.WHITE)
+        }
+    }
 
     override fun onCreateContentView(ctx: Context, parent: ViewGroup): View {
         binding = ViewDebugLayoutModifyPageBinding.inflate(LayoutInflater.from(ctx), parent, false)
