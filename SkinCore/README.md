@@ -5,7 +5,7 @@ Android 换肤框架
   // 视情况添加，如果有guava依赖冲突则添加
   implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
   // 换肤框架
-  implementation 'com.github.DFFXT.SkinSwitch:SkinCore:0.19.2.5'
+  implementation 'com.github.DFFXT.SkinSwitch:SkinCore:0.19.2.8'
 </code></pre>
 
 
@@ -34,8 +34,10 @@ Android 换肤框架
   // 新增支持的换肤属性
   SkinManger.addAttributeCollection(....)
 
-  // 当某个View换肤时，会触发此回调，根据返回状态确定是否需要换肤
+  // 当某个View换肤时，会触发此回调，根据返回状态确定十分需要换肤
   AttrApplyManager.onApplyInterceptor = {....}
+  // 系统资源也换肤，注意，开启后会极大延长换肤时间，默认关闭
+  AttrApplyManager.applySystemResources = true
 </code></pre>
 
 其它

@@ -5,9 +5,9 @@ Android 换肤框架
   // 视情况添加，如果有guava依赖冲突则添加
   implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
   // 换肤框架
-  implementation 'com.github.DFFXT.SkinSwitch:SkinCore:0.18.1.8'
+  implementation 'com.github.DFFXT.SkinSwitch:SkinCore:0.19.2.8'
   // 视情况添加，视图调试框架，支持xml修改实时生效，和kotlin但文件修冷启动生效，用于节省编译时间，具体使用方式需搭配android studio插件使用[插件下载](https://github.com/DFFXT/ViewDebug-Trans)
-  debugImplementation 'com.github.DFFXT.SkinSwitch:ViewDebug:0.18.1.8'
+  debugImplementation 'com.github.DFFXT.SkinSwitch:ViewDebug:0.19.2.8'
 </code></pre>
 
 
@@ -38,6 +38,8 @@ Android 换肤框架
 
   // 当某个View换肤时，会触发此回调，根据返回状态确定十分需要换肤
   AttrApplyManager.onApplyInterceptor = {....}
+  // 系统资源也换肤，注意，开启后会极大延长换肤时间，默认关闭
+  AttrApplyManager.applySystemResources = true
 </code></pre>
 
 其它
