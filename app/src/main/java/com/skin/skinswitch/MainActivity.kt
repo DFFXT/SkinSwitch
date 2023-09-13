@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         var presentation: Presentation? = null
         findViewById<View>(R.id.view).setOnClickListener {
             Logger.i("sss", "click")
-            TestActivity.startActivity(this)
+            //TestActivity.startActivity(this)
             /*if (presentation != null) {
                 presentation?.dismiss()
                 presentation = null

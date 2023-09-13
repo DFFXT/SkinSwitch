@@ -12,12 +12,12 @@
         android:layout_height="match_parent"
         tools:name="com.skin.skinswitch.module.HomeFragment" />
 
-    <TextView
+    <EditText
         android:layout_width="@dimen/test_d"
         android:layout_height="40dp"
         android:id="@+id/view"
         android:text="1"
-        android:background="@drawable/theme_drawable"
+        android:textCursorDrawable="@color/mainColor"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
