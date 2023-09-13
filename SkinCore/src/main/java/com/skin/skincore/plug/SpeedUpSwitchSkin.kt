@@ -19,7 +19,14 @@ import java.util.WeakHashMap
 open class SpeedUpSwitchSkin : AttrApplyManager.AttrApplyInterceptor, OnThemeChangeListener {
     companion object {
         // 延迟换肤条件，返回值决定是否延迟换肤
-        var delayApplyStrategy: ((view: View, eventType: IntArray) -> Boolean)? = null
+        // 当不再viewTree上，而且不是创建，则拦截，延迟换肤
+        // 如果刚创建：不拦截，直接切换
+        // 如果没有在window上，而且不是刚创建：拦截，延迟切换
+        // 如果当前View不显示：拦截，延迟切换
+        // 默认不拦截刚创建的view的换肤（EVENT_TYPE_CREATE），EVENT_TYPE_CREATE后不会收到onThemeChanged回调
+        var delayApplyStrategy: ((view: View, eventType: IntArray) -> Boolean)? = { view: View, eventType: IntArray ->
+            (!view.isAttachedToWindow || !view.isShown) && !eventType.contains(BaseViewApply.EVENT_TYPE_CREATE)
+        }
     }
 
     protected val handler = Handler(Looper.getMainLooper())
@@ -30,16 +37,6 @@ open class SpeedUpSwitchSkin : AttrApplyManager.AttrApplyInterceptor, OnThemeCha
     fun init() {
         SkinManager.addSkinChangeListener(this)
         AttrApplyManager.onApplyInterceptor = this
-        // 未定义拦截策略，使用默认策略
-        // 当不再viewTree上，而且不是创建，则拦截，延迟换肤
-        // 如果刚创建：不拦截，直接切换
-        // 如果没有在window上，而且不是刚创建：拦截，延迟切换
-        // 如果当前View不显示：拦截，延迟切换
-        if (delayApplyStrategy == null) {
-            delayApplyStrategy = { view: View, eventType: IntArray ->
-                !view.isAttachedToWindow && !eventType.contains(BaseViewApply.EVENT_TYPE_CREATE) || !view.isShown
-            }
-        }
     }
 
     /**
