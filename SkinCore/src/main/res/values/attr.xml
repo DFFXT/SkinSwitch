@@ -31,7 +31,5 @@
 
     </declare-styleable>
 
-    <color name="main_color">#0000FF</color>
-
     <item name="view_sKinAttr" type="id"/>
 </resources>

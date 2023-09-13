@@ -17,6 +17,7 @@ import com.example.viewdebug.ui.WindowControlManager
 import com.example.viewdebug.ui.skin.ViewDebugResourceManager
 import com.example.viewdebug.util.adjustOrientation
 import com.example.viewdebug.util.launch
+import com.example.viewdebug.xml.XmlManager
 import com.fxf.debugwindowlibaray.ui.UIPage
 import com.skin.log.Logger
 import kotlinx.coroutines.Dispatchers
@@ -60,7 +61,13 @@ class ModifyListPage : UIPage(), ViewDebugResourceManager.OnResourceChanged {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                ViewDebugResourceManager.removeInterceptor(items[viewHolder.adapterPosition].id)
+                val id = items[viewHolder.adapterPosition].id
+                ViewDebugResourceManager.removeInterceptor(id)
+                val type = ctx.resources.getResourceTypeName(id)
+                if (type != "layout") {
+                    // 移除了非布局资源，刷新全局
+                    XmlManager.applyGlobalViewByResId(id)
+                }
             }
 
         }).attachToRecyclerView(binding.rvList)
