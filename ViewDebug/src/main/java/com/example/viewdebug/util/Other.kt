@@ -14,6 +14,7 @@ import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import java.io.File
+import java.io.InputStream
 import java.lang.ref.WeakReference
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
@@ -74,3 +75,18 @@ internal fun String.makeAsDir(): File {
 }
 
 
+
+fun InputStream.readBytes(length: Int): ByteArray {
+    val arr = ByteArray(length)
+    var temp = ByteArray(length)
+    var recSize = 0
+    while (true) {
+        val len = this.read(temp)
+        if (len == -1) break
+        System.arraycopy(temp, 0, arr, recSize, len)
+        temp = ByteArray(length - len)
+        recSize += len
+        if (recSize == length) break
+    }
+    return arr
+}

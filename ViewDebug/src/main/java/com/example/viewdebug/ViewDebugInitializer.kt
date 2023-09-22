@@ -10,16 +10,12 @@ import androidx.startup.Initializer
 import com.example.viewdebug.dex.DexLoadManager
 import com.example.viewdebug.remote.RemoteFileReceiver
 import com.example.viewdebug.ui.WindowControlManager
-import com.example.viewdebug.ui.page.ViewImageShowPage
-import com.example.viewdebug.ui.page.info.ModifyListPage
 import com.example.viewdebug.ui.skin.ViewDebugMergeResource
-import com.example.viewdebug.ui.skin.ViewDebugResourceManager
 import com.example.viewdebug.util.ViewDebugInfo
 import com.example.viewdebug.util.launch
 import com.example.viewdebug.util.setViewDebugInfo
 import com.example.viewdebug.xml.AndroidXmRuleManager
 import com.example.viewdebug.xml.pack.PackAssetsFile
-import com.fxf.debugwindowlibaray.ViewDebugManager
 import com.skin.skincore.SkinManager
 import com.skin.skincore.asset.IAsset
 import com.skin.skincore.collector.ViewUnion
@@ -81,6 +77,7 @@ class ViewDebugInitializer : Initializer<ViewDebugInitializer> {
             RemoteFileReceiver.init()
             PackAssetsFile.clearCachedXml(ctx)
         }
+        // ServerManager.init()
         return this
     }
 

@@ -26,8 +26,13 @@ internal object RemoteFileReceiver {
     private val watchBase = getBasePath(ViewDebugInitializer.ctx)
     private val watchingReceivePath = getReceivePath(ViewDebugInitializer.ctx)
 
+    private val agreementFile: File by lazy {
+        val file = (ViewDebugInitializer.ctx.cacheDir.absolutePath + File.separator + "viewDebug").makeAsDir()
+        File(file, "agreement")
+    }
+
     // 配置文件
-    private val watchingConfigPath = watchBase + File.separator + "view-debug-config.json"
+    val watchingConfigFile = watchBase + File.separator + "view-debug-config.json"
 
     // 特殊文件监听器
     private val specialWatchers = LinkedList<FileWatcher>()
@@ -38,28 +43,32 @@ internal object RemoteFileReceiver {
     // 默认的文件接收处理器
     private val defaultFileWatchers = LinkedList<FileWatcher>()
 
-    fun  init() {
-        watchingReceivePath.makeAsDir()
-        // 判断是否存在，FileObserver只能监听已存在的文件
-        val watchTarget = File(watchingConfigPath)
-        if (!watchTarget.exists()) {
-            watchTarget.createNewFile()
-        }
+    fun init() {
         specialWatchers.add(SpecialFileListener())
         defaultFileWatchers.add(DefaultXmlFileListener())
         defaultFileWatchers.add(DefaultFileListener())
-        startWatch()
+        // io线程操作
+        launch(Dispatchers.IO) {
+            watchingReceivePath.makeAsDir()
+            // 判断是否存在，FileObserver只能监听已存在的文件
+            val watchTarget = File(watchingConfigFile)
+            if (!watchTarget.exists()) {
+                watchTarget.createNewFile()
+            }
+            startWatch()
+            writeAgreement()
+        }
     }
 
     private fun startWatch() {
-        fileObserver = object : FileObserver(watchingConfigPath, ATTRIB) {
+        fileObserver = object : FileObserver(watchingConfigFile, ATTRIB) {
             override fun onEvent(event: Int, path: String?) {
                 if (event == ATTRIB) {
                     launch(Dispatchers.IO) {
                         // 当监听到文件变化时，需要重新监听
                         fileObserver?.stopWatching()
                         delay(1000)
-                        val content = String(File(watchingConfigPath).readBytes())
+                        val content = String(File(watchingConfigFile).readBytes())
                         val json = JSONObject(content)
                         val arr = json.getJSONArray("config")
 
@@ -126,6 +135,24 @@ internal object RemoteFileReceiver {
 
     fun clearReceiveCache() {
         File(watchingReceivePath).deleteRecursively()
+    }
+
+    /**
+     * 写入协议，给idea插件读取，路径固定
+     */
+    private fun writeAgreement() {
+        if (!agreementFile.exists()) {
+            agreementFile.createNewFile()
+        }
+        val builder = StringBuilder()
+        builder.append("version=1\n")
+        // 包名
+        builder.append("pkgName=${ViewDebugInitializer.ctx.packageName}\n")
+        // 推送文件存放的文件夹
+        builder.append("destDir=${watchingReceivePath}\n")
+        // 推送监听文件地址
+        builder.append("listenFile=${watchingConfigFile}")
+        agreementFile.writeText(builder.toString())
     }
 
     internal interface FileWatcher {
