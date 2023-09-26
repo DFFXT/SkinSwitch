@@ -1,12 +1,15 @@
 package com.example.viewdebug.xml.struct
 
 import android.content.Context
+import com.example.viewdebug.xml.struct.writer.AndroidAttributeConvertor
 import com.example.viewdebug.xml.struct.writer.Attribute
+import com.example.viewdebug.xml.struct.writer.AttributeConvertor
 import com.example.viewdebug.xml.struct.writer.ChunkEndTagWriter
 import com.example.viewdebug.xml.struct.writer.ChunkFileWriter
 import com.example.viewdebug.xml.struct.writer.ChunkNamespaceWriter
 import com.example.viewdebug.xml.struct.writer.ChunkStartTagWriter
 import com.example.viewdebug.xml.struct.writer.ChunkStringWriter
+import com.example.viewdebug.xml.struct.writer.DefaultAttributeConvertor
 import com.example.viewdebug.xml.struct.writer.helper.AttributeWriterHelper
 import com.example.viewdebug.xml.struct.writer.link.ResourceLink
 import com.example.viewdebug.xml.struct.writer.link.ResourceLinkImpl
@@ -16,6 +19,7 @@ import org.w3c.dom.NodeList
 import java.io.InputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.util.LinkedList
 import javax.xml.parsers.DocumentBuilderFactory
 
 /**
@@ -28,6 +32,14 @@ class XmlCompiler(private val ctx: Context) {
     private val attributeWriterHelper = AttributeWriterHelper(this)
     private val factory = DocumentBuilderFactory.newInstance()
     private val builder = factory.newDocumentBuilder()
+    // 属性转换列表，这些属性需要转换，来在低版本上进行生效
+    // 比如，遇到paddingHorizontal属性，需要添加paddingLeft和paddingRight属性
+    private val attributeConvertorList = LinkedList<AttributeConvertor>().apply {
+        add(AndroidAttributeConvertor("paddingHorizontal",  arrayOf("paddingLeft", "paddingRight"), true))
+        add(AndroidAttributeConvertor("paddingVertical",  arrayOf("paddingTop", "paddingBottom"), true))
+        add(AndroidAttributeConvertor("layout_marginHorizontal",  arrayOf("layout_marginLeft", "layout_marginRight"), true))
+        add(AndroidAttributeConvertor("layout_marginVertical",  arrayOf("layout_marginTop", "layout_marginBottom"), true))
+    }
 
     private var filterTextNode = true
 
@@ -115,7 +127,15 @@ class XmlCompiler(private val ctx: Context) {
         }
     }
 
-    private fun addAttribute(tagName: String, prefix: String, attributeName: String, value: String) {
+    /**
+     * 添加属性解析
+     * @param tagName 标签名称
+     * @param prefix 前缀
+     * @param attributeName 属性名称
+     * @param value 属性值
+     * @param overwrite 是否覆盖已经有的属性
+     */
+    fun addAttribute(tagName: String, prefix: String, attributeName: String, value: String, overwrite: Boolean = false) {
         if (prefix.isNotEmpty()) {
             addOtherString(prefix)
             addAttrNameString(attributeName, prefix)
@@ -125,31 +145,34 @@ class XmlCompiler(private val ctx: Context) {
 
         // 忽略tools
         val tag = (chunkFile.chunkTags.last as ChunkStartTagWriter)
-        tag.attributes.add(
-            Attribute(Int.MAX_VALUE, chunkFile).apply {
-                val nsPrefix: String = prefix
-                val attrName: String = attributeName
-                if (prefix.isNotEmpty()) {
-                    this.name = attrName
-                    this.namespacePrefix = nsPrefix
+        val existAttr = tag.attributes.find { it.name == attributeName && it.namespacePrefix == prefix }
+        if (existAttr != null) {
+            if (overwrite) {
+                // 覆盖属性，需要移除已有
+                tag.attributes.remove(existAttr)
+            } else {
+                // 不覆盖，直接忽略当前添加
+                return
+            }
+        }
+        val attr = Attribute(Int.MAX_VALUE, chunkFile).apply {
+            if (prefix.isNotEmpty()) {
+                this.name = attributeName
+                this.namespacePrefix = prefix
 
-                    // 设置 用于排序
-                    this.systemResourceId = resourceLink.getAttributeId(nsPrefix, attrName)!!
-                    Logger.i("++++", "id = " + systemResourceId)
-                    chunkFile.chunkSystemResourceId.resourceIds.add(systemResourceId)
-                } else {
-                    this.name = attrName
-                    this.namespacePrefix = ""
-                }
-                // 从常量池获取，因为目前所有值都在这里
-                val resValue = attributeWriterHelper.compileAttributeResValue(tagName, attrName, value, nsPrefix)
-                if (resValue == null) {
-                    throw Exception("无法解析：${tagName} $nsPrefix $attrName ${value}")
-                }
-                this.resValue = resValue
-                Logger.v("sssss", resValue.data.toString() + "  ${prefix}:${attributeName}  $value")
-            },
-        )
+                // 设置 用于排序
+                this.systemResourceId = resourceLink.getAttributeId(prefix, attributeName)!!
+                chunkFile.chunkSystemResourceId.resourceIds.add(systemResourceId)
+            } else {
+                this.name = attributeName
+                this.namespacePrefix = ""
+            }
+            // 从常量池获取，因为目前所有值都在这里
+            val resValue = attributeWriterHelper.compileAttributeResValue(tagName, attributeName, value, prefix) ?: throw Exception("无法解析：${tagName} $prefix $attributeName ${value}")
+            this.resValue = resValue
+            Logger.v("sssss", resValue.data.toString() + "  ${prefix}:${attributeName}  $value")
+        }
+        tag.attributes.add(attr)
     }
 
     private fun addStartTag(node: Node) {
@@ -204,10 +227,14 @@ class XmlCompiler(private val ctx: Context) {
      * 适配特殊属性
      */
     private fun fixSpecialAttribute(tagNode: Node) {
-
+        attributeConvertorList.forEach {
+            it.onParsed(tagNode, this)
+        }
+        return
         val tag = (chunkFile.chunkTags.last as ChunkStartTagWriter)
         val ph = tag.attributes.find { it.name == "paddingHorizontal" && it.namespacePrefix == "android" }
         if (ph != null) {
+            // 适配paddingHorizontal
             val phNode = tagNode.attributes.getNamedItem("android:paddingHorizontal")
             if (tag.attributes.find { it.name == "paddingLeft" && it.namespacePrefix == "android" } == null) {
                 addAttribute(tag.name, "android", "paddingLeft", phNode.nodeValue)
@@ -218,6 +245,7 @@ class XmlCompiler(private val ctx: Context) {
         }
         val pv = tag.attributes.find { it.name == "paddingVertical" && it.namespacePrefix == "android" }
         if (pv != null) {
+            // 适配 paddingVertical
             val pvNode = tagNode.attributes.getNamedItem("android:paddingVertical")
             if (tag.attributes.find { it.name == "paddingTop" && it.namespacePrefix == "android" } == null) {
                 addAttribute(tag.name, "android", "paddingTop", pvNode.nodeValue)
@@ -226,5 +254,15 @@ class XmlCompiler(private val ctx: Context) {
                 addAttribute(tag.name, "android", "paddingBottom", pvNode.nodeValue)
             }
         }
+
+        val mh = tag.attributes.find { it.name == "layout_marginHorizontal" && it.namespacePrefix == "android" }
+        if (mh != null) {
+            // 适配layout_marginHorizontal
+            val msNode = tagNode.attributes.getNamedItem("android:layout_marginHorizontal")
+            if (tag.attributes.find { it.name =="layout_marginStart" && it.namespacePrefix == "android" } == null) {
+                addAttribute(tag.name, "android", "marginStart", msNode.nodeValue)
+            }
+        }
+
     }
 }
