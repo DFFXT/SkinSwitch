@@ -46,6 +46,7 @@ internal object RemoteFileReceiver {
     fun init() {
         specialWatchers.add(SpecialFileListener())
         defaultFileWatchers.add(DefaultXmlFileListener())
+        defaultFileWatchers.add(DefaultDexFileListener())
         defaultFileWatchers.add(DefaultFileListener())
         // io线程操作
         launch(Dispatchers.IO) {

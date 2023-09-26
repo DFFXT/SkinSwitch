@@ -7,7 +7,8 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.Keep
 import androidx.startup.Initializer
-import com.example.viewdebug.dex.DexLoadManager
+import com.example.viewdebug.apply.ChangeApplyManager
+import com.example.viewdebug.apply.IBuildIdentification
 import com.example.viewdebug.remote.RemoteFileReceiver
 import com.example.viewdebug.ui.WindowControlManager
 import com.example.viewdebug.ui.skin.ViewDebugMergeResource
@@ -31,7 +32,7 @@ import java.util.Collections
  * Initializer startup自启动
  */
 @Keep
-class ViewDebugInitializer : Initializer<ViewDebugInitializer> {
+open class ViewDebugInitializer : Initializer<ViewDebugInitializer> {
     override fun create(context: Context): ViewDebugInitializer {
         ctx = context.applicationContext as Application
         if (!Settings.canDrawOverlays(context)) {
@@ -39,7 +40,8 @@ class ViewDebugInitializer : Initializer<ViewDebugInitializer> {
             // Toast.makeText(context, "没有出现在应用上层的权限，无法使用调试功能", Toast.LENGTH_SHORT).show()
             //return this
         }
-        DexLoadManager.init(ctx)
+        ChangeApplyManager.init(ctx, getBuildIdentification())
+        // DexLoadManager.init(ctx)
         // 替换换肤框架的MergeResource对象
         ResourcesProviderManager.replaceResourceObjectCreator(object : ResourceObjectCreator {
             override fun createResourceObject(
@@ -75,7 +77,7 @@ class ViewDebugInitializer : Initializer<ViewDebugInitializer> {
             AndroidXmRuleManager.init(ctx)
             // CompileTest.main()
             RemoteFileReceiver.init()
-            PackAssetsFile.clearCachedXml(ctx)
+            // PackAssetsFile.clearCachedXml(ctx)
         }
         // ServerManager.init()
         return this
@@ -84,6 +86,11 @@ class ViewDebugInitializer : Initializer<ViewDebugInitializer> {
     override fun dependencies(): MutableList<Class<out Initializer<*>>> {
         return Collections.emptyList()
     }
+
+    /**
+     * 获取构建接口，外部重载这个方法，返回正确的构建id
+     */
+    open fun getBuildIdentification(): IBuildIdentification? = null
 
     companion object {
         lateinit var ctx: Application

@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import com.example.viewdebug.databinding.ViewDebugXmlTextContainerBinding
 import com.example.viewdebug.remote.RemoteFileReceiver
-import com.example.viewdebug.xml.XmlManager
+import com.example.viewdebug.apply.xml.XmlLoadManager
 import com.example.viewdebug.ui.dialog.BaseDialog
 import com.example.viewdebug.ui.skin.ViewDebugResourceManager
 import com.example.viewdebug.util.adjustOrientation
@@ -67,7 +67,7 @@ internal class XmlTextDialog(
             } else if (mode == 1) {
                 showLoading()
                 launch(Dispatchers.IO) {
-                    val compileResult = XmlManager.compileXmlAndApply(ctx, binding.tvText.text.toString().byteInputStream(), resourceId, resourceType)
+                    val compileResult = XmlLoadManager.compileXmlAndApply(ctx, binding.tvText.text.toString().byteInputStream(), resourceId, resourceType)
                     withContext(Dispatchers.Main) {
                         closeLoading()
                         if (!compileResult) {

@@ -6,6 +6,9 @@
     <string name="view_debug_file_receive_tip">接收到文件：%1$s</string>
     <string name="view_debug_file_receive_xml_ok_tip">xml编译成功：%1$s</string>
     <string name="view_debug_file_receive_xml_err_tip">xml编译失败：%1$s</string>
+    <string name="view_debug_dex_remove_tip">移除成功，重启生效</string>
+    <string name="view_debug_dex_reboot_apply">重启生效</string>
+    <string name="view_debug_dex_reboot_update">重启更新</string>
 
     <style name="MayStyle">
         <item name="android:textColor">@color/view_debug_red</item>

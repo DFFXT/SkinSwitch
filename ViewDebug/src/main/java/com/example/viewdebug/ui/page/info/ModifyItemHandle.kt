@@ -2,7 +2,10 @@ package com.example.viewdebug.ui.page.info
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.example.viewdebug.R
+import com.example.viewdebug.apply.ModifyState
 import com.example.viewdebug.databinding.ViewDebugItemModifyItemBinding
 import com.example.viewdebug.rv.ItemHandle
 import com.example.viewdebug.util.copyToClipboard
@@ -23,6 +26,12 @@ internal class ModifyItemHandle : ItemHandle<ModifyItemHandle.ModifyItem>() {
         vh.binding.tvTitle.setOnClickListener {
             copyToClipboard(it.context, item.name)
         }
+        vh.binding.tvState.isVisible = item.state != ModifyState.APPLIED
+        if (item.state == ModifyState.NOT_APPLIED) {
+            vh.binding.tvState.text = vh.binding.root.context.getText(R.string.view_debug_dex_reboot_apply)
+        } else if (item.state == ModifyState.UPDATABLE) {
+            vh.binding.tvState.text = vh.binding.root.context.getText(R.string.view_debug_dex_reboot_update)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -31,5 +40,7 @@ internal class ModifyItemHandle : ItemHandle<ModifyItemHandle.ModifyItem>() {
 
     private class VH(val binding: ViewDebugItemModifyItemBinding) : RecyclerView.ViewHolder(binding.root)
 
-    class ModifyItem(val name: String, val id: Int, val type: String)
+    class ModifyItem(val name: String, val id: Int, val type: String, val state: ModifyState) {
+
+    }
 }

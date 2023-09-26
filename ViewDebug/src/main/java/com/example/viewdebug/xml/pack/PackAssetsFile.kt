@@ -17,24 +17,44 @@ class PackAssetsFile(private val ctx: Context) {
         /**
          * 清除编译缓存
          */
-        fun clearCachedXml(ctx: Context) {
+        fun clearCachedXmlAndApk(ctx: Context) {
             val dir = File(getApkUnZipFolder(ctx), "assets")
             if (dir.exists()) {
                 dir.listFiles()?.forEach {
                     it.deleteRecursively()
                 }
             }
+            File(getPackedApkPath(ctx)).delete()
+        }
+
+        /**
+         * 获取当前apk编译后的xml
+         */
+        fun getResourceId(ctx: Context): List<Int> {
+            return compiledXmlDir(ctx).listFiles()?.mapNotNull { it.nameWithoutExtension.toIntOrNull() } ?: emptyList()
+        }
+
+        /**
+         * 编译后的xml地址
+         */
+        private fun compiledXmlDir(ctx: Context): File {
+            return  File(getApkUnZipFolder(ctx) + File.separator + "assets" + File.separator + FOLDER)
         }
 
         private fun getApkUnZipFolder(ctx: Context) =
             ctx.externalCacheDir!!.absolutePath + File.separator + "apk"
+
+        /**
+         * 生成的apk地址
+         */
+        fun getPackedApkPath(ctx: Context) =
+            ctx.externalCacheDir!!.absolutePath + File.separator + "view_debug.apk"
     }
 
     /**
      * 生成的apk地址
      */
-    fun getPackedApkPath() =
-        ctx.externalCacheDir!!.absolutePath + File.separator + "view_debug.apk"
+    fun getPackedApkPath() = Companion.getPackedApkPath(ctx)
 
 
     /**
@@ -42,8 +62,7 @@ class PackAssetsFile(private val ctx: Context) {
      * @param name 文件名称，不带后缀
      */
     suspend fun addAXMLFile(inputStream: InputStream, name: String) {
-        val dir =
-            File(getApkUnZipFolder(ctx) + File.separator + "assets" + File.separator + FOLDER)
+        val dir = compiledXmlDir(ctx)
         if (!dir.exists()) {
             dir.mkdirs()
         }

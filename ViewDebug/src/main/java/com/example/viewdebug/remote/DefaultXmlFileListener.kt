@@ -2,7 +2,7 @@ package com.example.viewdebug.remote
 
 import com.example.viewdebug.R
 import com.example.viewdebug.ViewDebugInitializer
-import com.example.viewdebug.xml.XmlManager
+import com.example.viewdebug.apply.xml.XmlLoadManager
 import com.example.viewdebug.util.launch
 import com.example.viewdebug.util.shortToast
 import com.skin.log.Logger
@@ -28,11 +28,11 @@ internal class DefaultXmlFileListener : RemoteFileReceiver.FileWatcher {
                         val id = ctx.resources.getIdentifier(file.nameWithoutExtension, type, ctx.packageName)
                         Logger.i("DefaultXmlFileListener", "$path $type $id")
                         if (id != 0) {
-                            if (XmlManager.compileXmlAndApply(ctx, file.inputStream(), id, type)) {
+                            if (XmlLoadManager.compileXmlAndApply(ctx, file.inputStream(), id, type)) {
                                 withContext(Dispatchers.Main) {
                                     // 全局刷新资源
                                     if(type != RemoteFileReceiver.FileWatcher.TYPE_LAYOUT) {
-                                        XmlManager.applyGlobalViewByResId(id)
+                                        XmlLoadManager.applyGlobalViewByResId(id)
                                     }
                                     ctx.getString(R.string.view_debug_file_receive_xml_ok_tip, file.name).shortToast()
                                 }

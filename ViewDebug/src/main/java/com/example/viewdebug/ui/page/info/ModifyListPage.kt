@@ -10,14 +10,16 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.viewdebug.R
+import com.example.viewdebug.apply.ModifyState
+import com.example.viewdebug.apply.dex.DexLoadManager
+import com.example.viewdebug.apply.xml.XmlLoadManager
 import com.example.viewdebug.databinding.ViewDebugLayoutModifyPageBinding
-import com.example.viewdebug.dex.DexLoadManager
 import com.example.viewdebug.rv.MultiTypeRecyclerAdapter
 import com.example.viewdebug.ui.WindowControlManager
 import com.example.viewdebug.ui.skin.ViewDebugResourceManager
 import com.example.viewdebug.util.adjustOrientation
 import com.example.viewdebug.util.launch
-import com.example.viewdebug.xml.XmlManager
+import com.example.viewdebug.util.shortToast
 import com.fxf.debugwindowlibaray.ui.UIPage
 import com.skin.log.Logger
 import kotlinx.coroutines.Dispatchers
@@ -46,14 +48,10 @@ class ModifyListPage : UIPage(), ViewDebugResourceManager.OnResourceChanged {
     override fun onCreateContentView(ctx: Context, parent: ViewGroup): View {
         binding = ViewDebugLayoutModifyPageBinding.inflate(LayoutInflater.from(ctx), parent, false)
         binding.rvList.adapter = adapter
-        ItemTouchHelper(object :ItemTouchHelper.Callback() {
+        ItemTouchHelper(object : ItemTouchHelper.Callback() {
             override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
-                val item = items[viewHolder.adapterPosition]
-                return if (item.type == "dex") {
-                    0
-                } else {
-                    makeMovementFlags(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT)
-                }
+                // val item = items[viewHolder.adapterPosition]
+                return makeMovementFlags(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT)
             }
 
             override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
@@ -61,13 +59,26 @@ class ModifyListPage : UIPage(), ViewDebugResourceManager.OnResourceChanged {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val id = items[viewHolder.adapterPosition].id
-                ViewDebugResourceManager.removeInterceptor(id)
-                val type = ctx.resources.getResourceTypeName(id)
-                if (type != "layout") {
-                    // 移除了非布局资源，刷新全局
-                    XmlManager.applyGlobalViewByResId(id)
+                val item = items[viewHolder.adapterPosition]
+                if (item.type == "dex") {
+                    // 移除dex
+                    if (item.state == ModifyState.APPLIED || item.state == ModifyState.UPDATABLE) {
+                        viewHolder.itemView.context.getString(R.string.view_debug_dex_remove_tip).shortToast()
+                    }
+                    DexLoadManager.removeAppliedDexList(item.name)
+                    items.removeAt(viewHolder.adapterPosition)
+                    adapter.notifyItemRemoved(viewHolder.adapterPosition)
+                    if (items.isEmpty()) {
+                        WindowControlManager.removePage(this@ModifyListPage)
+                    }
+                } else {
+                    ViewDebugResourceManager.removeInterceptor(item.id)
+                    if (item.type != "layout") {
+                        // 移除了非布局资源，刷新全局
+                        XmlLoadManager.applyGlobalViewByResId(item.id)
+                    }
                 }
+
             }
 
         }).attachToRecyclerView(binding.rvList)
@@ -77,12 +88,23 @@ class ModifyListPage : UIPage(), ViewDebugResourceManager.OnResourceChanged {
         }
         adjustOrientation(binding.rvList)
         ViewDebugResourceManager.addResourceChangeListener(this)
-        // 获取数据
-        items.clear()
-        items.addAll(DexLoadManager.getAppliedDexList().map { ModifyItemHandle.ModifyItem(it, 0, "dex") })
-        items.addAll(ViewDebugResourceManager.getAllChangedResource().convertItems())
-        adapter.update(items)
+
+        refresh()
         return binding.root
+    }
+
+    /**
+     * 更新数据
+     */
+    fun refresh() {
+        items.clear()
+        items.addAll(DexLoadManager.getAllDexList().map { ModifyItemHandle.ModifyItem(it.key, 0, "dex", it.value) })
+        items.addAll(ViewDebugResourceManager.getAllChangedResource().convertItems())
+        if (items.isEmpty()) {
+            WindowControlManager.removePage(this@ModifyListPage)
+        } else {
+            adapter.update(items)
+        }
     }
 
     override fun onDestroy() {
@@ -96,7 +118,8 @@ class ModifyListPage : UIPage(), ViewDebugResourceManager.OnResourceChanged {
             ModifyItemHandle.ModifyItem(
                 type + "/" + ctx.resources.getResourceEntryName(it),
                 it,
-                type
+                type,
+                ModifyState.APPLIED
             )
         }
     }
