@@ -5,9 +5,9 @@ Android 换肤框架
   // 视情况添加，如果有guava依赖冲突则添加
   implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
   // 换肤框架
-  implementation 'com.github.DFFXT.SkinSwitch:SkinCore:0.19.2.8'
+  implementation 'com.github.DFFXT.SkinSwitch:SkinCore:0.20.1'
   // 视情况添加，视图调试框架，支持xml修改实时生效，和kotlin但文件修冷启动生效，用于节省编译时间，具体使用方式需搭配android studio插件使用[插件下载](https://github.com/DFFXT/ViewDebug-Trans)
-  debugImplementation 'com.github.DFFXT.SkinSwitch:ViewDebug:0.19.2.8'
+  debugImplementation 'com.github.DFFXT.SkinSwitch:ViewDebug:0.20.1'
 </code></pre>
 
 
@@ -90,23 +90,17 @@ Android 换肤框架
         tools:node="merge"/>
 </provider>
 ```
-ViewDebugStarter实现，IBuildIdentification接口返回构建时间，则支持在同一个buildId中，远程推送的dex文件可重复加载，
+ViewDebugStarter实现，IBuildIdentification接口返回构建时间，则支持在同一个buildId中，远程推送的dex文件和xml文件可重复加载，
 ```kotlin
-class ViewDebugStarter : Initializer<ViewDebugStarter> {
-    override fun create(context: Context): ViewDebugStarter {
-        // dex设置版本接口，buildTime在gradle中赋值，必须在ViewDebugInitializer初始化之前赋值
-        DexLoadManager.setBuildIdentification(object : IBuildIdentification {
+@Keep
+class ViewDebugStarter : ViewDebugInitializer() {
+    override fun getBuildIdentification(): IBuildIdentification? {
+        return object : IBuildIdentification {
             override fun getBuildId(): String {
+                // 返回构建时间，buildTime字段可在gradle中添加：buildConfigField("long", "buildTime", "${System.currentTimeMillis()}")
                 return BuildConfig.buildTime.toString()
             }
-        })
-        // 这里手动初始化ViewDebugInitializer
-        AppInitializer.getInstance(context).initializeComponent(ViewDebugInitializer::class.java)
-        return this
-    }
-
-    override fun dependencies(): MutableList<Class<out Initializer<*>>> {
-        return Collections.emptyList()
+        }
     }
 }
 ```
