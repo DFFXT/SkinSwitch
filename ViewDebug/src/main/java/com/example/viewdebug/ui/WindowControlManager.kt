@@ -66,8 +66,8 @@ object WindowControlManager {
         } else {
             if (modifyListPage == null) {
                 modifyListPage = ModifyListPage()
-                viewDebugManager.addPage(modifyListPage!!)
             }
+            viewDebugManager.addPage(modifyListPage!!)
         }
     }
 

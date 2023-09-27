@@ -14,4 +14,6 @@
     <color name="view_debug_image_detail_title_bar_bg">#578FFF</color>
     <color name="view_debug_common_press_foreground">#225C5F65</color>
     <color name="view_debug_common_selected_color">#66ff0000</color>
+    <color name="view_debug_dex_state_ok">#0f8</color>
+    <color name="view_debug_dex_state_error">#8f00</color>
 </resources>

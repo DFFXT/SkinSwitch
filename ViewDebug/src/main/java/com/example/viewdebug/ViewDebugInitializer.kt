@@ -9,6 +9,7 @@ import androidx.annotation.Keep
 import androidx.startup.Initializer
 import com.example.viewdebug.apply.ChangeApplyManager
 import com.example.viewdebug.apply.IBuildIdentification
+import com.example.viewdebug.apply.dex.ClassLoadObserve
 import com.example.viewdebug.remote.RemoteFileReceiver
 import com.example.viewdebug.ui.WindowControlManager
 import com.example.viewdebug.ui.skin.ViewDebugMergeResource
@@ -16,7 +17,6 @@ import com.example.viewdebug.util.ViewDebugInfo
 import com.example.viewdebug.util.launch
 import com.example.viewdebug.util.setViewDebugInfo
 import com.example.viewdebug.xml.AndroidXmRuleManager
-import com.example.viewdebug.xml.pack.PackAssetsFile
 import com.skin.skincore.SkinManager
 import com.skin.skincore.asset.IAsset
 import com.skin.skincore.collector.ViewUnion
@@ -40,6 +40,7 @@ open class ViewDebugInitializer : Initializer<ViewDebugInitializer> {
             // Toast.makeText(context, "没有出现在应用上层的权限，无法使用调试功能", Toast.LENGTH_SHORT).show()
             //return this
         }
+        ClassLoadObserve
         ChangeApplyManager.init(ctx, getBuildIdentification())
         // DexLoadManager.init(ctx)
         // 替换换肤框架的MergeResource对象

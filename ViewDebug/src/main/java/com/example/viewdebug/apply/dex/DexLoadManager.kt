@@ -11,7 +11,9 @@ import com.skin.log.Logger
 import dalvik.system.BaseDexClassLoader
 import dalvik.system.DexClassLoader
 import kotlinx.coroutines.Dispatchers
+import org.json.JSONObject
 import java.io.File
+import java.util.Collections
 
 /**
  * 加载外部dex
@@ -32,7 +34,7 @@ object DexLoadManager {
         (RemoteFileReceiver.getBasePath(ctx) + "/dex").makeAsDir()
     }
 
-    private val dexMap = HashMap<String, ModifyState>()
+    private val dexMap = HashMap<String, DexInfo>()
 
     private var useOnce: Boolean = false
 
@@ -59,17 +61,12 @@ object DexLoadManager {
                 applyDexList.add(it)
             }
         }
-       /* dexTmpFolder.listFiles()?.forEach {
-            if (it.name.endsWith(".dex")) {
-                applyDexList.add(it)
-            }
-        }*/
         if (applyDexList.isEmpty()) {
             Logger.i(TAG, "no dex file")
             return
         }
         // 有新的dex到来，直接加载
-        applyDexLoad(context, applyDexList)
+        applyDexLoad(context, applyDexList, false)
 
         if (useOnce) {
             clear()
@@ -77,29 +74,39 @@ object DexLoadManager {
 
     }
 
+    fun hotApply() {
+        applyDexLoad(ctx, dexMove(), true)
+    }
+
     /**
      * 移动dex文件，根据是否只使用一次判断该移动到哪个文件夹
+     * @return 移动了哪些文件
      */
-    fun dexMove() {
-        receivePath.listFiles()?.forEach {
-            if (it.name.endsWith(".dex")) {
-                val dest = File(dexFolder, it.name)
-                if (dest.exists()) {
-                    dexMap[dest.name] = ModifyState.UPDATABLE
-                    dest.delete()
-                } else {
-                    dexMap[dest.name] = ModifyState.NOT_APPLIED
-                }
-                it.renameTo(dest)
-            }
+    private fun dexMove(): List<File> {
+        return receivePath.listFiles { _, name -> name.endsWith(".dex") }?.map {
+            val dest = File(dexFolder, it.name)
+            renameTo(it, dest)
+            val extraFile = File(it.absolutePath + ".extra")
+            renameTo(extraFile, File(dexFolder, extraFile.name))
+            dest
+        } ?: Collections.emptyList()
+    }
+
+    /**
+     * 移动文件，先删除目标文件，因为renameTo无法覆盖
+     */
+    private fun renameTo(src: File, dest: File) {
+        if (dest.exists()) {
+            dest.delete()
         }
+        src.renameTo(dest)
     }
 
     /**
      * 获取当前应用的dex文件名称
      * @return first: dex文件名称；second：是否已经应用
      */
-    fun getAllDexList(): HashMap<String, ModifyState> {
+    fun getAllDexList(): HashMap<String, DexInfo> {
         return dexMap
     }
 
@@ -124,7 +131,10 @@ object DexLoadManager {
         return false
     }
 
-    private fun applyDexLoad(context: Context, dexList: List<File>) {
+    /**
+     * @param hotApply 是否是热加载（冷加载是启动时进行加载）
+     */
+    private fun applyDexLoad(context: Context, dexList: List<File>, hotApply: Boolean) {
         val cl = this.javaClass.classLoader!!
         // 获取旧的elements
         val oldElement = getElements(cl)
@@ -134,8 +144,9 @@ object DexLoadManager {
             val newLoader = DexClassLoader(it.absolutePath, context.getExternalFilesDir("")!!.absolutePath, null, cl)
             newElement.addAll(getElements(newLoader))
         }
-        val arr = java.lang.reflect.Array.newInstance(oldElement.javaClass.componentType!!, oldElement.size + newElement.size)
-        // 合并新旧，需要注意，这里要生成对应类型的数组
+        val arr =
+            java.lang.reflect.Array.newInstance(oldElement.javaClass.componentType!!, oldElement.size + newElement.size)
+        // 合并新旧, 新的在前，需要注意，这里要生成对应类型的数组
         repeat(oldElement.size + newElement.size) {
 
             val value = if (it < newElement.size) {
@@ -150,8 +161,33 @@ object DexLoadManager {
             "已应用补丁".shortToast()
         }
         dexList.forEach {
-            dexMap[it.name] = ModifyState.APPLIED
+            val classList = getDexExtraInfo(it)
+            val classMap = HashMap<String, ModifyState>()
+            classList.forEach { clsName ->
+                val isLoad = ClassLoadObserve.isLoaded(clsName)
+                if (isLoad) {
+                    classMap[clsName] = if (hotApply) ModifyState.REBOOT_UPDATABLE else ModifyState.INVALID_APPLY
+                } else {
+                    classMap[clsName] = ModifyState.APPLIED
+                }
+            }
+            val info = DexInfo(it.name, classMap)
+            dexMap[info.name] = info
         }
+    }
+
+    private fun getDexExtraInfo(dexFile: File): List<String> {
+        val list = ArrayList<String>()
+        val extraFile = File(dexFile.absolutePath + ".extra")
+        if (extraFile.exists()) {
+            val json = JSONObject(extraFile.readText())
+            val arr = json.getJSONArray("class")
+
+            for (i in 0 until arr.length()) {
+                list.add(arr.getString(i))
+            }
+        }
+        return list
     }
 
 
@@ -179,7 +215,13 @@ object DexLoadManager {
         dexFolder.listFiles()?.forEach {
             it.deleteRecursively()
         }
-        //dexTmpFolder.deleteRecursively()
     }
+
+    class DexInfo(val name: String, val classList: HashMap<String, ModifyState>) {
+        fun getModifyState(): ModifyState {
+            return classList.maxByOrNull { it.value.ordinal }?.value ?: ModifyState.UNKNOWN
+        }
+    }
+
 
 }

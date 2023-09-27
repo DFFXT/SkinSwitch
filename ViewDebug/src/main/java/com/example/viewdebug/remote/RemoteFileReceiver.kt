@@ -79,6 +79,7 @@ internal object RemoteFileReceiver {
                             val receivePath = item.getString("file") ?: return@launch
                             val fileType = item.getString("type")
                             val originPath = item.getString("originPath")
+
                             val fileInfo = FileWatcher.FileInfo(receivePath, fileType, originPath)
                             Logger.i("RemoteFileReceiver", receivePath)
                             // 只有一个能处理，拦截了后续监听则不处理

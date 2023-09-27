@@ -23,6 +23,7 @@ import com.example.viewdebug.util.shortToast
 import com.fxf.debugwindowlibaray.ui.UIPage
 import com.skin.log.Logger
 import kotlinx.coroutines.Dispatchers
+import java.util.regex.Pattern
 
 /**
  * 当前应用更改列表
@@ -31,9 +32,20 @@ import kotlinx.coroutines.Dispatchers
  */
 class ModifyListPage : UIPage(), ViewDebugResourceManager.OnResourceChanged {
     private lateinit var binding: ViewDebugLayoutModifyPageBinding
-    private val items = ArrayList<ModifyItemHandle.ModifyItem>()
-    private val adapter = MultiTypeRecyclerAdapter<ModifyItemHandle.ModifyItem>().apply {
-        this.registerItemHandler(ModifyItemHandle())
+    private val items = ArrayList<ModifyItem>()
+    private val adapter = MultiTypeRecyclerAdapter<ModifyItem>().apply {
+        this.registerItemHandler(ModifyItemChildHandle())
+        this.registerItemHandler(ModifyItemParentHandle { item, index ->
+            if (item.isExpand) {
+                item.isExpand = false
+               items.removeAll(item.children.toSet())
+                notifyItemRangeRemoved(index + 1, item.children.size)
+            } else {
+                item.isExpand = true
+                items.addAll(index + 1, item.children)
+                notifyItemRangeInserted(index + 1, item.children.size)
+            }
+        })
     }
 
     override fun getTabIcon(): Int = R.mipmap.view_debug_modify_list
@@ -50,24 +62,35 @@ class ModifyListPage : UIPage(), ViewDebugResourceManager.OnResourceChanged {
         binding.rvList.adapter = adapter
         ItemTouchHelper(object : ItemTouchHelper.Callback() {
             override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
-                // val item = items[viewHolder.adapterPosition]
+                val item = items[viewHolder.adapterPosition]
+                if (item is ModifyItemChild) {
+                    return 0
+                }
                 return makeMovementFlags(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT)
             }
 
-            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
                 return false
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val item = items[viewHolder.adapterPosition]
+                val item = items[viewHolder.adapterPosition] as ModifyItemParent
                 if (item.type == "dex") {
                     // 移除dex
-                    if (item.state == ModifyState.APPLIED || item.state == ModifyState.UPDATABLE) {
+                    if (item.state == ModifyState.APPLIED || item.state == ModifyState.REBOOT_UPDATABLE) {
                         viewHolder.itemView.context.getString(R.string.view_debug_dex_remove_tip).shortToast()
                     }
                     DexLoadManager.removeAppliedDexList(item.name)
                     items.removeAt(viewHolder.adapterPosition)
-                    adapter.notifyItemRemoved(viewHolder.adapterPosition)
+                    if (items.removeAll(item.children.toSet())) {
+                        adapter.notifyItemRangeRemoved(viewHolder.adapterPosition, 1 + item.children.size)
+                    } else {
+                        adapter.notifyItemRemoved(viewHolder.adapterPosition)
+                    }
                     if (items.isEmpty()) {
                         WindowControlManager.removePage(this@ModifyListPage)
                     }
@@ -98,7 +121,21 @@ class ModifyListPage : UIPage(), ViewDebugResourceManager.OnResourceChanged {
      */
     fun refresh() {
         items.clear()
-        items.addAll(DexLoadManager.getAllDexList().map { ModifyItemHandle.ModifyItem(it.key, 0, "dex", it.value) })
+        val dexItems = ArrayList<ModifyItem>()
+        DexLoadManager.getAllDexList().forEach {
+            val parent = ModifyItemParent(false, it.key, 0, "dex", it.value.getModifyState())
+            val children = it.value.classList.map {
+                ModifyItemChild(parent, it.key, 0, "class", it.value)
+            }.sortedWith { o1, o2 ->
+                // 子节点排序
+                val p1 = (o1.state.ordinal shl 10) + 1024 - o1.name.length
+                val p2 = (o2.state.ordinal shl 10) + 1024 - o2.name.length
+                p2 - p1
+            }
+            parent.children.addAll(children)
+            dexItems.add(parent)
+        }
+        items.addAll(dexItems)
         items.addAll(ViewDebugResourceManager.getAllChangedResource().convertItems())
         if (items.isEmpty()) {
             WindowControlManager.removePage(this@ModifyListPage)
@@ -112,10 +149,11 @@ class ModifyListPage : UIPage(), ViewDebugResourceManager.OnResourceChanged {
         ViewDebugResourceManager.addResourceChangeListener(this)
     }
 
-    private fun Collection<Int>.convertItems(): List<ModifyItemHandle.ModifyItem> {
+    private fun Collection<Int>.convertItems(): List<ModifyItem> {
         return this.map {
             val type = ctx.resources.getResourceTypeName(it)
-            ModifyItemHandle.ModifyItem(
+            ModifyItemParent(
+                false,
                 type + "/" + ctx.resources.getResourceEntryName(it),
                 it,
                 type,
@@ -130,9 +168,10 @@ class ModifyListPage : UIPage(), ViewDebugResourceManager.OnResourceChanged {
     override fun onResourceAdd(id: Int) {
         launch(Dispatchers.Main) {
             if (items.indexOfFirst { it.id == id } == -1) {
-                Logger.d("ModifyListPage", "onResourceAdd $id")
+                Logger.d("ModifyListPage", "onResourceAdddddddddddddddddddddddddd $id")
                 items.addAll(listOf(id).convertItems())
                 adapter.notifyItemInserted(items.size)
+
             }
         }
 

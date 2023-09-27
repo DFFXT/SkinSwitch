@@ -53,6 +53,7 @@ dependencies {
     implementation 'androidx.startup:startup-runtime:1.0.0'
     implementation 'com.github.DFFXT:DebugWindow:1.0.0.8'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.1'
     testImplementation 'junit:junit:4.13.2'
     api project(":SkinCore")
 }

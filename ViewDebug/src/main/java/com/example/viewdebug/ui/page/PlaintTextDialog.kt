@@ -6,11 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.viewdebug.databinding.ViewDebugLayoutPlainTextBinding
 import com.example.viewdebug.rv.MultiTypeRecyclerAdapter
-import com.fxf.debugwindowlibaray.ui.UIPage
 import com.example.viewdebug.ui.dialog.BaseDialog
 import com.example.viewdebug.ui.page.itemHanlder.ItemPlainTextHandler
 import com.example.viewdebug.util.adjustOrientation
 import com.example.viewdebug.util.copyToClipboard
+import com.fxf.debugwindowlibaray.ui.UIPage
 
 /**
  * 显示纯文本，以行显示

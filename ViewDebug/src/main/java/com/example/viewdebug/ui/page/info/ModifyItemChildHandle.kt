@@ -13,11 +13,11 @@ import com.example.viewdebug.util.copyToClipboard
 /**
  * 已应用更改列表item
  */
-internal class ModifyItemHandle : ItemHandle<ModifyItemHandle.ModifyItem>() {
+internal class ModifyItemChildHandle : ItemHandle<ModifyItem>() {
 
 
     override fun handle(item: ModifyItem): Boolean {
-        return true
+        return item is ModifyItemChild
     }
 
     override fun onBindView(item: ModifyItem, position: Int, vh: RecyclerView.ViewHolder) {
@@ -27,10 +27,10 @@ internal class ModifyItemHandle : ItemHandle<ModifyItemHandle.ModifyItem>() {
             copyToClipboard(it.context, item.name)
         }
         vh.binding.tvState.isVisible = item.state != ModifyState.APPLIED
-        if (item.state == ModifyState.NOT_APPLIED) {
-            vh.binding.tvState.text = vh.binding.root.context.getText(R.string.view_debug_dex_reboot_apply)
-        } else if (item.state == ModifyState.UPDATABLE) {
+        if (item.state == ModifyState.REBOOT_UPDATABLE) {
             vh.binding.tvState.text = vh.binding.root.context.getText(R.string.view_debug_dex_reboot_update)
+        } else if (item.state == ModifyState.INVALID_APPLY) {
+            vh.binding.tvState.text = vh.binding.root.context.getText(R.string.view_debug_dex_invalid_apply)
         }
     }
 
@@ -40,7 +40,5 @@ internal class ModifyItemHandle : ItemHandle<ModifyItemHandle.ModifyItem>() {
 
     private class VH(val binding: ViewDebugItemModifyItemBinding) : RecyclerView.ViewHolder(binding.root)
 
-    class ModifyItem(val name: String, val id: Int, val type: String, val state: ModifyState) {
 
-    }
 }
