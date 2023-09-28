@@ -1,6 +1,7 @@
 package com.example.viewdebug.ui.page.info
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.viewdebug.R
@@ -19,15 +20,20 @@ class ModifyItemParentHandle(private val itemClick: (item: ModifyItemParent, ind
         notifyExpand(vh, item.isExpand)
         vh.binding.tvState.text = item.getStateText()
         vh.binding.tvTitle.text = item.name
-        vh.binding.root.setOnClickListener {
-            itemClick.invoke(item, position)
-            notifyExpand(vh, item.isExpand)
-        }
-        if (item.state != ModifyState.APPLIED) {
-            vh.binding.tvState.setTextColor(vh.binding.root.context.getColor(R.color.view_debug_dex_state_error))
+        if (item.children.isNotEmpty()) {
+            vh.binding.root.setOnClickListener {
+                itemClick.invoke(item, position)
+                notifyExpand(vh, item.isExpand)
+            }
+            if (item.state != ModifyState.APPLIED) {
+                vh.binding.tvState.setTextColor(vh.binding.root.context.getColor(R.color.view_debug_dex_state_error))
+            } else {
+                vh.binding.tvState.setTextColor(vh.binding.root.context.getColor(R.color.view_debug_dex_state_ok))
+            }
         } else {
-            vh.binding.tvState.setTextColor(vh.binding.root.context.getColor(R.color.view_debug_dex_state_ok))
+            vh.binding.ivCollapse.visibility = View.INVISIBLE
         }
+
     }
 
     private fun notifyExpand(vh: VH, isExpand: Boolean) {

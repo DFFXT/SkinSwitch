@@ -58,7 +58,7 @@ internal class XmlTextDialog(
             false,
         )
         binding.tvText.movementMethod = LinkMovementMethod.getInstance()
-        adjustOrientation(binding.root)
+        adjustOrientation(binding.container)
         binding.ivXmlTextOperate.setOnClickListener {
             if (mode == 0) {
                 binding.tvText.requestFocus()

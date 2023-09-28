@@ -6,6 +6,7 @@
     android:clickable="true"
     android:focusable="true"
     android:paddingBottom="40dp"
+    android:elevation="@dimen/view_debug_elevation"
     android:background="@color/view_debug_image_set_bg">
 
     <TextView
