@@ -1,10 +1,14 @@
 package com.example.viewdebug.util
 
 import android.content.res.Resources
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.updateLayoutParams
 import com.example.viewdebug.R
+import java.lang.StringBuilder
 
 internal fun View.setSize(width: Int? = null, height: Int? = null) {
     val lp = layoutParams ?: ViewGroup.LayoutParams(
@@ -35,6 +39,7 @@ internal fun View.enableSelect() {
 
 class ViewDebugInfo(
     val layoutId: Int?,
+    val invokeTrace: Array<StackTraceElement>
 ) {
     fun getLayoutName(res: Resources): String? {
         layoutId ?: return null
@@ -51,6 +56,28 @@ class ViewDebugInfo(
         }
         return null
     }
+
+    /**
+     * 获取主要的几个调用关系
+     */
+    fun getMainInvokeTrace(): String {
+        var anchor = false
+        val builder = StringBuilder()
+        for (ele in invokeTrace) {
+            if (anchor) {
+                builder.append(ele.className)
+                builder.append(".")
+                builder.append(ele.methodName)
+                builder.append(":")
+                builder.append(ele.lineNumber)
+                builder.append("\n")
+            }
+            if (ele.methodName == "inflate" && ele.className == LayoutInflater::class.java.name) {
+                anchor = true
+            }
+        }
+        return builder.toString()
+    }
 }
 
 internal fun View.getViewDebugInfo(): ViewDebugInfo? {
@@ -64,8 +91,12 @@ internal fun View.setViewDebugInfo(info: ViewDebugInfo) {
 internal fun adjustOrientation(rootView: View) {
     val ctx = rootView.context
     if (ctx.resources.displayMetrics.widthPixels > ctx.resources.displayMetrics.heightPixels) {
-        rootView.setSize(width = ctx.resources.displayMetrics.widthPixels / 2)
+        rootView.setSize(width = (ctx.resources.displayMetrics.widthPixels * 0.7).toInt())
+        // rootView.minimumWidth = (ctx.resources.displayMetrics.widthPixels * 0.77f).toInt()
     } else {
+        rootView.updateLayoutParams<ConstraintLayout.LayoutParams> {
+            matchConstraintMinWidth = (ctx.resources.displayMetrics.widthPixels * 0.8f).toInt()
+        }
         rootView.minimumWidth = (ctx.resources.displayMetrics.widthPixels * 0.8f).toInt()
     }
 }

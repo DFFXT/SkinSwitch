@@ -9,9 +9,11 @@ object LinkPlugin:ResourceLink {
     private val highBuildVersionResource = HashMap<String, Int>()
 
     init {
-        // 至少在api25版本上无法支持这些属性
+        // 至少在api25版本上无法支持这些属性，这里会进行编译优化，以常量的方式引入，所以低版本上不会崩溃
         highBuildVersionAttribute["android:paddingHorizontal"] = android.R.attr.paddingHorizontal
         highBuildVersionAttribute["android:paddingVertical"] = android.R.attr.paddingVertical
+        highBuildVersionAttribute["android:layout_marginHorizontal"] = android.R.attr.layout_marginHorizontal
+        highBuildVersionAttribute["android:layout_marginVertical"] = android.R.attr.layout_marginVertical
 
 
     }

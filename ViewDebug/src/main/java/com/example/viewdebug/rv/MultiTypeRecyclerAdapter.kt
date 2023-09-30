@@ -56,7 +56,7 @@ class MultiTypeRecyclerAdapter<T : Any> :
     }
 
     fun update(data: List<T>) {
-        this.data = ArrayList(data)
+        this.data = data
         notifyDataSetChanged()
     }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:background="@color/main_color"
+    android:background="@color/view_debug_red"
     android:layout_height="match_parent">
 
 
@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:paddingHorizontal="140dp"
         android:text="1444"
-        android:background="@color/view_debug_red"
+        android:background="@color/view_debug_black"
         android:paddingVertical="20dp"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>

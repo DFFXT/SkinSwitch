@@ -41,7 +41,7 @@ internal class ContextLoader(
     // 视图解析拦截
     internal var interceptor: AttrParseInterceptor? = null
     internal lateinit var attrParseListeners: LinkedList<AttrParseListener>
-    private val viewContainer = ViewContainer()
+    internal val viewContainer = ViewContainer()
     private val ctxRef = WeakReference(context)
 
     init {

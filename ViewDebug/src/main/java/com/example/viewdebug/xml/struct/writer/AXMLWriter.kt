@@ -45,8 +45,8 @@ abstract class BaseTagChunkWriter(startPosition: Int, private val chunkFileWrite
     override fun onWrite(data: ByteBuffer) {
         data.putInt(lineNumber)
         data.putInt(comment)
-        data.putInt(chunkFileWriter.chunkString.getStringIndex(namespaceUri))
-        data.putInt(chunkFileWriter.chunkString.getStringIndex(name))
+        data.putInt(chunkFileWriter.chunkString.getOtherString(namespaceUri))
+        data.putInt(chunkFileWriter.chunkString.getOtherString(name))
         onWrite2(data)
         writeChunkSize(data, data.position() - startPosition)
     }
@@ -131,7 +131,6 @@ class ChunkStringWriter(startPosition: Int) : BaseChunkWriter(startPosition) {
     // styleAccount * 4
     val styleOffset = ArrayList<Int>()
 
-    private val stringPools = HashMap<String, StringPool>()
     private lateinit var sortedStringPool: ArrayList<StringPool>
 
     // key type
@@ -149,7 +148,7 @@ class ChunkStringWriter(startPosition: Int) : BaseChunkWriter(startPosition) {
      *  其它字符串内部根据ASCII排序，中文还不清楚，也应该是根据其每个的byte数值来排序
      */
     fun addString(type: Int, priority: Int, string: String) {
-        if (!stringPools.contains(string)) {
+        /*if (!stringPools.contains(string)) {
             val pool = StringPool(priority.toLong() or (type.toLong() shl 32), string)
             stringPools[string] = pool
             if (type == PRIORITY_TYPE_ATTR_NAME) {
@@ -157,7 +156,22 @@ class ChunkStringWriter(startPosition: Int) : BaseChunkWriter(startPosition) {
             } else {
                 otherStrings.add(pool)
             }
+        }*/
+
+        // 各自判定，因为存在同一个字符串既是属性名称，又是普通字符串的情况
+        if (type == PRIORITY_TYPE_ATTR_NAME) {
+            if (attrNames.find { it.string == string } == null) {
+                val pool = StringPool(priority.toLong() or (type.toLong() shl 32), string)
+                attrNames.add(pool)
+            }
+
+        } else {
+            if (otherStrings.find { it.string == string } == null) {
+                val pool = StringPool(priority.toLong() or (type.toLong() shl 32), string)
+                otherStrings.add(pool)
+            }
         }
+
     }
 
     /**
@@ -181,10 +195,23 @@ class ChunkStringWriter(startPosition: Int) : BaseChunkWriter(startPosition) {
     /**
      * 获取字符串在池子中的位置
      * 必须在sort之后才有效
+     * @param type [PRIORITY_TYPE_ATTR_NAME][PRIORITY_TYPE_ATTR_VALUE]
      */
-    fun getStringIndex(string: String): Int {
-        return stringPools[string]?.index ?: -1
+    fun getStringIndex(type: Int, string: String): Int {
+        val index =  if (type == PRIORITY_TYPE_ATTR_NAME) {
+            attrNames.find { it.string == string }?.index ?: -1
+        } else {
+            otherStrings.find { it.string == string }?.index ?: -1
+        }
+        if (index == -1) {
+            Logger.e("getStringIndex", "string index error")
+        }
+        return index
     }
+
+    fun getOtherString(string: String) = getStringIndex(PRIORITY_TYPE_ATTR_VALUE, string)
+
+    fun getResourceString(string: String) = getStringIndex(PRIORITY_TYPE_ATTR_NAME, string)
 
     /**
      * todo 有可能发生错误，[StringPool.cpp]中是先读取的styleOffset再读取的stringOffset
@@ -375,8 +402,8 @@ class ChunkNamespaceWriter(startPosition: Int, type: Short, private val chunkFil
     override fun onWrite(data: ByteBuffer) {
         data.putInt(lineNumber)
         data.putInt(comment)
-        data.putInt(chunkFileWriter.chunkString.getStringIndex(prefix))
-        data.putInt(chunkFileWriter.chunkString.getStringIndex(uri))
+        data.putInt(chunkFileWriter.chunkString.getOtherString(prefix))
+        data.putInt(chunkFileWriter.chunkString.getOtherString(uri))
     }
 }
 
@@ -438,12 +465,16 @@ class Attribute(var systemResourceId: Int, private val chunkFileWriter: ChunkFil
         // todo 理论上应该进行范围判定
         val nsUri = chunkFileWriter.chunkStartNamespace.find { it.prefix == namespacePrefix }?.uri
         // 写入命名空间
-        data.putInt(chunkFileWriter.chunkString.getStringIndex(nsUri ?: ""))
-        data.putInt(chunkFileWriter.chunkString.getStringIndex(name))
+        data.putInt(chunkFileWriter.chunkString.getOtherString(nsUri ?: ""))
+        if (nsUri == null) {
+            data.putInt(chunkFileWriter.chunkString.getOtherString(name))
+        } else {
+            data.putInt(chunkFileWriter.chunkString.getResourceString(name))
+        }
         if (resValue.stringData == null) {
             data.putInt(value)
         } else {
-            resValue.data = chunkFileWriter.chunkString.getStringIndex(resValue.stringData!!)
+            resValue.data = chunkFileWriter.chunkString.getOtherString(resValue.stringData!!)
             data.putInt(resValue.data)
         }
         resValue.write(data)

@@ -7,7 +7,7 @@
     android:clickable="true"
     android:focusable="true"
     android:background="@color/view_debug_image_set_bg"
-    android:elevation="5dp">
+    android:elevation="@dimen/view_debug_elevation">
 
     <View
         android:layout_width="match_parent"
@@ -40,13 +40,6 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="PrivateResource,UseAppTint" />
 
-    <ImageView
-        android:layout_width="@dimen/view_debug_control_ui_status_bar_height"
-        android:layout_height="@dimen/view_debug_control_ui_status_bar_height"
-        android:layout_marginEnd="10dp"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="@color/view_debug_white"
-        app:layout_constraintEnd_toStartOf="@id/iv_close"/>
 
 
     <androidx.recyclerview.widget.RecyclerView

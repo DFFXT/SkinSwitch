@@ -61,10 +61,14 @@ class Asset(
     override fun applyTheme(skinThemeId: Int) {
         themeId = skinThemeId
         if (!themeSet.containsKey(skinThemeId)) {
-            dayTheme = day.newTheme()
+            if (!this::dayTheme.isInitialized) {
+                dayTheme = day.newTheme()
+            }
             dayTheme.applyStyle(skinThemeId, true)
 
-            nightTheme = night.newTheme()
+            if (!this::nightTheme.isInitialized) {
+                nightTheme = night.newTheme()
+            }
             nightTheme.applyStyle(skinThemeId, true)
             // themeSet[skinThemeId] = dayTheme
         }

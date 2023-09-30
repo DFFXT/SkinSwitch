@@ -2,18 +2,18 @@ package com.skin.skinswitch
 
 import android.app.Presentation
 import android.content.res.Resources
-import android.hardware.display.DisplayManager
 import android.os.Bundle
 import android.os.Environment
 import android.view.View
 import android.widget.RadioButton
 import androidx.appcompat.app.AppCompatActivity
 import com.example.skinswitch.R
+import com.skin.log.Logger
 import com.skin.skincore.SkinManager
 import com.skin.skincore.collector.isNight
 import com.skin.skinswitch.const.AppConst
 import com.skin.skinswitch.module.MainFragment
-import java.util.*
+import java.util.WeakHashMap
 
 val map = WeakHashMap<View, Int>()
 
@@ -61,6 +61,7 @@ class MainActivity : AppCompatActivity() {
 
         var presentation: Presentation? = null
         findViewById<View>(R.id.view).setOnClickListener {
+            Logger.i("sss", "click")
             //TestActivity.startActivity(this)
             /*if (presentation != null) {
                 presentation?.dismiss()

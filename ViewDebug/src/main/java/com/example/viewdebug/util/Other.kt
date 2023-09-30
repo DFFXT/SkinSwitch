@@ -6,13 +6,15 @@ import android.content.Context
 import android.view.View
 import android.widget.Toast
 import com.example.viewdebug.ViewDebugInitializer
-import com.example.viewdebug.ui.UIPage
-import com.example.viewdebug.ui.image.XmlParser
-import com.example.viewdebug.ui.image.XmlTextDialog
+import com.example.viewdebug.ui.page.XmlParser
+import com.example.viewdebug.ui.page.XmlTextDialog
+import com.fxf.debugwindowlibaray.ui.UIPage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.InputStream
 import java.lang.ref.WeakReference
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
@@ -28,7 +30,7 @@ internal fun copyToClipboard(ctx: Context, text: String) {
 /**
  * 显示xml弹窗
  */
-internal fun tryShowXmlText(ctx: Context, id: Int, hostPage: UIPage, attributeId: Int?, target: WeakReference<View>?) {
+internal fun tryShowXmlText(ctx: Context, id: Int, hostPage: UIPage, attributeId: Int?, target: WeakReference<View>?): Boolean {
     val attrValue = ctx.resources.getResourceEntryName(id)
     try {
         val parsedValue = XmlParser().getXmlText(ctx, id) { text ->
@@ -41,9 +43,11 @@ internal fun tryShowXmlText(ctx: Context, id: Int, hostPage: UIPage, attributeId
         }
         val dialog = XmlTextDialog(ctx, hostPage)
         dialog.show(id, parsedValue, attributeId, target)
+        return true
     } catch (e: Exception) {
         copyToClipboard(ctx, attrValue)
     }
+    return false
 }
 
 internal val applicationJob = SupervisorJob()
@@ -60,4 +64,29 @@ internal fun launch(
 
 internal fun String.shortToast() {
     Toast.makeText(ViewDebugInitializer.ctx, this, Toast.LENGTH_SHORT).show()
+}
+
+internal fun String.makeAsDir(): File {
+    val dir = File(this)
+    if (!dir.exists()) {
+        dir.mkdirs()
+    }
+    return dir
+}
+
+
+
+fun InputStream.readBytes(length: Int): ByteArray {
+    val arr = ByteArray(length)
+    var temp = ByteArray(length)
+    var recSize = 0
+    while (true) {
+        val len = this.read(temp)
+        if (len == -1) break
+        System.arraycopy(temp, 0, arr, recSize, len)
+        temp = ByteArray(length - len)
+        recSize += len
+        if (recSize == length) break
+    }
+    return arr
 }

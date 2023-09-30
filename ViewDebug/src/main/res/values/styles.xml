@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ViewDebugTitle">
+        <item name="android:textColor">@color/view_debug_white</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textSize">@dimen/view_debug_big_text_size</item>
+        <item name="android:paddingStart">@dimen/view_debug_common_padding</item>
+        <item name="android:paddingEnd">@dimen/view_debug_common_padding</item>
+    </style>
+</resources>

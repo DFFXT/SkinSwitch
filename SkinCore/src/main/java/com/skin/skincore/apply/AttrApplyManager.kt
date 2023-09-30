@@ -22,8 +22,18 @@ import com.skin.skincore.reflex.getSkinTheme
 object AttrApplyManager {
     private val skinAttrStrategy = SparseBooleanArray()
     private val applySet: SparseArray<BaseViewApply<View>> = SparseArray()
-    // 可蓝拦截换肤view
+
+    // 可拦截换肤view
     var onApplyInterceptor: AttrApplyInterceptor? = null
+
+    /**
+     * 是否应用系统资源，由于主题的存在，会给view的某些属性设置一个初始资源
+     * 比如textColorHint=@android:color/hint_foreground_material_light
+     * 比如textCursor=@android:drawable/text_cursor_material
+     * 比如scrollbarThumbVertical=android:drawable/scrollbar_handle_material
+     * View的好几个属性都存在初始值，导致换肤时这些属性都走了一遍，很耗时
+     */
+    var applySystemResources = false
 
     // 属性解析器
     internal val parser by lazy { DefaultParser(applySet.keyIterator().asSequence().toHashSet()) }
@@ -96,6 +106,10 @@ object AttrApplyManager {
         provider: IResourceProvider,
         theme: Resources.Theme?,
     ) {
+        if (!applySystemResources && resId and 0x7f000000 != 0x7f000000) {
+            // Logger.v("AttrApplyManager", "skip:${view.resources.getResourceName(resId)}")
+            return
+        }
         applySet[attributeId]?.tryApply(
             eventType,
             view,

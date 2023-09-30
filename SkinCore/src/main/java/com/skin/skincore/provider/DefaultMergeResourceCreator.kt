@@ -1,6 +1,6 @@
 package com.skin.skincore.provider
 
-import android.content.res.Resources
+import android.content.Context
 import com.skin.skincore.asset.IAsset
 
 /**
@@ -9,9 +9,9 @@ import com.skin.skincore.asset.IAsset
 object DefaultMergeResourceCreator : ResourceObjectCreator {
     override fun createResourceObject(
         asset: IAsset,
-        default: Resources,
-        themeId: Int,
+        defaultContext: Context,
+        themeIds: IntArray,
     ): MergeResource {
-        return MergeResource(asset, default, themeId)
+        return MergeResource(asset, defaultContext.resources, themeIds)
     }
 }

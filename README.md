@@ -5,9 +5,9 @@ Android 换肤框架
   // 视情况添加，如果有guava依赖冲突则添加
   implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
   // 换肤框架
-  implementation 'com.github.DFFXT.SkinSwitch:SkinCore:0.18.1.8'
+  implementation 'com.github.DFFXT.SkinSwitch:SkinCore:0.20.1'
   // 视情况添加，视图调试框架，支持xml修改实时生效，和kotlin但文件修冷启动生效，用于节省编译时间，具体使用方式需搭配android studio插件使用[插件下载](https://github.com/DFFXT/ViewDebug-Trans)
-  debugImplementation 'com.github.DFFXT.SkinSwitch:ViewDebug:0.18.1.8'
+  debugImplementation 'com.github.DFFXT.SkinSwitch:ViewDebug:0.20.1'
 </code></pre>
 
 
@@ -38,6 +38,8 @@ Android 换肤框架
 
   // 当某个View换肤时，会触发此回调，根据返回状态确定十分需要换肤
   AttrApplyManager.onApplyInterceptor = {....}
+  // 系统资源也换肤，注意，开启后会极大延长换肤时间，默认关闭
+  AttrApplyManager.applySystemResources = true
 </code></pre>
 
 其它
@@ -66,5 +68,42 @@ Android 换肤框架
   app:skin="true"
   app:skin_forDescendants="true"
 </code></pre>
+
+
+
+-----------------------------------------------------------------------------------
+更方便的使用：
+在AndroidManifest.xml中加入以下代码，代码功能为：禁止com.example.viewdebug.ViewDebugInitializer自动初始化，用ViewDebugStarter（需要自己实现）替代
+```xml
+<provider
+    android:name="androidx.startup.InitializationProvider"
+    android:authorities="${applicationId}.androidx-startup"
+    android:exported="false"
+    tools:node="merge">
+    <meta-data
+        android:name="com.example.viewdebug.ViewDebugInitializer"
+        android:value="androidx.startup"
+        tools:node="remove"/>
+    <meta-data
+        android:name="com.skin.skinswitch.ViewDebugStarter"
+        android:value="androidx.startup"
+        tools:node="merge"/>
+</provider>
+```
+ViewDebugStarter实现，IBuildIdentification接口返回构建时间，则支持在同一个buildId中，远程推送的dex文件和xml文件可重复加载，
+```kotlin
+@Keep
+class ViewDebugStarter : ViewDebugInitializer() {
+    override fun getBuildIdentification(): IBuildIdentification? {
+        return object : IBuildIdentification {
+            override fun getBuildId(): String {
+                // 返回构建时间，buildTime字段可在gradle中添加：buildConfigField("long", "buildTime", "${System.currentTimeMillis()}")
+                return BuildConfig.buildTime.toString()
+            }
+        }
+    }
+}
+```
+
 
 

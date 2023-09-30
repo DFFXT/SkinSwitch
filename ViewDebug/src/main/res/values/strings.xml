@@ -2,9 +2,15 @@
 <resources>
     <string name="view_debug_image_detail_title">背景选择</string>
     <string name="view_debug_view_detal_title">详细信息</string>
+    <string name="view_debug_modify_list_detal_title">更改列表</string>
     <string name="view_debug_file_receive_tip">接收到文件：%1$s</string>
     <string name="view_debug_file_receive_xml_ok_tip">xml编译成功：%1$s</string>
     <string name="view_debug_file_receive_xml_err_tip">xml编译失败：%1$s</string>
+    <string name="view_debug_dex_applied">生效中</string>
+    <string name="view_debug_dex_remove_tip">移除成功，重启生效</string>
+    <string name="view_debug_dex_invalid_apply">提前加载，无法覆盖</string>
+    <string name="view_debug_dex_reboot_update">重启更新</string>
+    <string name="view_debug_dex_unknown">未知</string>
 
     <style name="MayStyle">
         <item name="android:textColor">@color/view_debug_red</item>

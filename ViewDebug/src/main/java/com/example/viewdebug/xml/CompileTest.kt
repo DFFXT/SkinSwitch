@@ -1,43 +1,24 @@
 package com.example.viewdebug.xml
 
 import android.content.pm.PackageManager
-import com.example.viewdebug.R
 import com.example.viewdebug.ViewDebugInitializer
-import com.example.viewdebug.ui.image.XmlParser
+import com.example.viewdebug.ui.page.XmlParser
 import com.example.viewdebug.xml.pack.PackAssetsFile
 import com.example.viewdebug.xml.struct.XmlCompiler
 import com.example.viewdebug.xml.struct.reader.ChunkFile
-import com.example.viewdebug.xml.struct.writer.helper.ExternalFunction
-import com.example.viewdebug.xml.struct.writer.helper.value.AttrDimensionValueCompile
 import com.skin.log.Logger
-import java.io.ByteArrayInputStream
 import java.io.File
-import java.net.URI
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import java.nio.file.FileSystems
 
 object CompileTest {
 
     @JvmStatic
     fun main(vararg args: String) {
         val str = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\n" +
-                "    android:layout_width=\"match_parent\"\n" +
-                "    android:layout_height=\"match_parent\">\n" +
-                "\n" +
-                "\n" +
-                "    <LinearLayout\n" +
-                "        android:paddingLeft=\"20dp\"\n" +
-                "        android:paddingTop=\"20dp\"\n" +
-                "        android:paddingRight=\"20dp\"\n" +
-                "        android:paddingBottom=\"20dp\"\n" +
-                "        android:layout_width=\"match_parent\"\n" +
-                "        android:layout_height=\"wrap_content\"\n" +
-                "        android:paddingHorizontal=\"20dp\"\n" +
-                "        android:paddingVertical=\"20dp\"\n" +
-                "        />\n" +
-                "</androidx.constraintlayout.widget.ConstraintLayout>"
+                "<shape xmlns:android=\"http://schemas.android.com/apk/res/android\" android:shape=\"rectangle\">\n" +
+                "    <solid android:color=\"?attr/colorPrimary\"/>\n" +
+                "</shape>"
         val compiler = XmlCompiler(ViewDebugInitializer.ctx)
         val buffer = compiler.compile(str.byteInputStream())
         val reader = ChunkFile()
