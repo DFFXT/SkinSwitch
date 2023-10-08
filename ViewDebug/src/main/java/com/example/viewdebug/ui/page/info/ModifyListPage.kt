@@ -93,6 +93,7 @@ class ModifyListPage : UIPage(), ViewDebugResourceManager.OnResourceChanged {
                     }
                     if (items.isEmpty()) {
                         WindowControlManager.removePage(this@ModifyListPage)
+                        WindowControlManager.resetToEmptyPage()
                     }
                 } else {
                     ViewDebugResourceManager.removeInterceptor(item.id)
