@@ -25,13 +25,14 @@ class ModifyItemParentHandle(private val itemClick: (item: ModifyItemParent, ind
                 itemClick.invoke(item, position)
                 notifyExpand(vh, item.isExpand)
             }
-            if (item.state != ModifyState.APPLIED) {
-                vh.binding.tvState.setTextColor(vh.binding.root.context.getColor(R.color.view_debug_dex_state_error))
-            } else {
-                vh.binding.tvState.setTextColor(vh.binding.root.context.getColor(R.color.view_debug_dex_state_ok))
-            }
         } else {
             vh.binding.ivCollapse.visibility = View.INVISIBLE
+        }
+
+        if (item.state != ModifyState.APPLIED) {
+            vh.binding.tvState.setTextColor(vh.binding.root.context.getColor(R.color.view_debug_dex_state_error))
+        } else {
+            vh.binding.tvState.setTextColor(vh.binding.root.context.getColor(R.color.view_debug_dex_state_ok))
         }
 
     }
