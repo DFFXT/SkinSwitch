@@ -3,6 +3,7 @@ package com.example.viewdebug.apply.xml
 import android.app.Application
 import android.content.Context
 import com.example.viewdebug.ui.skin.ViewDebugResourceManager
+import com.example.viewdebug.util.launch
 import com.example.viewdebug.xml.pack.PackAssetsFile
 import com.example.viewdebug.xml.struct.XmlCompiler
 import com.skin.log.Logger
@@ -12,11 +13,13 @@ import com.skin.skincore.apply.base.BaseViewApply
 import com.skin.skincore.asset.DefaultResourceLoader
 import com.skin.skincore.collector.ViewUnion
 import com.skin.skincore.collector.getViewUnion
+import kotlinx.coroutines.Dispatchers
 import java.io.File
 import java.io.InputStream
 
 
 internal object XmlLoadManager {
+    // 理论上是可以不用额外copy缓存的 todo
     private val tmpApk by lazy {
         val apk = File(PackAssetsFile.getPackedApkPath(ctx))
         val file = File(apk.parent!!, "view-debug-tmp.apk")
@@ -32,16 +35,21 @@ internal object XmlLoadManager {
         }
         if (!loadApk) {
             // 不加载apk，需要删除
-            apk.delete()
-            PackAssetsFile.clearCachedXmlAndApk(ctx)
+            launch(Dispatchers.IO) {
+                apk.delete()
+                tmpApk.delete()
+                PackAssetsFile.clearCachedXmlAndApk(ctx)
+            }
             return
         }
 
         if (useOnce) {
             apk.copyTo(tmpApk, true)
             // 只使用一次，也需要将原始apk删除
-            PackAssetsFile.clearCachedXmlAndApk(ctx)
             applyApk(tmpApk.absolutePath)
+            launch(Dispatchers.IO) {
+                PackAssetsFile.clearCachedXmlAndApk(ctx)
+            }
         } else {
             // 需要多次使用，可以直接加载原始apk
             applyApk(apk.absolutePath)

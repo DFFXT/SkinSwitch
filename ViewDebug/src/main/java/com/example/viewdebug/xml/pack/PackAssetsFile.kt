@@ -35,6 +35,13 @@ class PackAssetsFile(private val ctx: Context) {
         }
 
         /**
+         * 删除资源文件
+         */
+        fun deleteResource(ctx: Context, id: Int) {
+            File(compiledXmlDir(ctx), "$id.xml").delete()
+        }
+
+        /**
          * 编译后的xml地址
          */
         private fun compiledXmlDir(ctx: Context): File {
