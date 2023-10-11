@@ -1,6 +1,8 @@
 package com.example.viewdebug.ui.skin
 
 import android.content.res.AssetManager
+import com.example.viewdebug.ViewDebugInitializer
+import com.example.viewdebug.xml.pack.PackAssetsFile
 import com.skin.log.Logger
 import com.skin.skincore.SkinManager
 
@@ -48,6 +50,7 @@ object ViewDebugResourceManager {
             ArrayList(onResourceChangedListeners).forEach {
                 it.onResourceRemove(value)
             }
+            PackAssetsFile.deleteResource(ViewDebugInitializer.ctx, value)
         }
     }
 
