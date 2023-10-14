@@ -2,9 +2,12 @@ package com.example.viewdebug.ui.skin
 
 import android.content.res.AssetManager
 import com.example.viewdebug.ViewDebugInitializer
+import com.example.viewdebug.apply.xml.XmlLoadManager
+import com.example.viewdebug.util.launch
 import com.example.viewdebug.xml.pack.PackAssetsFile
 import com.skin.log.Logger
 import com.skin.skincore.SkinManager
+import kotlinx.coroutines.Dispatchers
 
 /**
  * 应用资源变更管理
@@ -46,8 +49,23 @@ object ViewDebugResourceManager {
     fun addValuesInterceptor(id: Int, value: String) {
         valuesInterceptorMapper[id] = value
     }
+
+    /**
+     * 移除values item
+     */
     fun removeValue(id: Int) {
         valuesInterceptorMapper.remove(id)
+        launch(Dispatchers.IO) {
+            XmlLoadManager.saveValues()
+        }
+    }
+
+    /**
+     * 移除所有value资源
+     */
+    fun removeAllValues() {
+        valuesInterceptorMapper.clear()
+        XmlLoadManager.deleteValues()
     }
 
 

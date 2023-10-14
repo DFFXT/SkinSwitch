@@ -2,7 +2,6 @@ package com.example.viewdebug.xml.struct.writer.helper.value
 
 import com.example.viewdebug.xml.struct.XmlCompiler
 import com.example.viewdebug.xml.struct.writer.helper.ResourceType
-import java.lang.StringBuilder
 
 /**
  * 解析color格式
@@ -11,9 +10,12 @@ import java.lang.StringBuilder
 class AttrColorValueCompile : AttrValueCompile("color") {
     private val builder = StringBuilder()
     override fun compile(attrValue: String, compiler: XmlCompiler): CompiledAttrValue? {
+        return getColor(attrValue)
+    }
+
+    fun getColor(attrValue: String): CompiledAttrValue? {
         if (attrValue.startsWith("#")) {
-
-
+            builder.clear()
             return when (attrValue.length) {
                 // #f00
                 4 -> {
@@ -64,7 +66,6 @@ class AttrColorValueCompile : AttrValueCompile("color") {
                     CompiledAttrValue(ResourceType.TYPE_FIRST_COLOR_INT, value)
                 }
             }
-        }
-        return null
+        } else return null
     }
 }

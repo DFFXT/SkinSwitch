@@ -33,24 +33,32 @@ internal object XmlLoadManager {
     }
 
     private val valuesFile by lazy {
-        val dir = (RemoteFileReceiver.getBasePath(ViewDebugInitializer.ctx) + File.separator + "values-xml").makeAsDir()
+        val dir =
+            (RemoteFileReceiver.getBasePath(ViewDebugInitializer.ctx) + File.separator + "values-xml").makeAsDir()
         File(dir, "values")
     }
     private lateinit var ctx: Application
     fun init(ctx: Application, loadApk: Boolean, useOnce: Boolean) {
-        XmlLoadManager.ctx = ctx
+        this.ctx = ctx
+        initValues(loadApk, useOnce)
+        initApk(loadApk, useOnce)
+    }
+
+    /**
+     * 根据参数判断是否加载apk
+     */
+    private fun initApk(load: Boolean, useOnce: Boolean) {
         val apk = File(PackAssetsFile.getPackedApkPath(XmlLoadManager.ctx))
         if (!apk.exists()) {
             // 没有apk，直接返回
             return
         }
-        if (!loadApk) {
+        if (!load) {
             // 不加载apk，需要删除
             launch(Dispatchers.IO) {
                 apk.delete()
                 tmpApk.delete()
                 PackAssetsFile.clearCachedXmlAndApk(ctx)
-                deleteValues()
             }
             return
         }
@@ -76,7 +84,6 @@ internal object XmlLoadManager {
         val assetManager = DefaultResourceLoader().createAssetManager(apkPath, ctx)
         if (assetManager != null) {
             readXmlList(assetManager.second)
-            readValue()
         }
     }
 
@@ -86,6 +93,17 @@ internal object XmlLoadManager {
         ViewDebugResourceManager.interceptedAsset = assetManager
         rids.forEach {
             ViewDebugResourceManager.addInterceptor(ctx.resources.getResourceTypeName(it), it)
+        }
+    }
+
+    private fun initValues(load: Boolean, useOnce: Boolean) {
+        if (load) {
+            readValue()
+            if (useOnce) {
+                deleteValues()
+            }
+        } else {
+            deleteValues()
         }
     }
 
@@ -105,15 +123,17 @@ internal object XmlLoadManager {
             }
         }
     }
+
     /**
      * 保存xml-values数据,
      */
     internal fun saveValues() {
         val jsonArray = JSONArray()
         ViewDebugResourceManager.getAllValueChangedItem().forEach {
-            jsonArray.put(JSONObject()
-                .put("id", it.key)
-                .put("value", it.value)
+            jsonArray.put(
+                JSONObject()
+                    .put("id", it.key)
+                    .put("value", it.value)
             )
         }
         valuesFile.writeText(jsonArray.toString())
@@ -122,15 +142,21 @@ internal object XmlLoadManager {
     /**
      * 删除value资源
      */
-    private fun deleteValues() {
+    fun deleteValues() {
         if (valuesFile.exists()) {
             valuesFile.delete()
         }
     }
+
     /**
      * 编译xml，并打包，然后再加载
      */
-    internal suspend fun compileXmlAndApply(ctx: Context, inputStream: InputStream, resourceId: Int, resourceType: String): Boolean {
+    internal suspend fun compileXmlAndApply(
+        ctx: Context,
+        inputStream: InputStream,
+        resourceId: Int,
+        resourceType: String
+    ): Boolean {
         try {
             val compiler = XmlCompiler(ctx)
             val buffer = compiler.compile(inputStream)
@@ -141,7 +167,8 @@ internal object XmlLoadManager {
             pack.addAXMLFile(byteArray.inputStream(), resourceId.toString())
             pack.pack()
             // 读入
-            val assetManager = DefaultResourceLoader().createAssetManager(pack.getPackedApkPath(), ctx)
+            val assetManager =
+                DefaultResourceLoader().createAssetManager(pack.getPackedApkPath(), ctx)
             if (assetManager != null) {
                 ViewDebugResourceManager.interceptedAsset = assetManager.second
                 ViewDebugResourceManager.addInterceptor(resourceType, resourceId)
@@ -167,7 +194,12 @@ internal object XmlLoadManager {
                         // 构建viewUnion
                         val tempUnion = ViewUnion()
                         tempUnion.addAttr(attr)
-                        AttrApplyManager.apply(event, it, tempUnion, SkinManager.getResourceProvider(it.context))
+                        AttrApplyManager.apply(
+                            event,
+                            it,
+                            tempUnion,
+                            SkinManager.getResourceProvider(it.context)
+                        )
                     }
                 }
             }

@@ -13,8 +13,7 @@
         android:scaleX="1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/view_debug_red"
-        android:background="@drawable/view_debug_circle_stroke_1dp"
+        android:background="@color/view_debug_red"
         style="@style/MayStyle"/>
    <!-- <TextView
         android:text="LLLL)"

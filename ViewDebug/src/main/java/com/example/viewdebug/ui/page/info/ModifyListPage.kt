@@ -64,10 +64,11 @@ class ModifyListPage : UIPage(), ViewDebugResourceManager.OnResourceChanged {
         ItemTouchHelper(object : ItemTouchHelper.Callback() {
             override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
                 val item = items[viewHolder.adapterPosition]
-                if (item is ModifyItemChild) {
-                    return 0
+                return if (item is ModifyItemParent || item.type == RemoteFileReceiver.FileWatcher.TYPE_VALUES_XML) {
+                    makeMovementFlags(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT)
+                } else {
+                    0
                 }
-                return makeMovementFlags(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT)
             }
 
             override fun onMove(
@@ -79,8 +80,8 @@ class ModifyListPage : UIPage(), ViewDebugResourceManager.OnResourceChanged {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val item = items[viewHolder.adapterPosition] as ModifyItemParent
-                if (item.type == "dex") {
+                val item = items[viewHolder.adapterPosition]
+                if (item.type == "dex" && item is ModifyItemParent) {
                     // 移除dex
                     if (item.state == ModifyState.APPLIED || item.state == ModifyState.REBOOT_UPDATABLE) {
                         viewHolder.itemView.context.getString(R.string.view_debug_dex_remove_tip).shortToast()
@@ -97,8 +98,16 @@ class ModifyListPage : UIPage(), ViewDebugResourceManager.OnResourceChanged {
                         WindowControlManager.resetToEmptyPage()
                     }
                 } else {
-                    if (item.type in ViewDebugResourceManager.VALUE_TYPE) {
-                        ViewDebugResourceManager.removeValue(item.id)
+                    if (item.type == RemoteFileReceiver.FileWatcher.TYPE_VALUES_XML) {
+                        if (item is ModifyItemParent) {
+                            ViewDebugResourceManager.removeAllValues()
+                        } else {
+                            ViewDebugResourceManager.removeValue(item.id)
+                            item as ModifyItemChild
+                            item.parent.children.remove(item)
+                            items.remove(item)
+                            adapter.notifyItemRemoved(viewHolder.adapterPosition)
+                        }
                     } else {
                         ViewDebugResourceManager.removeInterceptor(item.id)
                         if (item.type != RemoteFileReceiver.FileWatcher.TYPE_LAYOUT) {

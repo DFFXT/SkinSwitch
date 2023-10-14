@@ -6,6 +6,7 @@ import android.content.res.XmlResourceParser
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import com.example.viewdebug.xml.pack.PackAssetsFile
+import com.example.viewdebug.xml.struct.writer.helper.value.AttrColorValueCompile
 import com.skin.skincore.asset.IAsset
 import com.skin.skincore.provider.MergeResource
 import java.util.WeakHashMap
@@ -48,6 +49,14 @@ class ViewDebugMergeResource(asset: IAsset, default: Resources, themeIds: IntArr
             return Drawable.createFromXml(this, parser, theme)
         }
         return super.getDrawableForDensity(id, density, theme)
+    }
+
+    override fun getColor(id: Int, theme: Theme?): Int {
+        val color = ViewDebugResourceManager.getAllValueChangedItem()[id]
+        if (color != null) {
+            return ResourceDecode.getColor(this, color, theme) ?: super.getColor(id, theme)
+        }
+        return super.getColor(id, theme)
     }
 
 
