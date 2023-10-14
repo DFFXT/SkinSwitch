@@ -14,6 +14,7 @@ import com.example.viewdebug.apply.ModifyState
 import com.example.viewdebug.apply.dex.DexLoadManager
 import com.example.viewdebug.apply.xml.XmlLoadManager
 import com.example.viewdebug.databinding.ViewDebugLayoutModifyPageBinding
+import com.example.viewdebug.remote.RemoteFileReceiver
 import com.example.viewdebug.rv.MultiTypeRecyclerAdapter
 import com.example.viewdebug.ui.WindowControlManager
 import com.example.viewdebug.ui.skin.ViewDebugResourceManager
@@ -96,11 +97,16 @@ class ModifyListPage : UIPage(), ViewDebugResourceManager.OnResourceChanged {
                         WindowControlManager.resetToEmptyPage()
                     }
                 } else {
-                    ViewDebugResourceManager.removeInterceptor(item.id)
-                    if (item.type != "layout") {
-                        // 移除了非布局资源，刷新全局
-                        XmlLoadManager.applyGlobalViewByResId(item.id)
+                    if (item.type in ViewDebugResourceManager.VALUE_TYPE) {
+                        ViewDebugResourceManager.removeValue(item.id)
+                    } else {
+                        ViewDebugResourceManager.removeInterceptor(item.id)
+                        if (item.type != RemoteFileReceiver.FileWatcher.TYPE_LAYOUT) {
+                            // 移除了非布局资源，刷新全局
+                            XmlLoadManager.applyGlobalViewByResId(item.id)
+                        }
                     }
+
                 }
 
             }
@@ -124,7 +130,7 @@ class ModifyListPage : UIPage(), ViewDebugResourceManager.OnResourceChanged {
         items.clear()
         val dexItems = ArrayList<ModifyItem>()
         DexLoadManager.getAllDexList().forEach {
-            val parent = ModifyItemParent(false, it.key, 0, "dex", it.value.getModifyState())
+            val parent = ModifyItemParent(false, it.key, 0, RemoteFileReceiver.FileWatcher.TYPE_DEX, it.value.getModifyState())
             val children = it.value.classList.map {
                 ModifyItemChild(parent, it.key, 0, "class", it.value)
             }.sortedWith { o1, o2 ->
@@ -138,6 +144,16 @@ class ModifyListPage : UIPage(), ViewDebugResourceManager.OnResourceChanged {
         }
         items.addAll(dexItems)
         items.addAll(ViewDebugResourceManager.getAllChangedResource().convertItems())
+        val values = ViewDebugResourceManager.getAllValueChangedItem()
+        if (values.isNotEmpty()) {
+            val valuesParent = ModifyItemParent(false, "values", 0, RemoteFileReceiver.FileWatcher.TYPE_VALUES_XML, ModifyState.APPLIED)
+            items.add(valuesParent)
+            val children = values.map {
+                val name = ctx.resources.getResourceTypeName(it.key) + "/" + ctx.resources.getResourceEntryName(it.key) + "=" + it.value
+                ModifyItemChild(valuesParent, name, it.key, RemoteFileReceiver.FileWatcher.TYPE_VALUES_XML, ModifyState.APPLIED)
+            }
+            valuesParent.children.addAll(children)
+        }
         if (items.isEmpty()) {
             WindowControlManager.removePage(this@ModifyListPage)
         } else {

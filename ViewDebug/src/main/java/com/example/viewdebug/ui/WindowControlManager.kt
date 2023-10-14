@@ -28,7 +28,13 @@ object WindowControlManager {
         viewDebugManager.addPage(ViewImageShowPage())
         // 监听是否有资源更改
 
-        ViewDebugResourceManager.addResourceChangeListener(object : ViewDebugResourceManager.OnResourceChanged {
+        if (ViewDebugResourceManager.getAllChangedResource().isNotEmpty() || ViewDebugResourceManager.getAllValueChangedItem().isNotEmpty()) {
+            launch(Dispatchers.Main) {
+                notifyModifyList()
+            }
+        }
+
+        /*ViewDebugResourceManager.addResourceChangeListener(object : ViewDebugResourceManager.OnResourceChanged {
             override fun onResourceAdd(id: Int) {
                 notify1()
             }
@@ -42,7 +48,7 @@ object WindowControlManager {
                     notifyModifyList()
                 }
             }
-        })
+        })*/
         notifyModifyList()
     }
 
@@ -58,7 +64,7 @@ object WindowControlManager {
      */
     fun notifyModifyList() {
         // 有资源更改则显示，没有资源更改则不显示页面
-        if (ViewDebugResourceManager.getAllChangedResource().isEmpty() && DexLoadManager.getAllDexList().isEmpty()) {
+        if (ViewDebugResourceManager.getAllChangedResource().isEmpty() && DexLoadManager.getAllDexList().isEmpty() && ViewDebugResourceManager.getAllValueChangedItem().isEmpty()) {
             if (modifyListPage != null) {
                 viewDebugManager.removePage(modifyListPage!!)
                 modifyListPage = null

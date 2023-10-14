@@ -11,14 +11,45 @@ import com.skin.skincore.SkinManager
  */
 object ViewDebugResourceManager {
 
+
     private val interceptorMapper = HashSet<Int>()
+
+    /**
+     * 支持的类型
+     */
+    val VALUE_TYPE = arrayOf("string", "color", "dimen")
+
+    /**
+     * string
+     * color
+     * integer
+     * boolean
+     *
+     */
+    private val valuesInterceptorMapper = HashMap<Int, String>()
     private val onResourceChangedListeners: HashSet<OnResourceChanged> = HashSet()
     internal var interceptedAsset: AssetManager? = null
 
     /**
      * 获取所有变更资源
      */
-    fun getAllChangedResource() = interceptorMapper
+    fun getAllChangedResource(): Set<Int> = interceptorMapper
+
+    /**
+     * get changed value items
+     */
+    fun getAllValueChangedItem(): Map<Int, String> = valuesInterceptorMapper
+
+    /**
+     * add value xml item
+     */
+    fun addValuesInterceptor(id: Int, value: String) {
+        valuesInterceptorMapper[id] = value
+    }
+    fun removeValue(id: Int) {
+        valuesInterceptorMapper.remove(id)
+    }
+
 
     /**
      * 新增拦截id

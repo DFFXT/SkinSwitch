@@ -2,8 +2,12 @@ package com.example.viewdebug.apply.xml
 
 import android.app.Application
 import android.content.Context
+import android.content.res.AssetManager
+import com.example.viewdebug.ViewDebugInitializer
+import com.example.viewdebug.remote.RemoteFileReceiver
 import com.example.viewdebug.ui.skin.ViewDebugResourceManager
 import com.example.viewdebug.util.launch
+import com.example.viewdebug.util.makeAsDir
 import com.example.viewdebug.xml.pack.PackAssetsFile
 import com.example.viewdebug.xml.struct.XmlCompiler
 import com.skin.log.Logger
@@ -14,6 +18,8 @@ import com.skin.skincore.asset.DefaultResourceLoader
 import com.skin.skincore.collector.ViewUnion
 import com.skin.skincore.collector.getViewUnion
 import kotlinx.coroutines.Dispatchers
+import org.json.JSONArray
+import org.json.JSONObject
 import java.io.File
 import java.io.InputStream
 
@@ -24,6 +30,11 @@ internal object XmlLoadManager {
         val apk = File(PackAssetsFile.getPackedApkPath(ctx))
         val file = File(apk.parent!!, "view-debug-tmp.apk")
         file
+    }
+
+    private val valuesFile by lazy {
+        val dir = (RemoteFileReceiver.getBasePath(ViewDebugInitializer.ctx) + File.separator + "values-xml").makeAsDir()
+        File(dir, "values")
     }
     private lateinit var ctx: Application
     fun init(ctx: Application, loadApk: Boolean, useOnce: Boolean) {
@@ -39,6 +50,7 @@ internal object XmlLoadManager {
                 apk.delete()
                 tmpApk.delete()
                 PackAssetsFile.clearCachedXmlAndApk(ctx)
+                deleteValues()
             }
             return
         }
@@ -49,6 +61,7 @@ internal object XmlLoadManager {
             applyApk(tmpApk.absolutePath)
             launch(Dispatchers.IO) {
                 PackAssetsFile.clearCachedXmlAndApk(ctx)
+                deleteValues()
             }
         } else {
             // 需要多次使用，可以直接加载原始apk
@@ -60,14 +73,58 @@ internal object XmlLoadManager {
      * 应用打开时，加载可应用的apk
      */
     private fun applyApk(apkPath: String) {
+        val assetManager = DefaultResourceLoader().createAssetManager(apkPath, ctx)
+        if (assetManager != null) {
+            readXmlList(assetManager.second)
+            readValue()
+        }
+    }
+
+    private fun readXmlList(assetManager: AssetManager) {
         val rids = PackAssetsFile.getResourceId(ctx)
         if (rids.isEmpty()) return
+        ViewDebugResourceManager.interceptedAsset = assetManager
         rids.forEach {
-            val assetManager = DefaultResourceLoader().createAssetManager(apkPath, ctx)
-            if (assetManager != null) {
-                ViewDebugResourceManager.interceptedAsset = assetManager.second
-                ViewDebugResourceManager.addInterceptor(ctx.resources.getResourceTypeName(it), it)
+            ViewDebugResourceManager.addInterceptor(ctx.resources.getResourceTypeName(it), it)
+        }
+    }
+
+    /**
+     * 读取本地尺存储的values文件
+     */
+    private fun readValue() {
+        if (valuesFile.exists()) {
+            val array = JSONArray(valuesFile.readText())
+            var item: JSONObject
+            for (i in 0 until array.length()) {
+                item = array.getJSONObject(i)
+                ViewDebugResourceManager.addValuesInterceptor(
+                    item.getInt("id"),
+                    item.getString("value")
+                )
             }
+        }
+    }
+    /**
+     * 保存xml-values数据,
+     */
+    internal fun saveValues() {
+        val jsonArray = JSONArray()
+        ViewDebugResourceManager.getAllValueChangedItem().forEach {
+            jsonArray.put(JSONObject()
+                .put("id", it.key)
+                .put("value", it.value)
+            )
+        }
+        valuesFile.writeText(jsonArray.toString())
+    }
+
+    /**
+     * 删除value资源
+     */
+    private fun deleteValues() {
+        if (valuesFile.exists()) {
+            valuesFile.delete()
         }
     }
     /**

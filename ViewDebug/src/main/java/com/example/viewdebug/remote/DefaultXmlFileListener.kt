@@ -3,6 +3,7 @@ package com.example.viewdebug.remote
 import com.example.viewdebug.R
 import com.example.viewdebug.ViewDebugInitializer
 import com.example.viewdebug.apply.xml.XmlLoadManager
+import com.example.viewdebug.ui.WindowControlManager
 import com.example.viewdebug.util.launch
 import com.example.viewdebug.util.shortToast
 import com.skin.log.Logger
@@ -35,6 +36,7 @@ internal class DefaultXmlFileListener : RemoteFileReceiver.FileWatcher {
                                         XmlLoadManager.applyGlobalViewByResId(id)
                                     }
                                     ctx.getString(R.string.view_debug_file_receive_xml_ok_tip, file.name).shortToast()
+                                    WindowControlManager.notifyModifyList()
                                 }
                             } else {
                                 withContext(Dispatchers.Main) {

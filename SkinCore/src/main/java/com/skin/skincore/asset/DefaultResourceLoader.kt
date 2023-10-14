@@ -31,6 +31,7 @@ class DefaultResourceLoader : IResourceLoader {
 
     /**
      * 根据path创建
+     * @return key: pkgName
      */
     fun createAssetManager(path: String, ctx: Context): Pair<String, AssetManager>? {
         if (!File(path).exists()) {

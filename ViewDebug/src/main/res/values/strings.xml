@@ -11,6 +11,8 @@
     <string name="view_debug_dex_invalid_apply">提前加载，无法覆盖</string>
     <string name="view_debug_dex_reboot_update">重启更新</string>
     <string name="view_debug_dex_unknown">未知</string>
+    <string name="view_debug_value_xml_parse_error">解析失败</string>
+
 
     <style name="MayStyle">
         <item name="android:textColor">@color/view_debug_red</item>

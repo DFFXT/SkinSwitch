@@ -47,6 +47,7 @@ internal object RemoteFileReceiver {
         specialWatchers.add(SpecialFileListener())
         defaultFileWatchers.add(DefaultXmlFileListener())
         defaultFileWatchers.add(DefaultDexFileListener())
+        defaultFileWatchers.add(ValueXMlListener())
         defaultFileWatchers.add(DefaultFileListener())
         // io线程操作
         launch(Dispatchers.IO) {
@@ -175,6 +176,7 @@ internal object RemoteFileReceiver {
             const val TYPE_FILE = "file"
             const val TYPE_DEX = "dex"
             const val TYPE_RULES = "rules"
+            const val TYPE_VALUES_XML = "values"
         }
     }
 }
