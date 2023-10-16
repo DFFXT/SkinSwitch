@@ -68,7 +68,7 @@ class PackAssetsFile(private val ctx: Context) {
      * 将当前数据流写入apk的assets目录
      * @param name 文件名称，不带后缀
      */
-    suspend fun addAXMLFile(inputStream: InputStream, name: String) {
+    fun addAXMLFile(inputStream: InputStream, name: String) {
         val dir = compiledXmlDir(ctx)
         if (!dir.exists()) {
             dir.mkdirs()

@@ -4,8 +4,8 @@
     <string name="view_debug_view_detal_title">详细信息</string>
     <string name="view_debug_modify_list_detal_title">更改列表</string>
     <string name="view_debug_file_receive_tip">接收到文件：%1$s</string>
-    <string name="view_debug_file_receive_xml_ok_tip">xml编译成功：%1$s</string>
-    <string name="view_debug_file_receive_xml_err_tip">xml编译失败：%1$s</string>
+    <string name="view_debug_file_receive_xml_ok_tip">xml应用成功</string>
+    <string name="view_debug_file_receive_xml_err_tip">xml应用失败</string>
     <string name="view_debug_dex_applied">生效中</string>
     <string name="view_debug_dex_remove_tip">移除成功，重启生效</string>
     <string name="view_debug_dex_invalid_apply">提前加载，无法覆盖</string>

@@ -27,7 +27,8 @@ internal object RemoteFileReceiver {
     private val watchingReceivePath = getReceivePath(ViewDebugInitializer.ctx)
 
     private val agreementFile: File by lazy {
-        val file = (ViewDebugInitializer.ctx.cacheDir.absolutePath + File.separator + "viewDebug").makeAsDir()
+        val file =
+            (ViewDebugInitializer.ctx.cacheDir.absolutePath + File.separator + "viewDebug").makeAsDir()
         File(file, "agreement")
     }
 
@@ -69,44 +70,46 @@ internal object RemoteFileReceiver {
                     launch(Dispatchers.IO) {
                         // 当监听到文件变化时，需要重新监听
                         fileObserver?.stopWatching()
-                        delay(1000)
+                        delay(300)
                         val content = String(File(watchingConfigFile).readBytes())
                         val json = JSONObject(content)
                         val arr = json.getJSONArray("config")
-
+                        val fileContainer = FileWatcher.FileContainer()
                         val watchers = fileWatcher.reversed()
                         for (i in 0 until arr.length()) {
                             val item = arr.getJSONObject(i)
                             val receivePath = item.getString("file") ?: return@launch
                             val fileType = item.getString("type")
                             val originPath = item.getString("originPath")
+                            fileContainer.fileInfo.add(
+                                FileWatcher.FileInfo(receivePath, fileType, originPath)
+                            )
+                        }
 
-                            val fileInfo = FileWatcher.FileInfo(receivePath, fileType, originPath)
-                            Logger.i("RemoteFileReceiver", receivePath)
-                            // 只有一个能处理，拦截了后续监听则不处理
-                            withContext(Dispatchers.Main) {
-                                var resolved = false
-                                for (watcher in specialWatchers) {
-                                    if (watcher.onChange(fileInfo)) {
+                       Logger.i("RemoteFileReceiver", json.toString())
+                        // 只有一个能处理，拦截了后续监听则不处理
+                        withContext(Dispatchers.Main) {
+                            var resolved = false
+                            for (watcher in specialWatchers) {
+                                if (watcher.onReceive(fileContainer)) {
+                                    resolved = true
+                                    break
+                                }
+                            }
+                            if (!resolved) {
+                                for (watcher in watchers) {
+                                    if (watcher.onReceive(fileContainer)) {
                                         resolved = true
                                         break
                                     }
                                 }
-                                if (!resolved) {
-                                    for (watcher in watchers) {
-                                        if (watcher.onChange(fileInfo)) {
-                                            resolved = true
-                                            break
-                                        }
-                                    }
-                                }
+                            }
 
-                                if (!resolved) {
-                                    // 未解决，尝试使用默认处理器
-                                    for (watcher in defaultFileWatchers) {
-                                        if (watcher.onChange(fileInfo)) {
-                                            break
-                                        }
+                            if (!resolved) {
+                                // 未解决，尝试使用默认处理器
+                                for (watcher in defaultFileWatchers) {
+                                    if (watcher.onReceive(fileContainer)) {
+                                        break
                                     }
                                 }
                             }
@@ -159,13 +162,24 @@ internal object RemoteFileReceiver {
     }
 
     internal interface FileWatcher {
-        fun onChange(fileInfo: FileInfo): Boolean
+        // receive
+        fun onReceive(fileContainer: FileContainer): Boolean
+
+        /**
+         * 接受到的配置文件信息
+         */
+        class FileContainer {
+            val fileInfo: LinkedList<FileInfo> = LinkedList()
+            var reboot: Boolean = false
+                private set
+        }
 
         /**
          * @param path 接收文件路径
          * @param type 文件类型[TYPE_FILE]
          * @param originPath 文件对应远程文件路径
          */
+
         class FileInfo(val path: String, val type: String?, val originPath: String?)
 
         companion object {

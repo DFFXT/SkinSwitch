@@ -6,14 +6,14 @@ import com.skin.log.Logger
 /**
  * 监听特殊文件
  */
-internal class SpecialFileListener: RemoteFileReceiver.FileWatcher {
-    override fun onChange(fileInfo: RemoteFileReceiver.FileWatcher.FileInfo): Boolean {
+internal class SpecialFileListener : RemoteFileReceiver.FileWatcher {
+    override fun onReceive(fileContainer: RemoteFileReceiver.FileWatcher.FileContainer): Boolean {
         // 如果是rules文件，则拦截应用
-        if (fileInfo.type == RemoteFileReceiver.FileWatcher.TYPE_RULES) {
-            Logger.i("SpecialFileListener", "receive："+fileInfo.path)
-            AndroidXmRuleManager.addRuleFile(fileInfo.path)
-            return true
-        }
+        fileContainer.fileInfo.filter { it.type == RemoteFileReceiver.FileWatcher.TYPE_RULES }
+            .forEach { fileInfo ->
+                Logger.i("SpecialFileListener", "receive：" + fileInfo.path)
+                AndroidXmRuleManager.addRuleFile(fileInfo.path)
+            }
         return false
     }
 }

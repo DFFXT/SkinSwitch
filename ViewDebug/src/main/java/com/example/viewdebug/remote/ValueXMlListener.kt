@@ -17,8 +17,10 @@ import javax.xml.parsers.DocumentBuilderFactory
  * 只能存在一个values xml文件，有新增时，就将新旧文件进行合并
  */
 internal class ValueXMlListener : RemoteFileReceiver.FileWatcher {
-    override fun onChange(fileInfo: RemoteFileReceiver.FileWatcher.FileInfo): Boolean {
-        if (fileInfo.type == RemoteFileReceiver.FileWatcher.TYPE_VALUES_XML) {
+    override fun onReceive(fileContainer: RemoteFileReceiver.FileWatcher.FileContainer): Boolean {
+        val fileInfo =
+            fileContainer.fileInfo.find { it.type == RemoteFileReceiver.FileWatcher.TYPE_VALUES_XML }
+        if (fileInfo != null) {
             launch(Dispatchers.IO) {
                 try {
                     val doc = DocumentBuilderFactory.newInstance().newDocumentBuilder()

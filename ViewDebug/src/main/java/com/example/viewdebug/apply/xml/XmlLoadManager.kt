@@ -38,6 +38,11 @@ internal object XmlLoadManager {
         File(dir, "values")
     }
     private lateinit var ctx: Application
+
+    private val pack by lazy {
+        PackAssetsFile(ctx)
+    }
+
     fun init(ctx: Application, loadApk: Boolean, useOnce: Boolean) {
         this.ctx = ctx
         initValues(loadApk, useOnce)
@@ -148,10 +153,7 @@ internal object XmlLoadManager {
         }
     }
 
-    /**
-     * 编译xml，并打包，然后再加载
-     */
-    internal suspend fun compileXmlAndApply(
+    internal fun compileXml(
         ctx: Context,
         inputStream: InputStream,
         resourceId: Int,
@@ -162,16 +164,29 @@ internal object XmlLoadManager {
             val buffer = compiler.compile(inputStream)
             val byteArray = ByteArray(buffer.limit())
             buffer.get(byteArray, 0, buffer.limit())
-            // 打包
-            val pack = PackAssetsFile(ctx)
             pack.addAXMLFile(byteArray.inputStream(), resourceId.toString())
-            pack.pack()
+            return true
+        } catch (e: Exception) {
+            Logger.e("XmlCompiler", "compile error")
+            e.printStackTrace()
+            return false
+        }
+    }
+
+    /**
+     * 编译xml，并打包，然后再加载
+     */
+    internal fun loadApk(): Boolean {
+        try {
             // 读入
             val assetManager =
                 DefaultResourceLoader().createAssetManager(pack.getPackedApkPath(), ctx)
             if (assetManager != null) {
                 ViewDebugResourceManager.interceptedAsset = assetManager.second
-                ViewDebugResourceManager.addInterceptor(resourceType, resourceId)
+                PackAssetsFile.getResourceId(ctx).forEach { resourceId ->
+                    val resourceType = ctx.resources.getResourceTypeName(resourceId)
+                    ViewDebugResourceManager.addInterceptor(resourceType, resourceId)
+                }
             }
             return true
         } catch (e: Exception) {
@@ -180,6 +195,7 @@ internal object XmlLoadManager {
             return false
         }
     }
+
 
     /**
      * 如果view使用了这个id，则刷新

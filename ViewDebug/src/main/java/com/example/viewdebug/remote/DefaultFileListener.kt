@@ -11,9 +11,10 @@ import java.io.File
  * 默认文件提示
  */
 internal class DefaultFileListener: RemoteFileReceiver.FileWatcher {
-    override fun onChange(fileInfo: RemoteFileReceiver.FileWatcher.FileInfo): Boolean {
+    override fun onReceive(fileContainer: RemoteFileReceiver.FileWatcher.FileContainer): Boolean {
         launch(Dispatchers.Main) {
-            ViewDebugInitializer.ctx.getString(R.string.view_debug_file_receive_tip, File(fileInfo.path).name).shortToast()
+            val files = fileContainer.fileInfo.joinToString(separator = "\n") { File(it.path).name }
+            ViewDebugInitializer.ctx.getString(R.string.view_debug_file_receive_tip, files).shortToast()
         }
         return true
     }

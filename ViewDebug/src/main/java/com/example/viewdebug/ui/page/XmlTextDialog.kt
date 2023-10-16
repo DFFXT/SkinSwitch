@@ -6,9 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import com.example.viewdebug.apply.xml.XmlLoadManager
 import com.example.viewdebug.databinding.ViewDebugXmlTextContainerBinding
 import com.example.viewdebug.remote.RemoteFileReceiver
-import com.example.viewdebug.apply.xml.XmlLoadManager
 import com.example.viewdebug.ui.dialog.BaseDialog
 import com.example.viewdebug.ui.skin.ViewDebugResourceManager
 import com.example.viewdebug.util.adjustOrientation
@@ -67,7 +67,13 @@ internal class XmlTextDialog(
             } else if (mode == 1) {
                 showLoading()
                 launch(Dispatchers.IO) {
-                    val compileResult = XmlLoadManager.compileXmlAndApply(ctx, binding.tvText.text.toString().byteInputStream(), resourceId, resourceType)
+                    val compileResult = XmlLoadManager.compileXml(
+                        ctx,
+                        binding.tvText.text.toString().byteInputStream(),
+                        resourceId,
+                        resourceType
+                    ) && XmlLoadManager.loadApk()
+
                     withContext(Dispatchers.Main) {
                         closeLoading()
                         if (!compileResult) {
@@ -81,7 +87,11 @@ internal class XmlTextDialog(
                                     AttrApplyManager.apply(
                                         attributeId!!,
                                         intArrayOf(BaseViewApply.EVENT_TYPE_THEME),
-                                        it, resourceId, resourceType, SkinManager.getResourceProvider(host.ctx), it.context.getSkinTheme()
+                                        it,
+                                        resourceId,
+                                        resourceType,
+                                        SkinManager.getResourceProvider(host.ctx),
+                                        it.context.getSkinTheme()
                                     )
                                 }
 
@@ -117,7 +127,8 @@ internal class XmlTextDialog(
             pack.addAXMLFile(byteArray.inputStream(), resourceId.toString())
             pack.pack()
             // 读入
-            val assetManager = DefaultResourceLoader().createAssetManager(pack.getPackedApkPath(), ctx)
+            val assetManager =
+                DefaultResourceLoader().createAssetManager(pack.getPackedApkPath(), ctx)
             if (assetManager != null) {
                 ViewDebugResourceManager.interceptedAsset = assetManager.second
                 ViewDebugResourceManager.addInterceptor(resourceType, resourceId)
@@ -160,9 +171,10 @@ internal class XmlTextDialog(
         RemoteFileReceiver.remove(this)
     }
 
-    override fun onChange(fileInfo: RemoteFileReceiver.FileWatcher.FileInfo): Boolean {
+    override fun onReceive(fileContainer: RemoteFileReceiver.FileWatcher.FileContainer): Boolean {
+        val fileInfo = fileContainer.fileInfo.find { it.type == resourceType } ?: return false
         val file = File(fileInfo.path)
-        if (file.exists() && fileInfo.path.endsWith(".xml")) {
+        if (file.exists()) {
             launch(Dispatchers.IO) {
                 val content = String(file.readBytes())
                 withContext(Dispatchers.Main) {
