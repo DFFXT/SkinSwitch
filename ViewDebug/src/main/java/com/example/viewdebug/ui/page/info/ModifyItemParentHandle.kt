@@ -22,7 +22,7 @@ class ModifyItemParentHandle(private val itemClick: (item: ModifyItemParent, ind
         vh.binding.tvTitle.text = item.name
         if (item.children.isNotEmpty()) {
             vh.binding.root.setOnClickListener {
-                itemClick.invoke(item, position)
+                itemClick.invoke(item, vh.adapterPosition)
                 notifyExpand(vh, item.isExpand)
             }
         } else {
