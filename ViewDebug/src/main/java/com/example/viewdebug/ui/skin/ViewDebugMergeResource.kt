@@ -1,14 +1,17 @@
 package com.example.viewdebug.ui.skin
 
+import android.content.res.AssetFileDescriptor
 import android.content.res.ColorStateList
 import android.content.res.Resources
 import android.content.res.XmlResourceParser
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.util.TypedValue
 import com.example.viewdebug.xml.pack.PackAssetsFile
 import com.example.viewdebug.xml.struct.writer.helper.value.AttrColorValueCompile
 import com.skin.skincore.asset.IAsset
 import com.skin.skincore.provider.MergeResource
+import java.io.InputStream
 import java.util.WeakHashMap
 
 /**
@@ -50,6 +53,14 @@ class ViewDebugMergeResource(asset: IAsset, default: Resources, themeIds: IntArr
         }
         return super.getDrawableForDensity(id, density, theme)
     }
+
+/*    override fun getString(id: Int): String {
+        val str = ViewDebugResourceManager.getAllValueChangedItem()[id]
+        if (str != null) {
+            return ResourceDecode.getString(this, str)
+        }
+        return super.getString(id)
+    }*/
 
     override fun getColor(id: Int, theme: Theme?): Int {
         val color = ViewDebugResourceManager.getAllValueChangedItem()[id]

@@ -16,7 +16,7 @@ import com.skin.skincore.provider.ISkinPathProvider
  * @param skinPathProvider 皮肤包配置
  * todo Asset的释放
  */
-class Asset(
+open class Asset(
     context: Context,
     private val skinPathProvider: ISkinPathProvider,
 ) : IAsset() {
@@ -93,7 +93,7 @@ class Asset(
         return res
     }
 
-    private fun createResource(assetInfo: AssetInfo, isNight: Boolean): Resources {
+    protected open fun createResource(assetInfo: AssetInfo, isNight: Boolean): Resources {
         val config = Configuration(configuration)
         config.applyNight(isNight)
         // 这里创建了Resource对象，会更改AssetManger内部的Configuration，影响其他Resource持有的AssetManger

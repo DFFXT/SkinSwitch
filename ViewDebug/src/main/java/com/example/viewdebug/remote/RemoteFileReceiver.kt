@@ -8,7 +8,6 @@ import com.example.viewdebug.util.makeAsDir
 import com.skin.log.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.io.File
 import java.util.LinkedList
@@ -27,8 +26,7 @@ internal object RemoteFileReceiver {
     private val watchingReceivePath = getReceivePath(ViewDebugInitializer.ctx)
 
     private val agreementFile: File by lazy {
-        val file =
-            (ViewDebugInitializer.ctx.cacheDir.absolutePath + File.separator + "viewDebug").makeAsDir()
+        val file = (ViewDebugInitializer.ctx.cacheDir.absolutePath + File.separator + "viewDebug").makeAsDir()
         File(file, "agreement")
     }
 
@@ -86,33 +84,16 @@ internal object RemoteFileReceiver {
                             )
                         }
 
-                       Logger.i("RemoteFileReceiver", json.toString())
+                        Logger.i("RemoteFileReceiver", json.toString())
                         // 只有一个能处理，拦截了后续监听则不处理
-                        withContext(Dispatchers.Main) {
-                            var resolved = false
-                            for (watcher in specialWatchers) {
-                                if (watcher.onReceive(fileContainer)) {
-                                    resolved = true
-                                    break
-                                }
-                            }
-                            if (!resolved) {
-                                for (watcher in watchers) {
-                                    if (watcher.onReceive(fileContainer)) {
-                                        resolved = true
-                                        break
-                                    }
-                                }
-                            }
-
-                            if (!resolved) {
-                                // 未解决，尝试使用默认处理器
-                                for (watcher in defaultFileWatchers) {
-                                    if (watcher.onReceive(fileContainer)) {
-                                        break
-                                    }
-                                }
-                            }
+                        var resolved = false
+                        var container = fileContainer
+                        val watcherCollection = LinkedList<FileWatcher>()
+                        watcherCollection.addAll(specialWatchers)
+                        watcherCollection.addAll(watchers)
+                        watcherCollection.addAll(defaultFileWatchers)
+                        for (watcher in watcherCollection) {
+                            container = watcher.process(container)
                         }
                         startWatch()
                     }
@@ -161,9 +142,31 @@ internal object RemoteFileReceiver {
         agreementFile.writeText(builder.toString())
     }
 
-    internal interface FileWatcher {
+    /**
+     * @param types 能够处理哪些类型的文件, 如果为空则，处理所有类型
+     * @param consume 是否需要消耗这些文件，true则消耗，不传递给下个监听
+     */
+    internal abstract class FileWatcher(protected vararg val types: String, protected val consume: Boolean) {
         // receive
-        fun onReceive(fileContainer: FileContainer): Boolean
+        abstract fun onReceive(fileContainer: FileContainer)
+
+        fun process(fileContainer: FileContainer): FileContainer {
+            val infos = if (types.isEmpty()) {
+                fileContainer.fileInfo
+            } else {
+                fileContainer.fileInfo.filter { it.type in types }
+            }
+            if (infos.isNotEmpty()) {
+                val container = FileContainer()
+                container.fileInfo.addAll(infos)
+                container.reboot = fileContainer.reboot
+                onReceive(container)
+            }
+            if (consume) {
+                fileContainer.fileInfo.removeAll { it.type in types }
+            }
+            return fileContainer
+        }
 
         /**
          * 接受到的配置文件信息
@@ -171,7 +174,6 @@ internal object RemoteFileReceiver {
         class FileContainer {
             val fileInfo: LinkedList<FileInfo> = LinkedList()
             var reboot: Boolean = false
-                private set
         }
 
         /**

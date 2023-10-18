@@ -17,6 +17,7 @@
         android:layout_height="40dp"
         android:id="@+id/view"
         android:text="1"
+        android:background="@drawable/aaa"
         android:textCursorDrawable="@color/mainColor"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

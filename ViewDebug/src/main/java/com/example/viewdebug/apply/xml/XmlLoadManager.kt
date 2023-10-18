@@ -173,6 +173,10 @@ internal object XmlLoadManager {
         }
     }
 
+    internal fun compileApk() {
+        pack.pack()
+    }
+
     /**
      * 编译xml，并打包，然后再加载
      */

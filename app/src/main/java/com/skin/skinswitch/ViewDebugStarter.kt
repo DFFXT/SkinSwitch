@@ -10,7 +10,7 @@ class ViewDebugStarter : ViewDebugInitializer() {
     override fun getBuildIdentification(): IBuildIdentification? {
         return object : IBuildIdentification {
             override fun getBuildId(): String {
-                return "BuildConfig.buildTime.toString()"
+                return BuildConfig.buildTime.toString()
             }
         }
     }

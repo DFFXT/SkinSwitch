@@ -35,10 +35,25 @@ import java.lang.ref.WeakReference
 internal class XmlTextDialog(
     private val ctx: Context,
     private val hostPage: UIPage,
-) : BaseDialog(hostPage), RemoteFileReceiver.FileWatcher {
+) : BaseDialog(hostPage) {
     private lateinit var binding: ViewDebugXmlTextContainerBinding
 
     private var loadingDialog: ViewDebugLoadingDialog? = null
+
+    private val watcher by lazy {
+        object : RemoteFileReceiver.FileWatcher(resourceType, consume = true) {
+            override fun onReceive(fileContainer: FileContainer) {
+                val path = fileContainer.fileInfo.firstOrNull()?.path ?: return
+                val file = File(path)
+                if (file.exists()) {
+                    val content = String(file.readBytes())
+                    launch(Dispatchers.Main) {
+                        binding.tvText.setText(content)
+                    }
+                }
+            }
+        }
+    }
     private var mode = 0
 
     private var resourceId: Int = 0
@@ -163,26 +178,12 @@ internal class XmlTextDialog(
         binding.tvName.setOnClickListener {
             copyToClipboard(ctx, title)
         }
-        RemoteFileReceiver.observe(this)
+        RemoteFileReceiver.observe(watcher)
     }
 
     override fun onClose() {
         super.onClose()
-        RemoteFileReceiver.remove(this)
+        RemoteFileReceiver.remove(watcher)
     }
 
-    override fun onReceive(fileContainer: RemoteFileReceiver.FileWatcher.FileContainer): Boolean {
-        val fileInfo = fileContainer.fileInfo.find { it.type == resourceType } ?: return false
-        val file = File(fileInfo.path)
-        if (file.exists()) {
-            launch(Dispatchers.IO) {
-                val content = String(file.readBytes())
-                withContext(Dispatchers.Main) {
-                    binding.tvText.setText(content)
-                }
-            }
-            return true
-        }
-        return false
-    }
 }

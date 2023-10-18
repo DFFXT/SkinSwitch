@@ -9,6 +9,16 @@ import com.example.viewdebug.xml.struct.writer.helper.value.AttrColorValueCompil
  * values资源解码
  */
 object ResourceDecode {
+
+    @Deprecated("")
+    fun getString(resources: Resources, string: String): String {
+        val stringId = referenceDecode(resources, string)
+        return if (stringId != null) {
+            resources.getString(stringId)
+        } else {
+            string
+        }
+    }
     /**
      * 获取颜色
      */

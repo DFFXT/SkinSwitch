@@ -1,14 +1,12 @@
 package com.example.viewdebug.remote
 
-import com.example.viewdebug.R
 import com.example.viewdebug.ViewDebugInitializer
-import com.example.viewdebug.apply.xml.XmlLoadManager
 import com.example.viewdebug.ui.WindowControlManager
 import com.example.viewdebug.ui.skin.ViewDebugResourceManager
 import com.example.viewdebug.util.launch
-import com.example.viewdebug.util.shortToast
 import kotlinx.coroutines.Dispatchers
 import org.w3c.dom.Node
+import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
 
 /**
@@ -16,35 +14,21 @@ import javax.xml.parsers.DocumentBuilderFactory
  * values类型和xml不一样
  * 只能存在一个values xml文件，有新增时，就将新旧文件进行合并
  */
-internal class ValueXMlListener : RemoteFileReceiver.FileWatcher {
-    override fun onReceive(fileContainer: RemoteFileReceiver.FileWatcher.FileContainer): Boolean {
-        val fileInfo =
-            fileContainer.fileInfo.find { it.type == RemoteFileReceiver.FileWatcher.TYPE_VALUES_XML }
-        if (fileInfo != null) {
-            launch(Dispatchers.IO) {
-                try {
-                    val doc = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-                        .parse("file:///" + fileInfo.path)
-                    val size = doc.childNodes.length
-                    for (i in 0 until size) {
-                        parse(doc.childNodes.item(i))
-                    }
-                    XmlLoadManager.saveValues()
-                    launch(Dispatchers.Main) {
-                        WindowControlManager.refreshModifyListPage()
-                        WindowControlManager.notifyModifyList()
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    launch(Dispatchers.Main) {
-                        ViewDebugInitializer.ctx.getString(R.string.view_debug_value_xml_parse_error)
-                            .shortToast()
-                    }
-                }
+@Deprecated("目前无法实现该功能，无法拦截color、string以及drawable的加载")
+internal class ValueXMlListener : RemoteFileReceiver.FileWatcher(TYPE_VALUES_XML, consume = true) {
+    override fun onReceive(fileContainer: FileContainer) {
+        return
+        fileContainer.fileInfo.forEach {
+            val file = File(it.path)
+            if (file.exists()) {
+                val doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file)
+                parse(doc)
             }
-            return true
         }
-        return false
+        launch(Dispatchers.Main) {
+            WindowControlManager.refreshModifyListPage()
+            WindowControlManager.notifyModifyList()
+        }
     }
 
     private fun parse(node: Node) {

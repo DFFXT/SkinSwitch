@@ -80,7 +80,7 @@ class PackAssetsFile(private val ctx: Context) {
     /**
      * 打包生成apk（生成压缩包）
      */
-    suspend fun pack() {
+    fun pack() {
         Logger.i("PackAssetsFile", "apk: ${getPackedApkPath()}   apkFolder: ${getApkUnZipFolder(ctx)}")
         checkApkResources()
         IOUtil.zip(getPackedApkPath(), File(getApkUnZipFolder(ctx)))
