@@ -2,6 +2,7 @@ package com.example.viewdebug.remote
 
 import android.content.Context
 import android.os.FileObserver
+import com.example.viewdebug.BuildConfig
 import com.example.viewdebug.ViewDebugInitializer
 import com.example.viewdebug.util.launch
 import com.example.viewdebug.util.makeAsDir
@@ -134,7 +135,7 @@ internal object RemoteFileReceiver {
             agreementFile.createNewFile()
         }
         val builder = StringBuilder()
-        builder.append("version=1\n")
+        builder.append("version=${BuildConfig.gitVersion}\n")
         // 包名
         builder.append("pkgName=${ViewDebugInitializer.ctx.packageName}\n")
         // 推送文件存放的文件夹

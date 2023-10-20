@@ -14,16 +14,22 @@ android {
         consumerProguardFiles "consumer-rules.pro"
         externalNativeBuild {
             cmake {
-                arguments "-DANDROID_ARM_NEON=TRUE","-DCMAKE_BUILD_TYPE=Release"
+                arguments "-DANDROID_ARM_NEON=TRUE", "-DCMAKE_BUILD_TYPE=Release"
                 cppFlags '-std=c++11'
             }
         }
+        buildConfigField("String", "gitVersion", "\"" + getLatestTag() + "\"")
     }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
+            // debug版本设置一个很大的gitVersion，方便开发
+            buildConfigField("String", "gitVersion", "\"99.99.99\"")
         }
     }
     compileOptions {
@@ -42,6 +48,13 @@ android {
             version '3.18.1'
         }
     }
+}
+/**
+ * 获取git上的tag
+ * @return
+ */
+static String getLatestTag() {
+    return 'git describe --tags'.execute().text.trim()
 }
 
 dependencies {
