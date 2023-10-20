@@ -22,7 +22,7 @@ add_library( # Sets the name of the library.
              SHARED
 
              # Provides a relative path to your source file(s).
-             ViewDebug.cpp StringToCompile.h)
+             ViewDebug.cpp StringToCompile.h Res_value.h)
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by

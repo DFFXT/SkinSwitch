@@ -159,17 +159,17 @@ internal object XmlLoadManager {
         resourceId: Int,
         resourceType: String
     ): Boolean {
-        try {
+        return try {
             val compiler = XmlCompiler(ctx)
             val buffer = compiler.compile(inputStream)
             val byteArray = ByteArray(buffer.limit())
             buffer.get(byteArray, 0, buffer.limit())
             pack.addAXMLFile(byteArray.inputStream(), resourceId.toString())
-            return true
+            true
         } catch (e: Exception) {
             Logger.e("XmlCompiler", "compile error")
             e.printStackTrace()
-            return false
+            false
         }
     }
 

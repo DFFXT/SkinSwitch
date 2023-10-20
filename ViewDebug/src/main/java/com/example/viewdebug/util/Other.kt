@@ -3,6 +3,10 @@ package com.example.viewdebug.util
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Process
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.example.viewdebug.ViewDebugInitializer
@@ -18,6 +22,7 @@ import java.io.InputStream
 import java.lang.ref.WeakReference
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.system.exitProcess
 
 /**
  * 复制到剪切板
@@ -75,7 +80,6 @@ internal fun String.makeAsDir(): File {
 }
 
 
-
 fun InputStream.readBytes(length: Int): ByteArray {
     val arr = ByteArray(length)
     var temp = ByteArray(length)
@@ -89,4 +93,43 @@ fun InputStream.readBytes(length: Int): ByteArray {
         if (recSize == length) break
     }
     return arr
+}
+
+private fun getLauncherActivity(ctx: Context, pkg: String): String? {
+    val intent = Intent(Intent.ACTION_MAIN, null)
+    intent.addCategory(Intent.CATEGORY_LAUNCHER)
+    intent.setPackage(pkg)
+    val pm: PackageManager = ctx.packageManager
+    val info = pm.queryIntentActivities(intent, 0)
+    return if (info.size == 0) {
+        ""
+    } else info[0].activityInfo.name
+}
+
+private fun getLaunchAppIntent(ctx: Context): Intent? {
+    val pkgName = ctx.packageName
+    val launcherActivity: String = getLauncherActivity(ctx, pkgName) ?: return null
+    val intent = Intent(Intent.ACTION_MAIN)
+    intent.addCategory(Intent.CATEGORY_LAUNCHER)
+    intent.setClassName(pkgName, launcherActivity)
+    return intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+}
+
+/**
+ * 重启进程
+ */
+fun relaunchApp(ctx: Context, isKillProcess: Boolean) {
+    val intent: Intent? = getLaunchAppIntent(ctx)
+    if (intent == null) {
+        Log.e("AppUtils", "Didn't exist launcher activity.")
+        return
+    }
+    intent.addFlags(
+        Intent.FLAG_ACTIVITY_NEW_TASK
+                or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK
+    )
+    ctx.startActivity(intent)
+    if (!isKillProcess) return
+    Process.killProcess(Process.myPid())
+    exitProcess(0)
 }

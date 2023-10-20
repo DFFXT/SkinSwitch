@@ -73,6 +73,9 @@ internal object RemoteFileReceiver {
                         val json = JSONObject(content)
                         val arr = json.getJSONArray("config")
                         val fileContainer = FileWatcher.FileContainer()
+                        if (json.has("reboot")) {
+                            fileContainer.reboot = json.getBoolean("reboot")
+                        }
                         val watchers = fileWatcher.reversed()
                         for (i in 0 until arr.length()) {
                             val item = arr.getJSONObject(i)
@@ -86,7 +89,6 @@ internal object RemoteFileReceiver {
 
                         Logger.i("RemoteFileReceiver", json.toString())
                         // 只有一个能处理，拦截了后续监听则不处理
-                        var resolved = false
                         var container = fileContainer
                         val watcherCollection = LinkedList<FileWatcher>()
                         watcherCollection.addAll(specialWatchers)

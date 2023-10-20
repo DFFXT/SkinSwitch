@@ -5,6 +5,7 @@ import com.example.viewdebug.ViewDebugInitializer
 import com.example.viewdebug.apply.xml.XmlLoadManager
 import com.example.viewdebug.ui.WindowControlManager
 import com.example.viewdebug.util.launch
+import com.example.viewdebug.util.relaunchApp
 import com.example.viewdebug.util.shortToast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -50,6 +51,9 @@ internal class DefaultXmlFileListener : RemoteFileReceiver.FileWatcher(
                     }
                     ctx.getString(R.string.view_debug_file_receive_xml_ok_tip).shortToast()
                     WindowControlManager.notifyModifyList()
+                    if (fileContainer.reboot) {
+                        relaunchApp(ctx, true)
+                    }
                 }
             }
 

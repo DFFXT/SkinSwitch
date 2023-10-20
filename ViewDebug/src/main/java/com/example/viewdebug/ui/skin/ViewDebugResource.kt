@@ -1,0 +1,114 @@
+package com.example.viewdebug.ui.skin
+
+import android.content.res.AssetFileDescriptor
+import android.content.res.AssetManager
+import android.content.res.ColorStateList
+import android.content.res.Configuration
+import android.content.res.Resources
+import android.content.res.XmlResourceParser
+import android.graphics.drawable.Drawable
+import android.util.AttributeSet
+import android.util.DisplayMetrics
+import android.util.TypedValue
+import com.example.viewdebug.xml.pack.PackAssetsFile
+import java.io.InputStream
+import java.util.WeakHashMap
+
+/**
+ * view debug专用的resource对象
+ */
+class ViewDebugResource(assetManager: AssetManager, metrics: DisplayMetrics, config: Configuration) : Resources(assetManager, metrics, config) {
+    private val layoutMap = WeakHashMap<AttributeSet, LayoutInfo>()
+
+    override fun getLayout(id: Int): XmlResourceParser {
+        val parser = if (ViewDebugResourceManager.getAllChangedResource().contains(id)) {
+            val p = ViewDebugResourceManager.interceptedAsset!!.openXmlResourceParser("assets/${PackAssetsFile.FOLDER}/$id.xml")
+            p
+        } else {
+            super.getLayout(id)
+        }
+        layoutMap[parser] = LayoutInfo(id, Throwable().stackTrace)
+
+        return parser
+    }
+
+    /**
+     * 拦截布局
+     */
+    override fun getXml(id: Int): XmlResourceParser {
+        if (ViewDebugResourceManager.getAllChangedResource().contains(id)) {
+            return ViewDebugResourceManager.interceptedAsset!!.openXmlResourceParser("assets/${PackAssetsFile.FOLDER}/$id.xml")
+        }
+        return super.getXml(id)
+    }
+
+    /**
+     * 拦截drawable
+     */
+    override fun getDrawableForDensity(id: Int, density: Int, theme: Theme?): Drawable? {
+        if (ViewDebugResourceManager.getAllChangedResource().contains(id)) {
+            val parser = ViewDebugResourceManager.interceptedAsset!!.openXmlResourceParser("assets/${PackAssetsFile.FOLDER}/$id.xml")
+            return Drawable.createFromXml(this, parser, theme)
+        }
+        return super.getDrawableForDensity(id, density, theme)
+    }
+
+    override fun getValueForDensity(id: Int, density: Int, outValue: TypedValue?, resolveRefs: Boolean) {
+        super.getValueForDensity(id, density, outValue, resolveRefs)
+    }
+
+    override fun openRawResource(id: Int): InputStream {
+        val name = getResourceName(id)
+        return super.openRawResource(id)
+    }
+
+    override fun openRawResourceFd(id: Int): AssetFileDescriptor {
+        val name = getResourceName(id)
+        return super.openRawResourceFd(id)
+    }
+
+    override fun openRawResource(id: Int, value: TypedValue?): InputStream {
+        val name = getResourceName(id)
+        return super.openRawResource(id, value)
+    }
+
+    override fun getString(id: Int): String {
+        val str = ViewDebugResourceManager.getAllValueChangedItem()[id]
+        if (str != null) {
+            return ResourceDecode.getString(this, str)
+        }
+        return super.getString(id)
+    }
+
+    override fun getColor(id: Int, theme: Theme?): Int {
+        val color = ViewDebugResourceManager.getAllValueChangedItem()[id]
+        if (color != null) {
+            return ResourceDecode.getColor(this, color, theme) ?: super.getColor(id, theme)
+        }
+        return super.getColor(id, theme)
+    }
+
+
+    /**
+     * 拦截颜色
+     */
+    override fun getColorStateList(id: Int, theme: Theme?): ColorStateList {
+        if (ViewDebugResourceManager.getAllChangedResource().contains(id)) {
+            val parser = ViewDebugResourceManager.interceptedAsset!!.openXmlResourceParser("assets/${PackAssetsFile.FOLDER}/$id.xml")
+            return ColorStateList.createFromXml(this, parser, theme)
+        }
+        return super.getColorStateList(id, theme)
+    }
+
+
+    /**
+     * 获取对应的布局id
+     */
+    fun getLayoutInfo(attributeSet: AttributeSet): LayoutInfo? {
+        return layoutMap[attributeSet]
+    }
+
+    class LayoutInfo(val layoutId: Int, val invokeTrace: Array<StackTraceElement>)
+
+
+}
