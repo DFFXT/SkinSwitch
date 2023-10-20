@@ -24,12 +24,21 @@
         android:elevation="@dimen/view_debug_elevation"
         android:text="@string/view_debug_modify_list_detal_title"
         style="@style/ViewDebugTitle"
-
         app:layout_constraintBottom_toTopOf="@id/rv_list"
         app:layout_constraintEnd_toEndOf="@id/rv_list"
         app:layout_constraintStart_toStartOf="@id/rv_list"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
+    <TextView
+        android:id="@+id/tv_clearAndRestart"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        style="@style/ViewDebugTitle"
+        app:layout_constraintTop_toTopOf="@id/view_debug_title_bar"
+        android:elevation="@dimen/view_debug_elevation"
+        app:layout_constraintEnd_toEndOf="@id/rv_list"
+        app:layout_constraintBottom_toTopOf="@id/rv_list"
+        android:text="@string/view_debug_modify_list_tab_restart"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_list"

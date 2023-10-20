@@ -20,6 +20,7 @@ import com.example.viewdebug.ui.WindowControlManager
 import com.example.viewdebug.ui.skin.ViewDebugResourceManager
 import com.example.viewdebug.util.adjustOrientation
 import com.example.viewdebug.util.launch
+import com.example.viewdebug.util.relaunchApp
 import com.example.viewdebug.util.shortToast
 import com.fxf.debugwindowlibaray.ui.UIPage
 import com.skin.log.Logger
@@ -125,12 +126,23 @@ class ModifyListPage : UIPage(), ViewDebugResourceManager.OnResourceChanged {
             // 关闭自身
             WindowControlManager.resetToEmptyPage()
         }
+        binding.tvClearAndRestart.setOnClickListener {
+            ViewDebugResourceManager.removeAllValues()
+            ViewDebugResourceManager.getAllChangedResource().forEach {
+                ViewDebugResourceManager.removeInterceptor(it)
+            }
+            DexLoadManager.clear()
+            launch(Dispatchers.IO) {
+                relaunchApp(it.context, true)
+            }
+        }
         adjustOrientation(binding.rvList)
         ViewDebugResourceManager.addResourceChangeListener(this)
 
         refresh()
         return binding.root
     }
+
 
     /**
      * 更新数据
