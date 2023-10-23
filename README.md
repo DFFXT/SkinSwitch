@@ -5,9 +5,9 @@ Android 换肤框架
   // 视情况添加，如果有guava依赖冲突则添加
   implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
   // 换肤框架
-  implementation 'com.github.DFFXT.SkinSwitch:SkinCore:0.20.1'
+  implementation 'com.github.DFFXT.SkinSwitch:SkinCore:0.20.5'
   // 视情况添加，视图调试框架，支持xml修改实时生效，和kotlin但文件修冷启动生效，用于节省编译时间，具体使用方式需搭配android studio插件使用[插件下载](https://github.com/DFFXT/ViewDebug-Trans)
-  debugImplementation 'com.github.DFFXT.SkinSwitch:ViewDebug:0.20.1'
+  debugImplementation 'com.github.DFFXT.SkinSwitch:ViewDebug:0.20.5'
 </code></pre>
 
 
