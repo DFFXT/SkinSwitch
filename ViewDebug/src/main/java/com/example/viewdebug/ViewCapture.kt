@@ -6,11 +6,10 @@ import androidx.core.view.children
 import java.util.LinkedList
 
 internal class ViewCapture {
+    private val position = intArrayOf(0, 0)
     fun capture(rootView: View, x: Int, y: Int): List<View> {
-        val position = intArrayOf(0, 0)
-        rootView.getLocationInWindow(position)
         val result = LinkedList<View>()
-        findViewByPosition(rootView, position[0], position[1], x, y, false, result)
+        findViewByPosition(rootView, x, y, false, result)
         return result
     }
 
@@ -20,21 +19,19 @@ internal class ViewCapture {
      */
     private fun findViewByPosition(
         rootView: View,
-        offsetX: Int,
-        offsetY: Int,
         x: Int,
         y: Int,
         captureInvisible: Boolean,
         out: LinkedList<View>,
     ) {
-        com.example.skincore.R.styleable.SkinAttr
+        rootView.getLocationInWindow(position)
         if (inRect(
-                rootView.left,
-                rootView.top,
-                rootView.right,
-                rootView.bottom,
-                x - offsetX,
-                y - offsetY,
+                position[0],
+                position[1],
+                position[0] + rootView.measuredWidth,
+                position[1] + rootView.measuredHeight,
+                x,
+                y,
             )
         ) {
             if (captureInvisible || rootView.isShown) {
@@ -43,8 +40,6 @@ internal class ViewCapture {
                     rootView.children.forEach { v ->
                         findViewByPosition(
                             v,
-                            offsetX + rootView.left,
-                            offsetY + rootView.top,
                             x,
                             y,
                             captureInvisible,
