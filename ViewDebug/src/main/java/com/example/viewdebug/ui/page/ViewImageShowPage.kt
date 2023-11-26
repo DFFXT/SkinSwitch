@@ -8,12 +8,15 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.view.children
 import com.example.viewdebug.R
-import com.example.viewdebug.ViewCapture
+import com.example.viewdebug.ui.page.layout.LayoutProfilerView
+import com.example.viewdebug.util.ViewCapture
 import com.fxf.debugwindowlibaray.ui.UIPage
 import com.example.viewdebug.ui.page.parser.Parser
 import com.example.viewdebug.ui.page.parser.ReferenceParser
 import com.example.viewdebug.ui.page.parser.AttrTextParser
+import java.util.LinkedList
 
 /**
  * 显示当前点击处View的背景、图片资源等
@@ -24,6 +27,15 @@ class ViewImageShowPage(
     private val captureAttrId: ArrayList<Pair<Int, Pair<String, Parser>>> = ArrayList(),
 ) :
     UIPage() {
+
+    private val profilerView by lazy {
+        LayoutProfilerView(ctx).apply {
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        }
+    }
 
     private val attribute by lazy {
         val attrIds = HashMap<Int, Pair<String, Parser>>()
@@ -55,7 +67,7 @@ class ViewImageShowPage(
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateContentView(ctx: Context, parent: ViewGroup): View {
-        return View(ctx).apply {
+        return profilerView.apply {
             layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -87,6 +99,24 @@ class ViewImageShowPage(
 
     fun removeAttribute(id: Int) {
         attribute.remove(id)
+    }
+
+    override fun onShow() {
+        super.onShow()
+        val activity = hostActivity?.get() ?: return
+        val root = activity.findViewById<ViewGroup>(android.R.id.content) ?: return
+        val list = LinkedList<View>()
+        getChildren(root, list)
+        profilerView.update(list)
+    }
+
+    private fun getChildren(view: ViewGroup, out: MutableList<View>) {
+        view.children.forEach {
+            out.add(it)
+            if (it is ViewGroup) {
+                getChildren(it, out)
+            }
+        }
     }
 
     override fun onClose() {

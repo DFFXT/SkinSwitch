@@ -1,4 +1,4 @@
-package com.example.viewdebug
+package com.example.viewdebug.util
 
 import android.view.View
 import android.view.ViewGroup
@@ -56,4 +56,6 @@ internal class ViewCapture {
     private fun inRect(x1: Int, y1: Int, x2: Int, y2: Int, px: Int, py: Int): Boolean {
         return px in (x1 + 1) until x2 && y1 < py && y2 > py
     }
+
+
 }
