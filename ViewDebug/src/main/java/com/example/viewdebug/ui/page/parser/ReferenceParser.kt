@@ -16,7 +16,7 @@ object ReferenceParser : Parser {
         val attrDescribe = attrName + "=@" + view.context.resources.getResourceTypeName(resId) + "/" + view.context.resources.getResourceEntryName(resId)
         val layoutId = viewDebugInfo?.layoutId
         val layoutName: String = if (layoutId != null && layoutId != 0) {
-            view.context.resources.getResourceEntryName(layoutId)
+            view.context.resources.getResourceEntryName(layoutId) + ".xml"
         } else {
             view::class.java.simpleName
         }

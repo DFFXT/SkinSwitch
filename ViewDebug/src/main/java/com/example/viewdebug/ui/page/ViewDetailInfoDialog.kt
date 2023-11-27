@@ -5,6 +5,10 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.marginBottom
+import androidx.core.view.marginEnd
+import androidx.core.view.marginStart
+import androidx.core.view.marginTop
 import androidx.lifecycle.ViewTreeLifecycleOwner
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
@@ -14,7 +18,7 @@ import com.fxf.debugwindowlibaray.ui.UIPage
 import com.example.viewdebug.ui.dialog.BaseDialog
 import com.example.viewdebug.ui.page.PlaintTextDialog
 import com.example.viewdebug.ui.page.attribute.Update
-import com.example.viewdebug.ui.page.attribute.impl.ViewUpdateProviderManger
+import com.example.viewdebug.ui.page.attribute.ViewUpdateProviderManger
 import com.example.viewdebug.ui.page.itemHanlder.ViewInfoInputItemHandler
 import com.example.viewdebug.ui.page.itemHanlder.ViewInfoItemHandler
 import com.example.viewdebug.ui.page.itemHanlder.ViewInfoItemTraceHandler
@@ -72,6 +76,13 @@ internal class ViewDetailInfoDialog(host: UIPage) : BaseDialog(host) {
             addDescribe(Item.TYPE_COMMON,"id", idName)
         }
         // endregion
+        // 尺寸
+        addDescribe(Item.TYPE_COMMON, "size", "" + target.measuredWidth + "*" + target.measuredHeight)
+        addDescribe(Item.TYPE_COMMON, "padding", "" + target.paddingStart + "," + target.paddingTop + "," + target.paddingEnd + "," + target.paddingBottom)
+        addDescribe(Item.TYPE_COMMON, "margin", "" + target.marginStart + "," + target.marginTop + "," + target.marginEnd + "," + target.marginBottom)
+
+
+
         addDescribe(Item.TYPE_COMMON,"Owner(Activity)", target.context::class.java.simpleName)
         // region 添加fragment信息
         ViewTreeLifecycleOwner.get(target)?.let {
@@ -105,16 +116,19 @@ internal class ViewDetailInfoDialog(host: UIPage) : BaseDialog(host) {
 
     private fun addAttributeUpdate(target: View) {
         val m = ViewUpdateProviderManger()
-        val provider = m.getProvider(target)
-        provider?.update?.forEach {
-            addDescribe(Item.TYPE_UPDATE, it.key, it.value.getValue(target), it.value)
+        val provider = m.getExtraInfo(target)
+        provider.forEach {
+            addDescribe(it.type, it.label, it.value, it.extra)
         }
     }
 
     class Item(val type: Int, val name: String,val extra: Any?) {
         companion object {
+            // 普通类型
             const val TYPE_COMMON = 0
+            // 可更新类型
             const val TYPE_UPDATE = 1
+            // 跳转类型
             const val TYPE_TRACE_JUMP = 2
         }
     }

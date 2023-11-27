@@ -84,9 +84,14 @@ class ViewImageShowPage(
                     hostRootView ?: return@setOnTouchListener true
                     val capturedViews =
                         capture.capture(hostRootView, event.rawX.toInt(), event.rawY.toInt())
+
+
+
                     // activity名称
                     val hostName = hostActivity?.get()?.javaClass?.simpleName ?: ""
                     dialog?.show(hostName, capturedViews)
+                    val target = dialog?.getFirstShowView()
+                    profilerView.highlight(target = target)
                 }
                 return@setOnTouchListener true
             }

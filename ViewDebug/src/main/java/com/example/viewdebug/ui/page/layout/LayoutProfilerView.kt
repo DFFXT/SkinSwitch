@@ -22,6 +22,8 @@ class LayoutProfilerView @JvmOverloads constructor(
     private var offsetX: Float = 0f
     private var offsetY: Float = 0f
 
+    private var highlightTarget: ViewRect? = null
+
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
         getLocationOnScreen(p)
@@ -33,11 +35,18 @@ class LayoutProfilerView @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         canvas.translate(-offsetX, -offsetY)
+        paint.style = Paint.Style.STROKE
+        paint.alpha = 255
         viewRects.forEach {
             val v = it.v.get()
             if (v != null) {
                 canvas.drawRect(it.left, it.top, it.right, it.bottom, paint)
             }
+        }
+        highlightTarget?.let {
+            paint.style = Paint.Style.FILL
+            paint.alpha = 100
+            canvas.drawRect(it.left, it.top, it.right, it.bottom, paint)
         }
         canvas.translate(offsetX, offsetY)
     }
@@ -48,6 +57,17 @@ class LayoutProfilerView @JvmOverloads constructor(
             it.getLocationInWindow(p)
             viewRects.add(ViewRect(p[0].toFloat(), p[1].toFloat(), p[0].toFloat() + it.measuredWidth, p[1].toFloat() + it.measuredHeight, WeakReference(it)))
         }
+        invalidate()
+    }
+
+    fun highlight(target: View?) {
+        target ?: run {
+            highlightTarget = null
+            invalidate()
+            return
+        }
+        target.getLocationOnScreen(p)
+        highlightTarget = ViewRect(p[0].toFloat(), p[1].toFloat(), p[0].toFloat() + target.measuredWidth, p[1].toFloat() + target.measuredHeight, WeakReference(target))
         invalidate()
     }
 

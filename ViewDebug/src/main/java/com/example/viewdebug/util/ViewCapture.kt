@@ -57,5 +57,24 @@ internal class ViewCapture {
         return px in (x1 + 1) until x2 && y1 < py && y2 > py
     }
 
+    companion object {
+        /**
+         * 获取面积最小的view
+         */
+        fun getMiniAreaTarget(views: List<View>): View? {
+            var mini = Int.MAX_VALUE
+            var target: View? = null
+            var area = 0
+            views.forEach {
+                area = it.measuredWidth * it.measuredHeight
+                if (mini > area) {
+                    mini = area
+                    target = it
+                }
+            }
+            return target
+        }
+    }
+
 
 }

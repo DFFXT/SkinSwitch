@@ -59,13 +59,13 @@ internal class ImageItemHandler(private val host: UIPage) : ItemHandle<Item>() {
         @SuppressLint("SetTextI18n")
         fun bind(item: Item) {
             binding.ivImage.setImageResourceSkinAble(item.id)
-            binding.tvLayout.text = item.layoutName + ".xml"
+            binding.tvTitle.text = item.layoutName
             binding.tvName.text = item.attribute
 
             binding.tvName.setOnClickListener {
                 onAttributeNameClick?.invoke(item)
             }
-            binding.tvLayout.setOnClickListener {
+            binding.tvTitle.setOnClickListener {
                 onLayoutNameClick?.invoke(item)
             }
             binding.ivImage.setOnClickListener {
