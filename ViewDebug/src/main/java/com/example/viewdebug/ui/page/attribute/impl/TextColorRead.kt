@@ -10,10 +10,11 @@ import com.skin.skincore.collector.getViewUnion
 internal class TextColorRead: Read<TextView>{
     override fun getValue(view: TextView): String {
         val colorId = view.getViewUnion()?.get(android.R.attr.textColor)?.resId
+        val currentColor = "#"+Integer.toHexString(view.currentTextColor)
         if (colorId != null && colorId !=0) {
-            return view.resources.getResourceEntryName(colorId)
+            return currentColor + " | " +  view.resources.getResourceEntryName(colorId)
         }
-        return "#"+Integer.toHexString(view.currentTextColor)
+        return currentColor
     }
 
 }
