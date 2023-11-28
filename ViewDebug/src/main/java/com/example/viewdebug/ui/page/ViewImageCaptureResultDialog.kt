@@ -136,7 +136,8 @@ class ViewImageCaptureResultDialog(
             WeakReference(v),
             R.mipmap.view_debug_view_view_type_icon,
             ln,
-            0,
+            layoutId = debugInfo.layoutId ?: 0,
+            attributeId = 0,
             v::class.java.simpleName
         )
     }

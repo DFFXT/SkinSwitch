@@ -113,6 +113,7 @@ class ViewImageShowPage(
         val list = LinkedList<View>()
         getChildren(root, list)
         profilerView.update(list)
+        profilerView.highlight(null)
     }
 
     private fun getChildren(view: ViewGroup, out: MutableList<View>) {

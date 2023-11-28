@@ -20,6 +20,6 @@ object ReferenceParser : Parser {
         } else {
             view::class.java.simpleName
         }
-        return Item(WeakReference(view), resId, layoutName, attrId, attrDescribe)
+        return Item(WeakReference(view), resId, layoutName, layoutId = layoutId ?: 0, attrId, attrDescribe)
     }
 }
