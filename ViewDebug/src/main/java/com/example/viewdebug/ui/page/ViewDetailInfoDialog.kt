@@ -14,17 +14,18 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import com.example.viewdebug.databinding.ViewDebugDialogDetailInfoBinding
 import com.example.viewdebug.rv.MultiTypeRecyclerAdapter
-import com.fxf.debugwindowlibaray.ui.UIPage
 import com.example.viewdebug.ui.dialog.BaseDialog
 import com.example.viewdebug.ui.page.PlaintTextDialog
+import com.example.viewdebug.ui.page.attribute.Read
 import com.example.viewdebug.ui.page.attribute.Update
-import com.example.viewdebug.ui.page.attribute.ViewUpdateProviderManger
+import com.example.viewdebug.ui.page.attribute.ViewInfoProviderManger
 import com.example.viewdebug.ui.page.itemHanlder.ViewInfoInputItemHandler
 import com.example.viewdebug.ui.page.itemHanlder.ViewInfoItemHandler
 import com.example.viewdebug.ui.page.itemHanlder.ViewInfoItemTraceHandler
 import com.example.viewdebug.util.adjustOrientation
 import com.example.viewdebug.util.fragmentViewLifecycleOwnerFragmentFiled
 import com.example.viewdebug.util.getViewDebugInfo
+import com.fxf.debugwindowlibaray.ui.UIPage
 import java.lang.ref.WeakReference
 
 /**
@@ -37,19 +38,17 @@ internal class ViewDetailInfoDialog(host: UIPage) : BaseDialog(host) {
         binding = ViewDebugDialogDetailInfoBinding.inflate(LayoutInflater.from(host.tabView.context), parent, false)
         adjustOrientation(binding.root)
         binding.rvList.adapter = adapter
-        adapter.registerItemHandler(ViewInfoItemHandler())
+        adapter.registerItemHandler(ViewInfoItemTraceHandler(host))
         adapter.registerItemHandler(
             ViewInfoInputItemHandler().apply {
                 this.updateClick = { item, arg ->
                     targetRef.get()?.let { target ->
-                        (item.extra as Update<View>).update(target, arg)
+                        (item.read as Update<View>).update(target, arg)
                     }
                 }
             },
         )
-        adapter.registerItemHandler(ViewInfoItemTraceHandler {
-            PlaintTextDialog(host).show(it.extra as String)
-        })
+        adapter.registerItemHandler(ViewInfoItemHandler())
         val lm = binding.rvList.layoutManager as GridLayoutManager
         lm.spanSizeLookup = object : SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
@@ -69,39 +68,6 @@ internal class ViewDetailInfoDialog(host: UIPage) : BaseDialog(host) {
     fun show(target: View) {
         this.targetRef = WeakReference(target)
         show()
-        addDescribe(Item.TYPE_COMMON,"Target", target::class.java.simpleName)
-        // region 添加id信息
-        if (target.id > 0) {
-            val idName = target.resources.getResourceName(target.id)
-            addDescribe(Item.TYPE_COMMON,"id", idName)
-        }
-        // endregion
-        // 尺寸
-        addDescribe(Item.TYPE_COMMON, "size", "" + target.measuredWidth + "*" + target.measuredHeight)
-        addDescribe(Item.TYPE_COMMON, "padding", "" + target.paddingStart + "," + target.paddingTop + "," + target.paddingEnd + "," + target.paddingBottom)
-        addDescribe(Item.TYPE_COMMON, "margin", "" + target.marginStart + "," + target.marginTop + "," + target.marginEnd + "," + target.marginBottom)
-
-
-
-        addDescribe(Item.TYPE_COMMON,"Owner(Activity)", target.context::class.java.simpleName)
-        // region 添加fragment信息
-        ViewTreeLifecycleOwner.get(target)?.let {
-            try {
-                if (it is FragmentViewLifecycleOwner) {
-                    val fragmentName = fragmentViewLifecycleOwnerFragmentFiled.get(it)::class.java.name
-                    addDescribe(Item.TYPE_COMMON,"Owner(Fragment)", fragmentName)
-                }
-            } catch (_: Exception) {
-            }
-        }
-        // endregion
-        val debugInfo = target.getViewDebugInfo()
-        if (debugInfo != null) {
-            addDescribe(Item.TYPE_COMMON,"Owner(layout)", debugInfo.getLayoutTypeAndName(target.resources) ?: "")
-            addDescribe(Item.TYPE_TRACE_JUMP,"", "查看布局生成调用栈", debugInfo.getMainInvokeTrace())
-        }
-
-
         addAttributeUpdate(target)
         adapter.update(data)
     }
@@ -109,27 +75,17 @@ internal class ViewDetailInfoDialog(host: UIPage) : BaseDialog(host) {
     /**
      * 添加详细信息
      */
-    private fun addDescribe(type: Int, label: String, value: String, extra: Any? = null) {
-        data.add(Item(Item.TYPE_COMMON, label, null))
-        data.add(Item(type, value, extra))
+    private fun addDescribe(label: String, value: String, extra: Read<*>? = null) {
+        data.add(Item(label, null))
+        data.add(Item(value, extra))
     }
 
     private fun addAttributeUpdate(target: View) {
-        val m = ViewUpdateProviderManger()
-        val provider = m.getExtraInfo(target)
+        val provider = ViewInfoProviderManger.getExtraInfo(target)
         provider.forEach {
-            addDescribe(it.type, it.label, it.value, it.extra)
+            addDescribe(it.label, it.value, it.extra)
         }
     }
 
-    class Item(val type: Int, val name: String,val extra: Any?) {
-        companion object {
-            // 普通类型
-            const val TYPE_COMMON = 0
-            // 可更新类型
-            const val TYPE_UPDATE = 1
-            // 跳转类型
-            const val TYPE_TRACE_JUMP = 2
-        }
-    }
+    class Item(val name: String,val read: Read<*>?)
 }

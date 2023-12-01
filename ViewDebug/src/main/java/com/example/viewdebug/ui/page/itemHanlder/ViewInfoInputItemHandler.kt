@@ -7,12 +7,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.viewdebug.R
 import com.example.viewdebug.databinding.ViewDebugViewItemInputBinding
 import com.example.viewdebug.rv.ItemHandle
+import com.example.viewdebug.ui.page.attribute.Update
 import com.example.viewdebug.util.copyToClipboard
 
 internal class ViewInfoInputItemHandler : ItemHandle<ViewDetailInfoDialog.Item>() {
     var updateClick: ((ViewDetailInfoDialog.Item, String) -> Unit)? = null
     override fun handle(item: ViewDetailInfoDialog.Item): Boolean {
-        return item.type == ViewDetailInfoDialog.Item.TYPE_UPDATE
+        return item.read is Update
     }
 
     override fun onBindView(item: ViewDetailInfoDialog.Item, position: Int, vh: RecyclerView.ViewHolder) {

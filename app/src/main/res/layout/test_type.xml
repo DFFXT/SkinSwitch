@@ -14,11 +14,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/MayStyle"/>
-   <!-- <TextView
-        android:text="LLLL)"
-        android:layout_width="wrap_content"
-        android:layout_gravity="end"
-        app:layout_constraintStart_toEndOf="@id/tv_ssss"
-        android:textColor="@color/view_debug_image_detail_title_bar_bg"
-        android:layout_height="wrap_content"/>-->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_list"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

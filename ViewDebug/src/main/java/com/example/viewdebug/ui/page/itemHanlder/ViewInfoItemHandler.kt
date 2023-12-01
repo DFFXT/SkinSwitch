@@ -8,14 +8,19 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.viewdebug.R
 import com.example.viewdebug.databinding.ViewDebugViewItemInfoBinding
 import com.example.viewdebug.rv.ItemHandle
+import com.example.viewdebug.ui.page.attribute.Read
 import com.example.viewdebug.util.copyToClipboard
 
 internal open class ViewInfoItemHandler : ItemHandle<ViewDetailInfoDialog.Item>() {
     override fun handle(item: ViewDetailInfoDialog.Item): Boolean {
-        return item.type == ViewDetailInfoDialog.Item.TYPE_COMMON
+        return item.read == null || item.read is Read
     }
 
-    override fun onBindView(item: ViewDetailInfoDialog.Item, position: Int, vh: RecyclerView.ViewHolder) {
+    override fun onBindView(
+        item: ViewDetailInfoDialog.Item,
+        position: Int,
+        vh: RecyclerView.ViewHolder
+    ) {
         vh as VH
         vh.binding.tvName.text = item.name
         if (position.rem(2) == 0) {
@@ -43,7 +48,8 @@ internal open class ViewInfoItemHandler : ItemHandle<ViewDetailInfoDialog.Item>(
         return R.layout.view_debug_view_item_info
     }
 
-    protected class VH(val binding: ViewDebugViewItemInfoBinding) : RecyclerView.ViewHolder(binding.root) {
+    protected class VH(val binding: ViewDebugViewItemInfoBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
     }
 

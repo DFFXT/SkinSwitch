@@ -8,6 +8,8 @@ import android.view.View
 internal abstract class ViewExtraInfoProvider<T : View> {
     /**
      * key：属性名称，用于显示；value：对应的属性更新处理器
+     * value Read类型，只读
+     *       Update类型，可更新数据
      */
     abstract val extraInfoProvider: LinkedHashMap<String, Read<T>>
 
@@ -16,9 +18,6 @@ internal abstract class ViewExtraInfoProvider<T : View> {
      */
     abstract fun support(view: View): Boolean
 
-    fun getSupportedAttribute(): List<String> {
-        return extraInfoProvider.map { it.key }
-    }
 
     fun update(view: View, attributeName: String, vararg args: String) {
         (extraInfoProvider[attributeName] as? Update)?.update(view as T, *args)
