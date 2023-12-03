@@ -30,9 +30,8 @@ class ViewImageCaptureResultDialog(
     private lateinit var dialogBinding: ViewDebugImageSetContainerBinding
 
     companion object {
-        private var mode = 0
-        private var MODE_IMAGE = 0
-        private var MODE_VIEW = 1
+        const val MODE_IMAGE = 0
+        const val MODE_VIEW = 1
     }
 
 
@@ -57,7 +56,7 @@ class ViewImageCaptureResultDialog(
         attrIds.put(id, pair)
     }
 
-    fun show(title: String, capturedViews: List<View>) {
+    fun show(title: String, capturedViews: List<View>, mode: Int) {
 
         if (mode == MODE_IMAGE) {
             showModeImage(capturedViews)
@@ -78,14 +77,27 @@ class ViewImageCaptureResultDialog(
     }
 
     private fun showModeView(capturedViews: List<View>) {
-        /*val data = capturedViews.map {
-            ImageItemHandler.ViewItem(
-                WeakReference(it),
-                it.getViewUnion(),
-                it.getViewDebugInfo(),
-            )
-        }*/
-        // rAdapter.update(data)
+        val data = ArrayList<Item>(capturedViews.size)
+        for (v in capturedViews) {
+            val u = v.getViewUnion()
+            val debugInfo = v.getViewDebugInfo()
+            var isAdd = false
+            attrIds.forEach {
+                val attrInfo = it.value
+                val item = attrInfo.second.getItem(v, it.key, attrInfo.first, u, debugInfo)
+                if (item != null) {
+                    isAdd = true
+                    data.add(item)
+                }
+            }
+            if (!isAdd) {
+                createSimpleViewItem(v)?.let { data.add(it) }
+            }
+            if (data.size >= 6) {
+                break
+            }
+        }
+        rAdapter.update(data)
     }
 
     /**

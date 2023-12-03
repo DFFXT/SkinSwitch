@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.core.view.children
 import com.example.viewdebug.R
@@ -53,15 +54,32 @@ class ViewImageShowPage(
     }
     private var dialog: ViewImageCaptureResultDialog? = null
 
+    private var mode = ViewImageCaptureResultDialog.MODE_VIEW
+
     override fun enableTouch(): Boolean = true
 
     override fun enableFocus(): Boolean = true
 
     override fun onCreateTabView(ctx: Context, parent: ViewGroup): View {
-        return super.onCreateTabView(ctx, parent).apply {
+        val container = FrameLayout(ctx)
+        val iv = super.onCreateTabView(ctx, parent).apply {
             this as ImageView
             imageTintList = ColorStateList.valueOf(Color.WHITE)
+            setOnClickListener {
+                if (this@ViewImageShowPage.isOnShow) {
+                    mode = if (mode == ViewImageCaptureResultDialog.MODE_IMAGE) {
+                        imageTintList = ColorStateList.valueOf(Color.WHITE)
+                        ViewImageCaptureResultDialog.MODE_VIEW
+                    } else {
+                        imageTintList = ColorStateList.valueOf(Color.RED)
+                        ViewImageCaptureResultDialog.MODE_IMAGE
+                    }
+                }
+                container.callOnClick()
+            }
         }
+        container.addView(iv)
+        return container
     }
     override fun getTabIcon(): Int = R.mipmap.view_debug_image_layer_pick
 
@@ -89,7 +107,7 @@ class ViewImageShowPage(
 
                     // activity名称
                     val hostName = hostActivity?.get()?.javaClass?.simpleName ?: ""
-                    dialog?.show(hostName, capturedViews)
+                    dialog?.show(hostName, capturedViews, mode)
                     val target = dialog?.getFirstShowView()
                     profilerView.highlight(target = target)
                 }
