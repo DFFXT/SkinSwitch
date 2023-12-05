@@ -24,8 +24,11 @@ class ViewImageCaptureResultDialog(
     ctx: Context,
     hostPage: UIPage,
     private val attrIds: HashMap<Int, Pair<String, Parser>>,
+    itemClick: (View?) -> Unit
 ) : BaseDialog(hostPage) {
-    private val imageItemHandler = ImageItemHandler(hostPage)
+    private val imageItemHandler = ImageItemHandler(hostPage) {
+        itemClick.invoke(it)
+    }
     private val rAdapter = MultiTypeRecyclerAdapter<Item>()
     private lateinit var dialogBinding: ViewDebugImageSetContainerBinding
 
@@ -141,14 +144,13 @@ class ViewImageCaptureResultDialog(
 
     private fun createSimpleViewItem(v: View?): Item? {
         v ?: return null
-        val u = v.getViewUnion()
-        val debugInfo = v.getViewDebugInfo() ?: return null
-        val ln = debugInfo.getLayoutName(v.resources) ?: return null
+        val debugInfo = v.getViewDebugInfo()
+        val ln = debugInfo?.getLayoutName(v.resources) ?: "???"
         return Item(
             WeakReference(v),
             R.mipmap.view_debug_view_view_type_icon,
             ln,
-            layoutId = debugInfo.layoutId ?: 0,
+            layoutId = debugInfo?.layoutId ?: 0,
             attributeId = 0,
             v::class.java.simpleName
         )
