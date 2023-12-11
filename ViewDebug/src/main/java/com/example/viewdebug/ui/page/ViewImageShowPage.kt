@@ -91,7 +91,9 @@ class ViewImageShowPage(
                 ViewGroup.LayoutParams.MATCH_PARENT,
             )
             val capture = ViewCapture()
-            dialog = ViewImageCaptureResultDialog(ctx, this@ViewImageShowPage, attribute)
+            dialog = ViewImageCaptureResultDialog(ctx, this@ViewImageShowPage, attribute) {
+                profilerView.highlight(it)
+            }
             captureAttrId.forEach {
                 dialog?.addAttribute(it.first, it.second)
             }

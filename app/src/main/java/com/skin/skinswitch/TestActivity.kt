@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.skinswitch.R
+import com.example.skinswitch.databinding.LayoutTestItemBinding
 import com.example.viewdebug.rv.ItemHandle
 import com.example.viewdebug.rv.MultiTypeRecyclerAdapter
 import com.skin.log.Logger
@@ -32,7 +33,8 @@ class TestActivity : AppCompatActivity() {
                 parent: ViewGroup,
                 viewType: Int
             ): RecyclerView.ViewHolder {
-                return object : RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.layout_test_item, parent, false)){}
+                val v = LayoutTestItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                return object : RecyclerView.ViewHolder(v.root){}
             }
 
         })

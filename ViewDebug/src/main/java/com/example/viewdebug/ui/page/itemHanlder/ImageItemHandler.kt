@@ -19,12 +19,12 @@ import java.lang.ref.WeakReference
 /**
  * 图片显示适配器
  */
-internal class ImageItemHandler(private val host: UIPage) : ItemHandle<Item>() {
+internal class ImageItemHandler(private val host: UIPage, private val itemClick: (View?) -> Unit) : ItemHandle<Item>() {
 
-    var onAttributeNameClick: ((Item) -> Unit)? = null
-    var onLayoutNameClick: ((Item) -> Unit)? = null
-    var onImageClick: ((Item) -> Unit)? = null
-    var onItemClick: ((Item) -> Unit)? = null
+    private var onAttributeNameClick: ((Item) -> Unit)? = null
+    private var onLayoutNameClick: ((Item) -> Unit)? = null
+    private var onImageClick: ((Item) -> Unit)? = null
+    private var onItemClick: ((Item) -> Unit)? = null
 
     init {
         this.onImageClick = click@{
@@ -52,6 +52,7 @@ internal class ImageItemHandler(private val host: UIPage) : ItemHandle<Item>() {
             } else {
                 Toast.makeText(host.tabView.context, "对象已经消失", Toast.LENGTH_SHORT).show()
             }
+            itemClick(target)
         }
     }
 
