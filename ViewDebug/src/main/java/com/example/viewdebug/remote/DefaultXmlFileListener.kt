@@ -7,6 +7,7 @@ import com.example.viewdebug.ui.WindowControlManager
 import com.example.viewdebug.util.launch
 import com.example.viewdebug.util.relaunchApp
 import com.example.viewdebug.util.shortToast
+import com.skin.log.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -37,9 +38,16 @@ internal class DefaultXmlFileListener : RemoteFileReceiver.FileWatcher(
                         ctx.packageName
                     )
                     val type = ctx.resources.getResourceTypeName(id)
-                    XmlLoadManager.compileXml(ctx, file.inputStream(), id, type)
-                    layoutId.add(id)
+                    if (XmlLoadManager.compileXml(ctx, file.inputStream(), id, type)) {
+                        layoutId.add(id)
+                    } else {
+                        Logger.d("DefaultXmlFileListener", "error")
+                    }
                 }
+            }
+            if (layoutId.isEmpty()) {
+                Logger.d("DefaultXmlFileListener", "no resources")
+                return
             }
             XmlLoadManager.compileApk()
             XmlLoadManager.loadApk()
