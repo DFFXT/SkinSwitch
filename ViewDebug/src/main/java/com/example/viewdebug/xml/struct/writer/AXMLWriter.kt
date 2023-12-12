@@ -204,7 +204,7 @@ class ChunkStringWriter(startPosition: Int) : BaseChunkWriter(startPosition) {
             otherStrings.find { it.string == string }?.index ?: -1
         }
         if (index == -1) {
-            Logger.e("getStringIndex", "string index error")
+            Logger.e("getStringIndex", "string index error: $type  $string")
         }
         return index
     }

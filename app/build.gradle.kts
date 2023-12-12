@@ -39,6 +39,7 @@ android {
         jvmTarget = "1.8"
     }
     buildFeatures.viewBinding = true
+    namespace = "com.example.skinswitch"
 }
 
 dependencies {

@@ -48,6 +48,7 @@ android {
             version '3.18.1'
         }
     }
+    namespace 'com.example.viewdebug'
 }
 /**
  * 获取git上的tag
