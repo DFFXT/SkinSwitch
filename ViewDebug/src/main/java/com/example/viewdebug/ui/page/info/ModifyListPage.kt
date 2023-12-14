@@ -25,7 +25,6 @@ import com.example.viewdebug.util.shortToast
 import com.fxf.debugwindowlibaray.ui.UIPage
 import com.skin.log.Logger
 import kotlinx.coroutines.Dispatchers
-import java.util.regex.Pattern
 
 /**
  * 当前应用更改列表
@@ -40,7 +39,7 @@ class ModifyListPage : UIPage(), ViewDebugResourceManager.OnResourceChanged {
         this.registerItemHandler(ModifyItemParentHandle { item, index ->
             if (item.isExpand) {
                 item.isExpand = false
-               items.removeAll(item.children.toSet())
+                items.removeAll(item.children.toSet())
                 notifyItemRangeRemoved(index + 1, item.children.size)
             } else {
                 item.isExpand = true
@@ -63,7 +62,10 @@ class ModifyListPage : UIPage(), ViewDebugResourceManager.OnResourceChanged {
         binding = ViewDebugLayoutModifyPageBinding.inflate(LayoutInflater.from(ctx), parent, false)
         binding.rvList.adapter = adapter
         ItemTouchHelper(object : ItemTouchHelper.Callback() {
-            override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
+            override fun getMovementFlags(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ): Int {
                 val item = items[viewHolder.adapterPosition]
                 return if (item is ModifyItemParent || item.type == RemoteFileReceiver.FileWatcher.TYPE_VALUES_XML) {
                     makeMovementFlags(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT)
@@ -85,18 +87,18 @@ class ModifyListPage : UIPage(), ViewDebugResourceManager.OnResourceChanged {
                 if (item.type == "dex" && item is ModifyItemParent) {
                     // 移除dex
                     if (item.state == ModifyState.APPLIED || item.state == ModifyState.REBOOT_UPDATABLE) {
-                        viewHolder.itemView.context.getString(R.string.view_debug_dex_remove_tip).shortToast()
+                        viewHolder.itemView.context.getString(R.string.view_debug_dex_remove_tip)
+                            .shortToast()
                     }
                     DexLoadManager.removeAppliedDexList(item.name)
                     items.removeAt(viewHolder.adapterPosition)
                     if (items.removeAll(item.children.toSet())) {
-                        adapter.notifyItemRangeRemoved(viewHolder.adapterPosition, 1 + item.children.size)
+                        adapter.notifyItemRangeRemoved(
+                            viewHolder.adapterPosition,
+                            1 + item.children.size
+                        )
                     } else {
                         adapter.notifyItemRemoved(viewHolder.adapterPosition)
-                    }
-                    if (items.isEmpty()) {
-                        WindowControlManager.removePage(this@ModifyListPage)
-                        WindowControlManager.resetToEmptyPage()
                     }
                 } else {
                     if (item.type == RemoteFileReceiver.FileWatcher.TYPE_VALUES_XML) {
@@ -116,7 +118,10 @@ class ModifyListPage : UIPage(), ViewDebugResourceManager.OnResourceChanged {
                             XmlLoadManager.applyGlobalViewByResId(item.id)
                         }
                     }
-
+                    if (items.isEmpty()) {
+                        WindowControlManager.removePage(this@ModifyListPage)
+                        WindowControlManager.resetToEmptyPage()
+                    }
                 }
 
             }
@@ -151,7 +156,13 @@ class ModifyListPage : UIPage(), ViewDebugResourceManager.OnResourceChanged {
         items.clear()
         val dexItems = ArrayList<ModifyItem>()
         DexLoadManager.getAllDexList().forEach {
-            val parent = ModifyItemParent(false, it.key, 0, RemoteFileReceiver.FileWatcher.TYPE_DEX, it.value.getModifyState())
+            val parent = ModifyItemParent(
+                false,
+                it.key,
+                0,
+                RemoteFileReceiver.FileWatcher.TYPE_DEX,
+                it.value.getModifyState()
+            )
             val children = it.value.classList.map {
                 ModifyItemChild(parent, it.key, 0, "class", it.value)
             }.sortedWith { o1, o2 ->
@@ -167,11 +178,26 @@ class ModifyListPage : UIPage(), ViewDebugResourceManager.OnResourceChanged {
         items.addAll(ViewDebugResourceManager.getAllChangedResource().convertItems())
         val values = ViewDebugResourceManager.getAllValueChangedItem()
         if (values.isNotEmpty()) {
-            val valuesParent = ModifyItemParent(false, "values", 0, RemoteFileReceiver.FileWatcher.TYPE_VALUES_XML, ModifyState.APPLIED)
+            val valuesParent = ModifyItemParent(
+                false,
+                "values",
+                0,
+                RemoteFileReceiver.FileWatcher.TYPE_VALUES_XML,
+                ModifyState.APPLIED
+            )
             items.add(valuesParent)
             val children = values.map {
-                val name = ctx.resources.getResourceTypeName(it.key) + "/" + ctx.resources.getResourceEntryName(it.key) + "=" + it.value
-                ModifyItemChild(valuesParent, name, it.key, RemoteFileReceiver.FileWatcher.TYPE_VALUES_XML, ModifyState.APPLIED)
+                val name =
+                    ctx.resources.getResourceTypeName(it.key) + "/" + ctx.resources.getResourceEntryName(
+                        it.key
+                    ) + "=" + it.value
+                ModifyItemChild(
+                    valuesParent,
+                    name,
+                    it.key,
+                    RemoteFileReceiver.FileWatcher.TYPE_VALUES_XML,
+                    ModifyState.APPLIED
+                )
             }
             valuesParent.children.addAll(children)
         }
