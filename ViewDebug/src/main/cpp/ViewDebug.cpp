@@ -24,6 +24,7 @@
 #include "Res_value.h"
 #include <jni.h>
 #include "StringToCompile.h"
+#include <android/log.h>
 
 
 /*
@@ -48,6 +49,10 @@ Java_com_example_viewdebug_xml_struct_writer_helper_ExternalFunction_stringToFlo
     size_t len = strlen(str);
     Res_value value{};
     stringToFloat(str, len, &value);
+    // __android_log_print(ANDROID_LOG_INFO, "native-log", "type=%s",to_string(value.dataType).c_str());
+    // __android_log_print(ANDROID_LOG_INFO, "native-log", "data=%s",to_string(value.data).c_str());
     // 前32位存储type；后32存储data
-    return ((long)value.dataType << 32) | value.data;
+    // 必须转换为64位的数值类型，否则导致armeabi-v7a类型的so移位异常（32位的cpu）
+    ::int64_t dataType = value.dataType;
+    return (dataType << 32) | value.data;
 }
