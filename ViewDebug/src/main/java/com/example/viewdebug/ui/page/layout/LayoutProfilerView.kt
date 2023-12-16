@@ -54,7 +54,7 @@ class LayoutProfilerView @JvmOverloads constructor(
     fun update(views: List<View>) {
         viewRects.clear()
         views.forEach {
-            it.getLocationInWindow(p)
+            it.getLocationOnScreen(p)
             viewRects.add(ViewRect(p[0].toFloat(), p[1].toFloat(), p[0].toFloat() + it.measuredWidth, p[1].toFloat() + it.measuredHeight, WeakReference(it)))
         }
         invalidate()

@@ -1,16 +1,88 @@
 package com.example.viewdebug.util
 
+import android.app.Activity
+import android.content.Context
+import android.os.Trace
+import android.util.Range
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.core.view.children
 import java.util.LinkedList
 
 internal class ViewCapture {
-    private val position = intArrayOf(0, 0)
+
     fun capture(rootView: View, x: Int, y: Int): List<View> {
         val result = LinkedList<View>()
         findViewByPosition(rootView, x, y, false, result)
         return result
+    }
+
+    fun capture(context: Context, x: Int, y: Int): List<View> {
+        val last = getLastWindowRootView(context, x, y)
+        return if (last is ViewGroup) {
+            capture(last, x, y)
+        } else {
+            emptyList()
+        }
+
+    }
+
+    companion object {
+        private val position = intArrayOf(0, 0)
+        private fun inRect(x1: Int, y1: Int, x2: Int, y2: Int, px: Int, py: Int): Boolean {
+            return px in (x1 + 1) until x2 && y1 < py && y2 > py
+        }
+
+        private fun inRect(view: View, px: Int, py: Int): Boolean {
+            view.getLocationOnScreen(position)
+            return inRect(
+                position[0],
+                position[1],
+                position[0] + view.measuredWidth,
+                position[1] + view.measuredHeight,
+                px,
+                py,
+            )
+        }
+
+        /**
+         * 获取最后的窗口，必须包含x，y坐标
+         * @param x 坐标 当未null时不考虑坐标
+         */
+        fun getLastWindowRootView(context: Context, x: Int? = null, y: Int? = null): View? {
+            try {
+                val windowManager = context.getSystemService(WindowManager::class.java)
+                val global =
+                    Class.forName("android.view.WindowManagerImpl").getDeclaredField("mGlobal")
+                        .run {
+                            isAccessible = true
+                            get(windowManager)
+                        }
+                val views =
+                    Class.forName("android.view.WindowManagerGlobal").getDeclaredField("mViews")
+                        .run {
+                            isAccessible = true
+                            get(global)
+                        } as List<View>
+                if (x != null && y != null) {
+                    for (i in views.indices) {
+                        if (inRect(views[views.size - 1 - i], x, y)) {
+                            return views[views.size - 1 - i]
+                        }
+                    }
+                } else {
+                    return views.lastOrNull()
+                }
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                if (context is Activity) {
+                    return context.findViewById(android.R.id.content)
+                }
+            }
+            return null
+        }
     }
 
     /**
@@ -24,7 +96,7 @@ internal class ViewCapture {
         captureInvisible: Boolean,
         out: LinkedList<View>,
     ) {
-        rootView.getLocationInWindow(position)
+        rootView.getLocationOnScreen(position)
         if (inRect(
                 position[0],
                 position[1],
@@ -51,10 +123,6 @@ internal class ViewCapture {
                 }
             }
         }
-    }
-
-    private fun inRect(x1: Int, y1: Int, x2: Int, y2: Int, px: Int, py: Int): Boolean {
-        return px in (x1 + 1) until x2 && y1 < py && y2 > py
     }
 
 

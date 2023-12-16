@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.RadioButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDialog
 import com.example.skinswitch.R
 import com.skin.log.Logger
 import com.skin.skincore.SkinManager
@@ -63,7 +64,16 @@ class MainActivity : AppCompatActivity() {
         var presentation: Presentation? = null
         findViewById<View>(R.id.view).setOnClickListener {
             Logger.i("sss", "click")
-            TestActivity.startActivity(this)
+            // TestActivity.startActivity(this)
+            AppCompatDialog(this).apply {
+                setContentView(R.layout.test_type)
+                show()
+                it.postDelayed({
+                    val ac = this@MainActivity
+                    val decor = this@MainActivity.window.decorView
+                    val f = 0
+                }, 1000)
+            }
             /*if (presentation != null) {
                 presentation?.dismiss()
                 presentation = null

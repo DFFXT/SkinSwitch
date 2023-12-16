@@ -103,7 +103,7 @@ class ViewImageShowPage(
                         hostActivity?.get()?.window?.decorView
                     hostRootView ?: return@setOnTouchListener true
                     val capturedViews =
-                        capture.capture(hostRootView, event.rawX.toInt(), event.rawY.toInt())
+                        capture.capture(hostRootView.context, event.rawX.toInt(), event.rawY.toInt())
 
 
 
@@ -129,7 +129,9 @@ class ViewImageShowPage(
     override fun onShow() {
         super.onShow()
         val activity = hostActivity?.get() ?: return
-        val root = activity.findViewById<ViewGroup>(android.R.id.content) ?: return
+        // val root = activity.findViewById<ViewGroup>(android.R.id.content) ?: return
+        val root = ViewCapture.getLastWindowRootView(activity) ?: return
+        if (root !is ViewGroup) return
         val list = LinkedList<View>()
         getChildren(root, list)
         profilerView.update(list)

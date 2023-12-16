@@ -12,8 +12,14 @@ import com.example.viewdebug.ui.page.attribute.ViewExtraInfoProvider
 internal class TextViewUpdateProvider : ViewExtraInfoProvider<TextView>() {
     override val extraInfoProvider: LinkedHashMap<String, Read<TextView>>
         get() = LinkedHashMap<String, Read<TextView>>().apply {
-            this["android:text"] = TextUpdate()
             this["android:textColor"] = TextColorRead()
+            this["android:textSize"] = object : Read<TextView> {
+                override fun getValue(view: TextView): String {
+                    return view.textSize.toString() + "px|" + (view.textSize / view.context.resources.displayMetrics.density) + "dp"
+                }
+
+            }
+            this["android:text"] = TextUpdate()
         }
 
     override fun support(view: View): Boolean {

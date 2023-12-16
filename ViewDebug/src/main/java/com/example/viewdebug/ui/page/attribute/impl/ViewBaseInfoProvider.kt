@@ -2,6 +2,7 @@ package com.example.viewdebug.ui.page.attribute.impl
 
 import android.content.Context
 import android.view.View
+import android.view.WindowManager
 import androidx.core.view.marginBottom
 import androidx.core.view.marginEnd
 import androidx.core.view.marginStart
@@ -17,7 +18,7 @@ import com.fxf.debugwindowlibaray.ui.UIPage
 /**
  * view 基本信息提供
  */
-internal class ViewBaseInfoProvider() : ViewExtraInfoProvider<View>() {
+internal class ViewBaseInfoProvider : ViewExtraInfoProvider<View>() {
 
     override val extraInfoProvider: LinkedHashMap<String, Read<View>> =
         LinkedHashMap<String, Read<View>>().apply {
@@ -32,6 +33,14 @@ internal class ViewBaseInfoProvider() : ViewExtraInfoProvider<View>() {
                         return view.resources.getResourceName(view.id)
                     }
                     return null
+                }
+            }
+            this["rect"] = object : Read<View> {
+                override fun getValue(view: View): String? {
+                    val p = intArrayOf(0, 0)
+                    view.getLocationOnScreen(p)
+                    val wm = view.context.getSystemService(WindowManager::class.java)
+                    return "${p[0]},${p[1]} - ${view.measuredWidth + p[0]}, ${view.measuredHeight + p[1]}"
                 }
             }
             this["size"] = object : Read<View> {
