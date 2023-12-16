@@ -31,6 +31,9 @@ internal object RemoteFileReceiver {
         File(file, "agreement")
     }
 
+    // 清除文件名称
+    const val CLEAR_SIGNAL = "clear_signal"
+
     // 配置文件
     val watchingConfigFile = watchBase + File.separator + "view-debug-config.json"
 
@@ -45,6 +48,7 @@ internal object RemoteFileReceiver {
 
     fun init() {
         specialWatchers.add(SpecialFileListener())
+        specialWatchers.add(DefaultLaunchFileListener())
         defaultFileWatchers.add(DefaultXmlFileListener())
         defaultFileWatchers.add(DefaultDexFileListener())
         defaultFileWatchers.add(ValueXMlListener())
@@ -115,10 +119,16 @@ internal object RemoteFileReceiver {
         fileWatcher.remove(watcher)
     }
 
+    /**
+     * 插件存储区域，插件的所有存储都应在这个文件夹下
+     */
     fun getBasePath(ctx: Context): String {
         return ctx.externalCacheDir!!.absolutePath + File.separator + "view-debug"
     }
 
+    /**
+     * 文件接受的文件夹
+     */
     fun getReceivePath(ctx: Context): String {
         return getBasePath(ctx) + File.separator + "receive"
     }
@@ -141,7 +151,9 @@ internal object RemoteFileReceiver {
         // 推送文件存放的文件夹
         builder.append("destDir=${watchingReceivePath}\n")
         // 推送监听文件地址
-        builder.append("listenFile=${watchingConfigFile}")
+        builder.append("listenFile=${watchingConfigFile}\n")
+        // 清空所有更改信号文件名称
+        builder.append("clearSignalFileName=${CLEAR_SIGNAL}")
         agreementFile.writeText(builder.toString())
     }
 
@@ -191,11 +203,17 @@ internal object RemoteFileReceiver {
             const val TYPE_LAYOUT = "layout"
             const val TYPE_DRAWABLE = "drawable"
             const val TYPE_COLOR = "color"
+            // 未实装
             const val TYPE_ANIM = "anim"
             const val TYPE_FILE = "file"
             const val TYPE_DEX = "dex"
+            // 规则文件
             const val TYPE_RULES = "rules"
+            // launch信号
+            const val TYPE_LAUNCH = "launch"
+            @Deprecated("不计划实装, 无该功能")
             const val TYPE_VALUES_XML = "values"
+
         }
     }
 }
