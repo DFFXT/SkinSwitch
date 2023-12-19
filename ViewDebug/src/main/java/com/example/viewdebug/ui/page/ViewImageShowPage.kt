@@ -56,6 +56,11 @@ class ViewImageShowPage(
 
     private var mode = ViewImageCaptureResultDialog.MODE_VIEW
 
+    // 调试插件的两个view
+    private val rootParentViews by lazy {
+        arrayOf(getRootParent(tabView), getRootParent(contentView))
+    }
+
     override fun enableTouch(): Boolean = true
 
     override fun enableFocus(): Boolean = true
@@ -103,7 +108,7 @@ class ViewImageShowPage(
                         hostActivity?.get()?.window?.decorView
                     hostRootView ?: return@setOnTouchListener true
                     val capturedViews =
-                        capture.capture(hostRootView.context, event.rawX.toInt(), event.rawY.toInt())
+                        capture.capture(hostRootView.context, event.rawX.toInt(), event.rawY.toInt(), excludeViews = rootParentViews)
 
 
 
@@ -130,12 +135,25 @@ class ViewImageShowPage(
         super.onShow()
         val activity = hostActivity?.get() ?: return
         // val root = activity.findViewById<ViewGroup>(android.R.id.content) ?: return
-        val root = ViewCapture.getLastWindowRootView(activity) ?: return
+        val root = ViewCapture.getLastWindowRootView(activity, excludeViews = rootParentViews) ?: return
         if (root !is ViewGroup) return
         val list = LinkedList<View>()
         getChildren(root, list)
         profilerView.update(list)
         profilerView.highlight(null)
+    }
+
+    private fun getRootParent(view: View): View {
+        return when (val parent = view.parent) {
+            null -> {
+                view
+            }
+            is View -> {
+                getRootParent(parent)
+            }
+
+            else -> view
+        }
     }
 
     private fun getChildren(view: ViewGroup, out: MutableList<View>) {

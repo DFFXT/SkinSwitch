@@ -18,8 +18,8 @@ internal class ViewCapture {
         return result
     }
 
-    fun capture(context: Context, x: Int, y: Int): List<View> {
-        val last = getLastWindowRootView(context, x, y)
+    fun capture(context: Context, x: Int, y: Int, vararg excludeViews: View): List<View> {
+        val last = getLastWindowRootView(context, x, y, *excludeViews)
         return if (last is ViewGroup) {
             capture(last, x, y)
         } else {
@@ -49,8 +49,9 @@ internal class ViewCapture {
         /**
          * 获取最后的窗口，必须包含x，y坐标
          * @param x 坐标 当未null时不考虑坐标
+         * @param excludeViews 被排除的view，因为调试窗口插件本身会包含两个view
          */
-        fun getLastWindowRootView(context: Context, x: Int? = null, y: Int? = null): View? {
+        fun getLastWindowRootView(context: Context, x: Int? = null, y: Int? = null, vararg excludeViews: View): View? {
             try {
                 val windowManager = context.getSystemService(WindowManager::class.java)
                 val global =
@@ -67,8 +68,9 @@ internal class ViewCapture {
                         } as List<View>
                 if (x != null && y != null) {
                     for (i in views.indices) {
-                        if (inRect(views[views.size - 1 - i], x, y)) {
-                            return views[views.size - 1 - i]
+                        val view = views[views.size - 1 - i]
+                        if (inRect(view, x, y) && !excludeViews.contains(view)) {
+                            return view
                         }
                     }
                 } else {
