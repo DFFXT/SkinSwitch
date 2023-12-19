@@ -158,9 +158,11 @@ class ViewImageShowPage(
 
     private fun getChildren(view: ViewGroup, out: MutableList<View>) {
         view.children.forEach {
-            out.add(it)
-            if (it is ViewGroup) {
-                getChildren(it, out)
+            if (it.isShown) {
+                out.add(it)
+                if (it is ViewGroup) {
+                    getChildren(it, out)
+                }
             }
         }
     }
