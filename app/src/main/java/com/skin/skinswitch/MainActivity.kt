@@ -4,11 +4,14 @@ import android.app.Presentation
 import android.content.res.Resources
 import android.os.Bundle
 import android.os.Environment
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.PopupWindow
 import android.widget.RadioButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDialog
+import androidx.core.widget.PopupMenuCompat
 import com.example.skinswitch.R
 import com.skin.log.Logger
 import com.skin.skincore.SkinManager
@@ -34,6 +37,8 @@ class MainActivity : AppCompatActivity() {
         val dayMode = findViewById<RadioButton>(R.id.radio_dayMode)
         val defaultSkin = findViewById<RadioButton>(R.id.radio_defaultSkin)
         val customSkin = findViewById<RadioButton>(R.id.radio_customSkin)
+        val btnDialog = findViewById<View>(R.id.btn_dialog)
+        val btnPopupWindow = findViewById<View>(R.id.btn_popupWindow)
         if (resources.isNight()) {
             nightMode.isChecked = true
         } else {
@@ -61,19 +66,42 @@ class MainActivity : AppCompatActivity() {
             .commit()
 
 
+        val dialog = AppCompatDialog(this).apply {
+            setContentView(R.layout.test_dialog)
+            val btn = findViewById<View>(R.id.tv_switch)
+            btn?.setOnClickListener {
+                SkinManager.applyThemeNight(!SkinManager.isNightMode())
+            }
+        }
+        btnDialog.setOnClickListener {
+            if (dialog.isShowing) {
+                dialog.dismiss()
+            } else{
+                dialog.show()
+            }
+        }
+
+        val popupWindow = PopupWindow(this).apply {
+            contentView = LayoutInflater.from(this@MainActivity).inflate(R.layout.test_dialog, null, false)
+            val btn = contentView.findViewById<View>(R.id.tv_switch)
+            btn?.setOnClickListener {
+                SkinManager.applyThemeNight(!SkinManager.isNightMode())
+            }
+        }
+        btnPopupWindow.setOnClickListener {
+            if (popupWindow.isShowing) {
+                popupWindow.dismiss()
+            } else {
+                popupWindow.showAsDropDown(it)
+            }
+        }
+
+
         var presentation: Presentation? = null
         findViewById<View>(R.id.view).setOnClickListener {
             Logger.i("sss", "click")
-            // TestActivity.startActivity(this)
-            AppCompatDialog(this).apply {
-                setContentView(R.layout.test_type)
-                show()
-                it.postDelayed({
-                    val ac = this@MainActivity
-                    val decor = this@MainActivity.window.decorView
-                    val f = 0
-                }, 1000)
-            }
+            TestActivity.startActivity(this)
+
             /*if (presentation != null) {
                 presentation?.dismiss()
                 presentation = null
