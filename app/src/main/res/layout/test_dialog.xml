@@ -4,22 +4,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:text="AVV">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:src="@drawable/icon_default_head"/>
+    <com.CustomViewTestSkinView
+        android:paddingHorizontal="50dp"
+        android:paddingVertical="20dp"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        app:custom_bg="@color/dialog_bg"
+        android:layout_height="match_parent">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/icon_default_head"/>
 
-    <TextView
-        android:id="@+id/tv_switch"
-        android:text="切换模式"
-        android:scaleX="1"
-        android:layout_gravity="center"
-        android:textColor="@color/mainColor"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="@style/MayStyle"/>
+        <TextView
+            android:id="@+id/tv_switch"
+            android:text="切换模式"
+            android:scaleX="1"
+            android:layout_gravity="center"
+            android:textColor="@color/test_text_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/MayStyle"/>
+    </com.CustomViewTestSkinView>
+
+
 </LinearLayout>

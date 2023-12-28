@@ -3,6 +3,7 @@ package com.skin.skinswitch
 import android.app.Application
 import android.content.res.Resources
 import android.view.View
+import com.CustomViewTestSkinView
 import com.example.skinswitch.R
 import com.skin.skincore.SkinManager
 import com.skin.skincore.apply.base.BaseViewApply
@@ -41,12 +42,11 @@ class App : Application() {
                 }
             }
         )
-        SkinManager.addAttributeCollection(object : BaseViewApply<View>(android.R.attr.layout_width, eventType = 898) {
-            override fun apply(view: View, resId: Int, resType: String, provider: IResourceProvider, theme: Resources.Theme?) {
-                /*(view.layoutParams as ViewGroup.LayoutParams).apply {
-                    width = provider.getCurrentResource().getDimension(resId).toInt()
-                    view.layoutParams = this
-                }*/
+
+        SkinManager.addAttributeCollection(object : BaseViewApply<CustomViewTestSkinView>(R.attr.custom_bg) {
+            override fun apply(view: CustomViewTestSkinView, resId: Int, resType: String, provider: IResourceProvider, theme: Resources.Theme?) {
+                // 当View创建时，会立即执行
+                view.setCustomBg(provider.getDrawable(resId, theme))
             }
         })
 
