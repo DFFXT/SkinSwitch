@@ -66,15 +66,14 @@ internal class ViewCapture {
                             isAccessible = true
                             get(global)
                         } as List<View>
-                if (x != null && y != null) {
-                    for (i in views.indices) {
-                        val view = views[views.size - 1 - i]
-                        if (inRect(view, x, y) && !excludeViews.contains(view)) {
+
+                for (i in views.indices) {
+                    val view = views[views.size - 1 - i]
+                    if (!excludeViews.contains(view)) {
+                        if ((x == null || y == null) || inRect(view, x, y)){
                             return view
                         }
                     }
-                } else {
-                    return views.lastOrNull()
                 }
 
             } catch (e: Exception) {
