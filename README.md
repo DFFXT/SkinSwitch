@@ -1,13 +1,21 @@
 # SkinSwitch
-Android 换肤框架
+Android 换肤、调试框架<p>
+该仓库分为两个功能：<p>
+SkinCore: 具有动态换肤能力，可单独使用<p>
+ViewDebug：具有调试能力，必须依赖SkinCore，具体包括视图抓取（能方便知道页面上View的一些信息，View位于那个布局xml中），如果和Android studio插件结合(https://github.com/DFFXT/ViewDebug-Trans)，将具备免编译能力，大大缩小大型项目动则2-3分钟的编译等待时间。目前支持快速生效的类型有<p>
+1.xml文件，包括：layout、drawable <p>
+2.kotlin代码<p>
+3.部分java代码（通过内部转kotlin，走kotlin编译实现）<p>
+以上类型在通过Android studio插件推送后，能在10s内将修改结果应用到设备，免去编译耗时。
+
 使用方式
 <pre><code>
   // 视情况添加，如果有guava依赖冲突则添加
   implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
   // 换肤框架
-  implementation 'com.github.DFFXT.SkinSwitch:SkinCore:0.20.5'
+  implementation 'com.github.DFFXT.SkinSwitch:SkinCore:0.21.8'
   // 视情况添加，视图调试框架，支持xml修改实时生效，和kotlin但文件修冷启动生效，用于节省编译时间，具体使用方式需搭配android studio插件使用[插件下载](https://github.com/DFFXT/ViewDebug-Trans)
-  debugImplementation 'com.github.DFFXT.SkinSwitch:ViewDebug:0.20.5'
+  debugImplementation 'com.github.DFFXT.SkinSwitch:ViewDebug:0.21.8'
 </code></pre>
 
 
@@ -72,8 +80,13 @@ Android 换肤框架
 
 
 -----------------------------------------------------------------------------------
-更方便的使用：
+
+
+视图调试[ViewDebug]会自动通过start-up插件初始化。如果想关闭自动初始化可以移除对应的provider
+
+取消自动初始化：
 在AndroidManifest.xml中加入以下代码，代码功能为：禁止com.example.viewdebug.ViewDebugInitializer自动初始化，用ViewDebugStarter（需要自己实现）替代
+（调试工具一般不打入release版本，所以需要创建的是src/debug/AndroidManifest.xml文件，只在debug版本编译代码）
 ```xml
 <provider
     android:name="androidx.startup.InitializationProvider"
@@ -89,20 +102,6 @@ Android 换肤框架
         android:value="androidx.startup"
         tools:node="merge"/>
 </provider>
-```
-ViewDebugStarter实现，IBuildIdentification接口返回构建时间，则支持在同一个buildId中，远程推送的dex文件和xml文件可重复加载，
-```kotlin
-@Keep
-class ViewDebugStarter : ViewDebugInitializer() {
-    override fun getBuildIdentification(): IBuildIdentification? {
-        return object : IBuildIdentification {
-            override fun getBuildId(): String {
-                // 返回构建时间，buildTime字段可在gradle中添加：buildConfigField("long", "buildTime", "${System.currentTimeMillis()}")
-                return BuildConfig.buildTime.toString()
-            }
-        }
-    }
-}
 ```
 
 
