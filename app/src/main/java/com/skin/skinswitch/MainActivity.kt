@@ -1,6 +1,7 @@
 package com.skin.skinswitch
 
 import android.app.Presentation
+import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Bundle
 import android.os.Environment
@@ -97,28 +98,17 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        var presentation: Presentation? = null
         findViewById<View>(R.id.view).setOnClickListener {
             Logger.i("sss", "click")
             TestActivity.startActivity(this)
+        }
+    }
 
-            /*if (presentation != null) {
-                presentation?.dismiss()
-                presentation = null
-                return@setOnClickListener
-            }
-            getSystemService(DisplayManager::class.java).displays.getOrNull(1)?.let {
-                object : Presentation(this, it) {
-                    override fun onCreate(savedInstanceState: Bundle?) {
-                        super.onCreate(savedInstanceState)
-                        setContentView(R.layout.layout_presentaion)
-                    }
-                }.apply {
-                    SkinManager.makeContextSkinAble(this.context)
-                    show()
-                    presentation = this
-                }
-            }*/
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        // 对接系统白天黑夜模式
+        if (newConfig.isNight() != SkinManager.isNightMode()) {
+            SkinManager.applyThemeNight(newConfig.isNight())
         }
     }
 }

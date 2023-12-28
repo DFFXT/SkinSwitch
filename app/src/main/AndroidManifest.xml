@@ -26,6 +26,7 @@
                 tools:node="merge"/>
         </provider>
         <activity
+            android:configChanges="uiMode"
             android:name="com.skin.skinswitch.MainActivity"
             android:exported="true">
             <intent-filter>
