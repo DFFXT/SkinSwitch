@@ -41,6 +41,7 @@ class MainActivity : AppCompatActivity(), OnThemeChangeListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        SkinManager.addSkinChangeListener(this)
         setContentView(R.layout.activity_main)
         val defaultSkin = findViewById<RadioButton>(R.id.radio_defaultSkin)
         val customSkin = findViewById<RadioButton>(R.id.radio_customSkin)
@@ -116,5 +117,10 @@ class MainActivity : AppCompatActivity(), OnThemeChangeListener {
         if (newConfig.isNight() != SkinManager.isNightMode()) {
             SkinManager.applyThemeNight(newConfig.isNight())
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        SkinManager.removeSkinChangeListener(this)
     }
 }

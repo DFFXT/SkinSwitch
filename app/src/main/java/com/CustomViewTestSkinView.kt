@@ -15,11 +15,12 @@ class CustomViewTestSkinView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
     init {
-        context.obtainStyledAttributes(R.styleable.CustomViewTestSkinView).use {
+        context.obtainStyledAttributes(R.styleable.CustomViewTestSkinView).let {
             if (it.hasValue(R.styleable.CustomViewTestSkinView_custom_bg)) {
                 //setCustomBg(AppCompatResources.getDrawable(context, it.getResourceId(R.styleable.CustomViewTestSkinView_custom_bg, 0)))
                 setCustomBg(it.getDrawable(R.styleable.CustomViewTestSkinView_custom_bg))
             }
+            it.recycle()
         }
     }
 

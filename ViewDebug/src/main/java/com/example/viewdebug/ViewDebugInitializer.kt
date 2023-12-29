@@ -42,9 +42,7 @@ open class ViewDebugInitializer : Initializer<ViewDebugInitializer> {
         }
         ClassLoadObserve
         ChangeApplyManager.init(ctx, getBuildIdentification())
-        // DexLoadManager.init(ctx)
-        // 替换换肤框架的MergeResource对象
-        // SkinInit().init()
+
         ResourcesProviderManager.replaceResourceObjectCreator(object : ResourceObjectCreator {
             override fun createResourceObject(
                 asset: IAsset,

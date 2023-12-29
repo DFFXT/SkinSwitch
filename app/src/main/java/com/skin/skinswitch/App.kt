@@ -2,7 +2,6 @@ package com.skin.skinswitch
 
 import android.app.Application
 import android.content.res.Resources
-import android.view.View
 import com.CustomViewTestSkinView
 import com.example.skinswitch.R
 import com.skin.skincore.SkinManager
