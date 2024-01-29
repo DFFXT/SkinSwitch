@@ -83,9 +83,23 @@ fun View.addViewSkinAttrs(attr: Attrs) {
             addAttr(attr)
         }
         this.setTag(R.id.view_sKinAttr, union)
+        // 将view添加到换肤框架，防止这个view不是通过xml生成的
+        SkinManager.addView(this)
     } else {
         union.addAttr(attr)
     }
+}
+
+/**
+ * 获取View的VIewUnion对象，没有则创建
+ */
+internal fun View.getOrCreateViewUnion(): ViewUnion {
+    var union = this.getViewUnion()
+    if (union == null) {
+        union = ViewUnion()
+        this.setTag(R.id.view_sKinAttr, union)
+    }
+    return union
 }
 
 /**
@@ -112,6 +126,7 @@ fun View.removeSkinAttr(attributeId: Int) {
 /**
  * 清空该view的换肤能力，外部如果想清除，需调用[SkinManager.removeView]
  */
+@Deprecated("不应该清除属性现信息，不然无法恢复")
 internal fun View.clearSkinAttr() {
     this.setTag(R.id.view_sKinAttr, null)
 }

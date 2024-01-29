@@ -176,6 +176,13 @@ object SkinManager {
         loaderServer.getContextLoader(view.context)?.removeView(view)
     }
 
+    /**
+     * 将view添加到换肤框架中
+     */
+    fun addView(view: View) {
+        loaderServer.getContextLoader(view.context)?.addView(view)
+    }
+
     fun addSkinChangeListener(listener: OnThemeChangeListener) {
         skinChangeListenerSet.add(listener)
     }
@@ -238,4 +245,5 @@ object SkinManager {
         }
         return views
     }
+
 }

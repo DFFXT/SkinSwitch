@@ -19,7 +19,7 @@ internal class ViewContainer : Iterable<MutableMap.MutableEntry<View, Unit>> {
 
     fun remove(view: View) {
         viewRef.remove(view)
-        view.clearSkinAttr()
+        // view.clearSkinAttr()
     }
 
     operator fun get(view: View): ViewUnion? = view.getViewUnion()

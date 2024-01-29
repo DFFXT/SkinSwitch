@@ -8,7 +8,9 @@ import com.skin.skincore.apply.AttrApplyManager
 import com.skin.skincore.apply.base.BaseViewApply
 import com.skin.skincore.asset.IAsset
 import com.skin.skincore.collector.ViewContainer
+import com.skin.skincore.collector.ViewUnion
 import com.skin.skincore.collector.applyNight
+import com.skin.skincore.collector.getOrCreateViewUnion
 import com.skin.skincore.collector.getViewUnion
 import com.skin.skincore.inflater.IOnViewCreated
 import com.skin.skincore.inflater.InflaterInterceptor
@@ -58,7 +60,8 @@ internal class ContextLoader(
                     // 判断是否拦截
                     if (interceptor?.beforeParse(parent, view, attributeSet) != true) {
                         val union = parser.parse(parent, view, attributeSet)
-                        viewContainer.add(view, union)
+                        addView(view, union)
+                        // viewContainer.add(view, union)
                         attrParseListeners.forEach {
                             it.onAttrParsed(parent, view, attributeSet, union)
                         }
@@ -112,8 +115,18 @@ internal class ContextLoader(
         }
     }
 
+    /**
+     * 移除可换肤view，可通过[addView]重新添加
+     */
     fun removeView(view: View) {
         viewContainer.remove(view)
+    }
+
+    /**
+     * 新增可换肤view以及对应的换肤属性
+     */
+    fun addView(view: View, viewUnion: ViewUnion = view.getOrCreateViewUnion()) {
+        viewContainer.add(view, viewUnion)
     }
 
     fun getResourceProvider(): IResourceProvider {
