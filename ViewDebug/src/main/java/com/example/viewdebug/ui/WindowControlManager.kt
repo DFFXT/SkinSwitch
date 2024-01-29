@@ -24,7 +24,7 @@ object WindowControlManager {
     private var modifyListPage: ModifyListPage? = null
     fun init(ctx: Application) {
         emptyPage = EmptyPage()
-        viewDebugManager.init(ctx, emptyPage)
+        viewDebugManager.init(ctx, defaultPage = emptyPage)
         viewDebugManager.addPage(ViewImageShowPage())
         // 监听是否有资源更改
 
