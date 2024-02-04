@@ -17,6 +17,7 @@ import com.example.viewdebug.util.ViewDebugInfo
 import com.example.viewdebug.util.launch
 import com.example.viewdebug.util.setViewDebugInfo
 import com.example.viewdebug.xml.AndroidXmRuleManager
+import com.fxf.debugwindowlibaray.DebugWindowInitializer
 import com.skin.skincore.SkinManager
 import com.skin.skincore.asset.IAsset
 import com.skin.skincore.collector.ViewUnion
@@ -84,7 +85,7 @@ open class ViewDebugInitializer : Initializer<ViewDebugInitializer> {
     }
 
     override fun dependencies(): MutableList<Class<out Initializer<*>>> {
-        return Collections.emptyList()
+        return mutableListOf(DebugWindowInitializer::class.java)
     }
 
     /**

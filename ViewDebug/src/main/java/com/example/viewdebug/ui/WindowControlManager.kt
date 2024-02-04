@@ -7,6 +7,7 @@ import com.example.viewdebug.ui.page.ViewImageShowPage
 import com.example.viewdebug.ui.page.info.ModifyListPage
 import com.example.viewdebug.ui.skin.ViewDebugResourceManager
 import com.example.viewdebug.util.launch
+import com.fxf.debugwindowlibaray.DebugWindowInitializer
 import com.fxf.debugwindowlibaray.ViewDebugManager
 import com.fxf.debugwindowlibaray.ui.EmptyPage
 import com.fxf.debugwindowlibaray.ui.UIPage
@@ -16,15 +17,11 @@ import kotlinx.coroutines.Dispatchers
  * 调试窗口管理
  */
 object WindowControlManager {
-    private val viewDebugManager = ViewDebugManager()
-    @SuppressLint("StaticFieldLeak")
-    private lateinit var emptyPage: EmptyPage
+    private val viewDebugManager = DebugWindowInitializer.viewDebugManager
 
     @SuppressLint("StaticFieldLeak")
     private var modifyListPage: ModifyListPage? = null
     fun init(ctx: Application) {
-        emptyPage = EmptyPage()
-        viewDebugManager.init(ctx, defaultPage = emptyPage)
         viewDebugManager.addPage(ViewImageShowPage())
         // 监听是否有资源更改
 
@@ -85,6 +82,6 @@ object WindowControlManager {
      * 页面切换到空白页
      */
     fun resetToEmptyPage() {
-        viewDebugManager.switchPage(emptyPage)
+        viewDebugManager.switchPage(0)
     }
 }
