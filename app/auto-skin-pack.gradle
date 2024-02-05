@@ -59,8 +59,12 @@ task buildSkinPack {
             var moduleName = module.moduleName
             var output = module.skinInput
             if (output == null || output.length() == 0) {
-                // 没有设置输出路径，使用默认路径
-                output = project(":" + moduleName).getBuildDir().absolutePath + "/outputs/apk/debug/" + moduleName + "-debug.apk"
+                // 没有设置输出路径，使用默认路径, 默认路径通过debug模式编译来获取
+                project(":" + moduleName).android.applicationVariants.forEach {
+                    if (it.name == "debug") {
+                        output = it.outputs.getAt(0).outputFile.absolutePath
+                    }
+                }
             } else {
                 // 设置了相对路劲
                 output = project(":" + moduleName).getBuildDir().absolutePath + "/" + output

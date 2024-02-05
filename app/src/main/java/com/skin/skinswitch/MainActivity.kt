@@ -7,12 +7,14 @@ import android.os.Bundle
 import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.PopupWindow
 import android.widget.RadioButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDialog
 import androidx.core.widget.PopupMenuCompat
+import com.CustomV
 import com.example.skinswitch.R
 import com.skin.log.Logger
 import com.skin.skincore.OnThemeChangeListener
@@ -46,6 +48,8 @@ class MainActivity : AppCompatActivity(), OnThemeChangeListener {
         val defaultSkin = findViewById<RadioButton>(R.id.radio_defaultSkin)
         val customSkin = findViewById<RadioButton>(R.id.radio_customSkin)
         val btnDialog = findViewById<View>(R.id.btn_dialog)
+        // findViewById<ViewGroup>(R.id.root).addView(CustomV(this))
+
         val btnPopupWindow = findViewById<View>(R.id.btn_popupWindow)
 
         notifyRadioButton()

@@ -17,11 +17,17 @@ import com.skin.skincore.plug.SkinPackDeveloping
 import com.skin.skincore.plug.SpeedUpSwitchSkin
 import com.skin.skincore.provider.DefaultProviderFactory
 import com.skin.skincore.provider.IResourceProvider
+import com.skin.skincore.provider.ISkinPathProvider
 import com.skin.skincore.provider.ResourceProviderFactory
 import com.skin.skincore.provider.ResourcesProviderManager
 
 /**
  * 皮肤管理器
+ *
+ * 资源提供者管理[ResourcesProviderManager]
+ * 新增换肤属性
+ *
+ *
  */
 object SkinManager {
     private const val TAG = "SkinManager_"
@@ -74,7 +80,7 @@ object SkinManager {
         if (!loaderServer.containsContext(context)) {
             val asset = AssetLoaderManager.getAsset(
                 context,
-                ResourcesProviderManager.getPathProvider(theme),
+                ResourcesProviderManager.getPathProvider(context, theme),
             )
             loaderServer.addLoader(
                 ContextLoader(
@@ -85,11 +91,30 @@ object SkinManager {
                 ),
             )
         }
-        applyThemeNight(isNight, context)
+        // 不应该通知换肤
+        // applyThemeNight(isNight, context)
     }
 
     fun destroy(ctx: Context) {
         loaderServer.removeLoader(ctx)
+    }
+
+    /**
+     * 释放皮肤资源
+     * @param context 需要释放的context，因为[ResourceProviderFactory.getResourceProviderKey]需要context参数。
+     * 如果传null或者不传，则清空所有context的对应主题资源
+     * 如果不同context具有不同的key，那么就需要传正确的context，比如加载了其它已安装应用的Context，并且显示了其它应用的View，就需要传这个参数
+     */
+    fun releaseTheme(context: Context? = null, theme: Int) {
+        if (theme != getCurrentTheme()) {
+            if (context == null) {
+                loaderServer.getAllContextLoader().forEach {
+                    ResourcesProviderManager.releaseProvider(it.getContextReference().get()!!, theme)
+                }
+            } else {
+                ResourcesProviderManager.releaseProvider(context, theme)
+            }
+        }
     }
 
     /**
@@ -105,30 +130,28 @@ object SkinManager {
     /**
      * 皮肤切换，将对应的context进行切换
      * @param ctx 如果为null，单独切换，如果不null全局切换
-     * 如果页面比较多建议分批次调用
      * @param isNight 使用当前皮肤包的哪种模式
      * @param eventType 事件类型，默认[BaseViewApply.EVENT_TYPE_THEME]换肤事件，可自定义，对应的
      * 需要[BaseViewApply]里面的eventType与之对应
+     * @param releaseOld 是否自动释放老的皮肤资源
      */
-    fun switchTheme(theme: Int, ctx: Context? = null, isNight: Boolean? = this.isNight, eventType: IntArray = intArrayOf(BaseViewApply.EVENT_TYPE_THEME)) {
+    fun switchTheme(theme: Int,
+                    ctx: Context? = null,
+                    isNight: Boolean? = this.isNight,
+                    eventType: IntArray = intArrayOf(BaseViewApply.EVENT_TYPE_THEME),
+                    releaseOld: Boolean = true) {
         Logger.d(TAG, "switchTheme $theme $ctx $isNight ${eventType.joinToString(",")}")
-        val asset = AssetLoaderManager.getAsset(
-            application,
-            ResourcesProviderManager.getPathProvider(theme),
-        )
         if (this.theme != theme || this.isNight != isNight) {
             this.isNight = isNight ?: this.isNight
             // 应用资源的白天黑夜模式
             applyNightMode(this.isNight, ctx)
         }
-        loaderServer.switchTheme(
-            asset,
-            ResourcesProviderManager.getResourceProvider(application, theme),
-            ctx,
-            eventType,
-        )
-
+        loaderServer.switchTheme(ctx, theme, eventType)
+        val oldTheme =this.theme
         this.theme = theme
+        if (releaseOld) {
+            releaseTheme(ctx, oldTheme)
+        }
     }
 
     /**

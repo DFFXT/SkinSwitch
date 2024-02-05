@@ -1,17 +1,18 @@
 package com.skin.skincore.provider
 
 import android.content.Context
+import com.skin.log.Logger
 import com.skin.skincore.SkinManager
 import com.skin.skincore.asset.AssetLoaderManager
 import java.util.WeakHashMap
 
 /**
- * 资源提供者管理
+ * 资源提供者管理，如果某个theme下的资源需要释放，则需要调用[releaseProvider]进行释放，否则map会一直持有
+ * 资源加载器[AssetLoaderManager]
  */
 object ResourcesProviderManager {
-    private val map = WeakHashMap<Int, IResourceProvider>()
+    private val map = HashMap<String, IResourceProvider>()
     private val pathMap = WeakHashMap<Int, ISkinPathProvider>()
-    private lateinit var defaultResourceProvider: IResourceProvider
     private lateinit var resourceProviderFactory: ResourceProviderFactory
 
     // Resource对象创建器
@@ -21,7 +22,6 @@ object ResourcesProviderManager {
     // 默认资源路径提供器
     private val defaultSkinPathProvider = CustomSkinPathProvider("", "", SkinManager.DEFAULT_THEME)
     fun init(context: Context, resourceProviderFactory: ResourceProviderFactory) {
-        defaultResourceProvider = resourceProviderFactory.getDefaultProvider(context)
         if (!resourceObjectCreatorHasSet) {
             this.resourceObjectCreator = DefaultMergeResourceCreator
         }
@@ -45,36 +45,44 @@ object ResourcesProviderManager {
      * 根据主题获取资源提供者
      */
     fun getResourceProvider(context: Context, theme: Int): IResourceProvider {
-        return if (theme == SkinManager.DEFAULT_THEME) {
-            if (this::defaultResourceProvider.isInitialized) {
-                defaultResourceProvider
+        val key = resourceProviderFactory.getResourceProviderKey(context, theme)
+        var provider = map[key]
+        if (provider == null) {
+            Logger.d("ResourcesProviderManager", "create resources provider for context: ${context.packageName} ,theme: $theme")
+            provider = if (theme == SkinManager.DEFAULT_THEME) {
+                resourceProviderFactory.getDefaultProvider(context)
             } else {
-                DefaultResourceProvider(context)
-            }
-        } else {
-            var provider = map[theme]
-            if (provider == null) {
-                val asset = AssetLoaderManager.getAsset(context, getPathProvider(theme))
+                val asset = AssetLoaderManager.getAsset(context, getPathProvider(context, theme))
                     ?: throw IllegalArgumentException("no path for theme: $theme")
-                provider = resourceProviderFactory.getResourceProvider(
+                resourceProviderFactory.getResourceProvider(
                     context,
                     theme,
                     asset,
-                    defaultResourceProvider,
+                    getResourceProvider(context, SkinManager.DEFAULT_THEME),
                 )
-                map[theme] = provider
             }
-            provider
+            map[key] = provider
         }
+        return provider
     }
 
-    fun getPathProvider(theme: Int): ISkinPathProvider {
+    /**
+     * 释放对应context和theme下的资源提供器
+     * 一套皮肤资源只需调用该方法就能完全释放，其它地方都是弱引用
+     */
+    internal fun releaseProvider(context: Context, theme: Int) {
+        val key = resourceProviderFactory.getResourceProviderKey(context, theme)
+        val target = map.remove(key)
+        Logger.d("ResourcesProviderManager", "releaseProvider: $target size:${map.size}")
+    }
+
+    fun getPathProvider(context: Context, theme: Int): ISkinPathProvider {
         return if (theme == SkinManager.DEFAULT_THEME) {
             defaultSkinPathProvider
         } else {
             var provider = pathMap[theme]
             if (provider == null) {
-                provider = resourceProviderFactory.getSkinPathProvider(theme)
+                provider = resourceProviderFactory.getSkinPathProvider(context, theme)
                 pathMap[theme] = provider
             }
             provider

@@ -2,10 +2,12 @@ package com.skin.skincore.loader
 
 import android.content.Context
 import android.view.View
+import com.skin.skincore.asset.AssetLoaderManager
 import com.skin.skincore.asset.IAsset
 import com.skin.skincore.parser.AttrParseInterceptor
 import com.skin.skincore.parser.AttrParseListener
 import com.skin.skincore.provider.IResourceProvider
+import com.skin.skincore.provider.ResourcesProviderManager
 import java.util.LinkedList
 
 internal class ContextLoaderServer {
@@ -39,19 +41,29 @@ internal class ContextLoaderServer {
      * @param ctx 要切换的context，如果为null则应用整体切换
      */
     fun switchTheme(
-        asset: IAsset?,
-        iResourceProvider: IResourceProvider,
         ctx: Context?,
+        theme: Int,
         eventType: IntArray,
     ) {
         checkContext()
         if (ctx != null) {
-            getContextLoader(ctx)?.switchTheme(asset, iResourceProvider, eventType)
+            getContextLoader(ctx)?.let {
+                switch(it, theme, eventType)
+            }
         } else {
             loaderContainer.forEach {
-                it.switchTheme(asset, iResourceProvider, eventType)
+                switch(it, theme, eventType)
             }
         }
+    }
+
+    private fun switch(loader: ContextLoader, theme: Int, eventType: IntArray) {
+        val ctx = loader.getContextReference().get() ?: return
+        val asset = AssetLoaderManager.getAsset(
+            ctx,
+            ResourcesProviderManager.getPathProvider(ctx, theme),
+        )
+        loader.switchTheme(asset, ResourcesProviderManager.getResourceProvider(ctx, theme), eventType)
     }
 
     /**

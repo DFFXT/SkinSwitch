@@ -22,7 +22,7 @@ import com.skin.log.Logger
 import com.skin.skincore.SkinManager
 import com.skin.skincore.apply.AttrApplyManager
 import com.skin.skincore.apply.base.BaseViewApply
-import com.skin.skincore.asset.DefaultResourceLoader
+import com.skin.skincore.asset.DefaultAssetLoader
 import com.skin.skincore.reflex.getSkinTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -143,7 +143,7 @@ internal class XmlTextDialog(
             pack.pack()
             // 读入
             val assetManager =
-                DefaultResourceLoader().createAssetManager(pack.getPackedApkPath(), ctx)
+                DefaultAssetLoader().createAssetManager(pack.getPackedApkPath(), ctx)
             if (assetManager != null) {
                 ViewDebugResourceManager.interceptedAsset = assetManager.second
                 ViewDebugResourceManager.addInterceptor(resourceType, resourceId)

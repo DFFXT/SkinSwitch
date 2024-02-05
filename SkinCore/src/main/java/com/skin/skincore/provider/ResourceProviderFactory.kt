@@ -14,9 +14,17 @@ interface ResourceProviderFactory {
     fun getResourceProvider(ctx: Context, theme: Int, asset: IAsset, defaultProvider: IResourceProvider): IResourceProvider
 
     /**
+     * 获取资源提供器的key，用于存储
+     * 这里默认使用 包名+theme的方式，用包名参与的原因是有可能是插件化，加载的其它apk的view，包名参与可以支持插件化的换肤
+     */
+    fun getResourceProviderKey(ctx: Context, theme: Int): String {
+        return ctx.packageName + "@" + theme
+    }
+
+    /**
      * 返回对应主题的资源路径
      */
-    fun getSkinPathProvider(theme: Int): ISkinPathProvider
+    fun getSkinPathProvider(context: Context, theme: Int): ISkinPathProvider
 
     /**
      * 返回默认的资源，当皮肤包里面没有时适用默认的资源提供器
@@ -28,5 +36,5 @@ interface ResourceProviderFactory {
      */
     fun getSkinFolder(): String
 
-    fun getSkinName(theme: Int): String
+    fun getSkinName(context: Context, theme: Int): String
 }

@@ -13,6 +13,8 @@ import com.fxf.debugwindowlibaray.ui.UIPage
 import com.example.viewdebug.ui.page.ImageDetailDialog
 import com.example.viewdebug.util.copyToClipboard
 import com.example.viewdebug.util.tryShowXmlText
+import com.skin.skincore.SkinManager
+import com.skin.skincore.collector.removeSkinAttr
 import com.skin.skincore.collector.setImageResourceSkinAble
 import java.lang.ref.WeakReference
 
@@ -60,7 +62,17 @@ internal class ImageItemHandler(private val host: UIPage, private val itemClick:
         RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("SetTextI18n")
         fun bind(item: Item) {
-            binding.ivImage.setImageResourceSkinAble(item.id)
+
+            try {
+                binding.ivImage.setImageResourceSkinAble(item.id)
+            } catch (_: Throwable) {
+                // 如果使用当前context无法加载对应id，说明这个view使用的资源是其它context的
+                binding.ivImage.removeSkinAttr(android.R.attr.src)
+                val ctx = item.target.get()?.context ?: binding.ivImage.context
+                val provider = SkinManager.getResourceProvider(ctx)
+                // 通过对应context的provider来加载
+                binding.ivImage.setImageDrawable(provider.getDrawable(item.id, null))
+            }
             binding.tvTitle.text = item.layoutName
             binding.tvName.text = item.attribute
 

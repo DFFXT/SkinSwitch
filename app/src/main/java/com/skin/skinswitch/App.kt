@@ -30,26 +30,12 @@ class App : Application() {
     }
 
     private fun initSkin() {
-        AssetLoaderManager.setAssetFactory(object : IAssetFactory {
-            override fun createAsset(context: Context, skinPathProvider: ISkinPathProvider): IAsset {
-                return object : Asset(context, skinPathProvider) {
-                    override fun getResource(): Resources {
-                        val res = context.resources
-                        if (res is MergeResource) {
-                            return res.default
-                        }
-                        return super.getResource()
-                    }
-                }
-            }
-
-        })
         SkinManager.init(
             this, R.style.Theme_SkinSwitch,
             object : DefaultProviderFactory() {
                 // private val nightProvider = NightProvider(application)
 
-                override fun getSkinName(theme: Int): String {
+                override fun getSkinName(context: Context, theme: Int): String {
                     if (theme == AppConst.THEME_CARTOON) {
                         return "7"
                         // return CustomSkinPathProvider(Environment.getExternalStorageDirectory().absolutePath + "/skinPack-cartoon-debug - 副本.rar")

@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:id="@+id/root"
     android:layout_height="match_parent"
     tools:context="com.skin.skinswitch.MainActivity">
 
@@ -79,6 +80,12 @@
         android:text="popup-Window"
         app:layout_constraintStart_toStartOf="@id/group_skin"
         app:layout_constraintTop_toBottomOf="@id/btn_dialog"/>
+    <com.CustomV
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

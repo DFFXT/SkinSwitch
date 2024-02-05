@@ -6,6 +6,7 @@ plugins {
 apply("${project.projectDir}/auto-skin-pack.gradle")
 
 android {
+
     compileSdk = 32
 
     defaultConfig {

@@ -9,23 +9,36 @@ import com.skin.log.Logger
 import com.skin.skincore.provider.ISkinPathProvider
 import com.skin.skincore.reflex.addAssetPathMethod
 import java.io.File
+import java.util.WeakHashMap
 
 /**
  * 默认的皮肤包加载逻辑
  * 加载外部apk
  */
-class DefaultResourceLoader : IResourceLoader {
-    private val default by lazy { DefaultResourceProvider() }
+class DefaultAssetLoader : IResourceLoader {
+    private val default by lazy { DefaultAssetProvider() }
+
+    // AssetManager用来读写文件，即使是不同的Configuration，也能复用
+    // key：AssetManager，value：String
+    private val assetManagerMap = WeakHashMap<AssetInfo, String>()
     override fun createAsset(
-        application: Application,
+        application: Context,
         configuration: Configuration,
         provider: ISkinPathProvider,
     ): AssetInfo {
         val path = provider.getSkinPath()
+        // 查看缓存
+        val assetInfo =  assetManagerMap.entries.find { it.value == path }?.key
+        if (assetInfo != null) {
+            return assetInfo
+        }
+        // 没有缓存
         val pair = createAssetManager(path, application)
+
         if (pair != null) {
             return AssetInfo(pair.second, pair.first)
         }
+        // 没有创建成功
         return default.getDefault(application, provider)
     }
 

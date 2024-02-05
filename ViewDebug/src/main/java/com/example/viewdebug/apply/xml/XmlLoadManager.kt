@@ -14,7 +14,7 @@ import com.skin.log.Logger
 import com.skin.skincore.SkinManager
 import com.skin.skincore.apply.AttrApplyManager
 import com.skin.skincore.apply.base.BaseViewApply
-import com.skin.skincore.asset.DefaultResourceLoader
+import com.skin.skincore.asset.DefaultAssetLoader
 import com.skin.skincore.collector.ViewUnion
 import com.skin.skincore.collector.getViewUnion
 import kotlinx.coroutines.Dispatchers
@@ -86,7 +86,7 @@ internal object XmlLoadManager {
      * 应用打开时，加载可应用的apk
      */
     private fun applyApk(apkPath: String) {
-        val assetManager = DefaultResourceLoader().createAssetManager(apkPath, ctx)
+        val assetManager = DefaultAssetLoader().createAssetManager(apkPath, ctx)
         if (assetManager != null) {
             readXmlList(assetManager.second)
         }
@@ -184,7 +184,7 @@ internal object XmlLoadManager {
         try {
             // 读入
             val assetManager =
-                DefaultResourceLoader().createAssetManager(pack.getPackedApkPath(), ctx)
+                DefaultAssetLoader().createAssetManager(pack.getPackedApkPath(), ctx)
             if (assetManager != null) {
                 ViewDebugResourceManager.interceptedAsset = assetManager.second
                 PackAssetsFile.getResourceId(ctx).forEach { resourceId ->

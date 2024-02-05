@@ -1,6 +1,7 @@
 package com.skin.skincore.provider
 
 import android.content.Context
+import com.skin.skincore.SkinManager
 import com.skin.skincore.asset.IAsset
 
 /**
@@ -12,13 +13,13 @@ open class DefaultProviderFactory : ResourceProviderFactory {
         return ThemeResourceProvider(asset, ctx.resources, defaultProvider)
     }
 
-    override fun getSkinPathProvider(theme: Int): ISkinPathProvider {
-        return CustomSkinPathProvider(getSkinFolder(), getSkinName(theme), theme)
+    override fun getSkinPathProvider(context: Context, theme: Int): ISkinPathProvider {
+        return CustomSkinPathProvider(getSkinFolder(), getSkinName(context, theme), theme)
     }
 
     override fun getDefaultProvider(ctx: Context) = DefaultResourceProvider(ctx)
 
     override fun getSkinFolder(): String  = ""
 
-    override fun getSkinName(theme: Int): String  = ""
+    override fun getSkinName(context: Context, theme: Int): String  = ""
 }

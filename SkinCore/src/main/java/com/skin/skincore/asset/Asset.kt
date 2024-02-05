@@ -20,10 +20,10 @@ open class Asset(
     context: Context,
     private val skinPathProvider: ISkinPathProvider,
 ) : IAsset() {
-    private val application = context.applicationContext as Application
+    private val application = context.applicationContext ?: context
     private val configuration = context.resources.configuration
     private val displayMetrics = context.resources.displayMetrics
-    private val resourceLoader: IResourceLoader = DefaultResourceLoader()
+    private val resourceLoader: IResourceLoader = DefaultAssetLoader()
     private val info = resourceLoader.createAsset(application, configuration, skinPathProvider)
     lateinit var res: Resources
         private set

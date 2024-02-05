@@ -2,4 +2,5 @@
 <resources>
     <color name="purple_500">#00f000</color>
     <color name="test_text_color">#FF0000</color>
+    <color name="dialog_transparent_background">#FF0000</color>
 </resources>
