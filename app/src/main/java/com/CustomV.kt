@@ -16,11 +16,11 @@ class CustomV @JvmOverloads constructor(
 
     override fun onFinishInflate() {
         super.onFinishInflate()
-        Log.d("ssss", context.toString())
+        /*Log.d("ssss", context.toString())
         val ctx = context.createPackageContext("com.baidu.carlifevehicle", Context.CONTEXT_INCLUDE_CODE or Context.CONTEXT_IGNORE_SECURITY)
         SkinManager.makeContextSkinAble(ctx)
         val constructor = ctx.classLoader.loadClass("MyView").getDeclaredConstructor(Context::class.java)
         val v = constructor.newInstance(ctx) as View
-        addView(v)
+        addView(v)*/
     }
 }

@@ -1,6 +1,5 @@
 package com.example.viewdebug.ui.page.attribute.impl
 
-import android.content.Context
 import android.view.View
 import android.view.WindowManager
 import androidx.core.view.marginBottom
@@ -59,7 +58,7 @@ internal class ViewBaseInfoProvider : ViewExtraInfoProvider<View>() {
                 }
             }
 
-            this["Activity"] = object : Read<View> {
+            this["Activity|Context"] = object : Read<View> {
                 override fun getValue(view: View): String {
                     return view.context::class.java.simpleName
                 }
@@ -75,7 +74,7 @@ internal class ViewBaseInfoProvider : ViewExtraInfoProvider<View>() {
             }
             this["layout-trace"] = object : Link<View> {
                 var trace :String? = null
-                override fun getValue(view: View): String? {
+                override fun getValue(view: View): String {
                     trace = view.getViewDebugInfo()?.getMainInvokeTrace()
                     return "查看生成调用栈"
                 }
