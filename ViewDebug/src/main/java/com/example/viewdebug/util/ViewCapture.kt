@@ -12,16 +12,16 @@ import java.util.LinkedList
 
 internal class ViewCapture {
 
-    fun capture(rootView: View, x: Int, y: Int): List<View> {
+    fun capture(rootView: View, x: Int, y: Int, vararg excludeViews: View): List<View> {
         val result = LinkedList<View>()
-        findViewByPosition(rootView, x, y, false, result)
+        findViewByPosition(rootView, x, y, false, result, excludeViews = excludeViews)
         return result
     }
 
     fun capture(context: Context, x: Int, y: Int, vararg excludeViews: View): List<View> {
         val last = getLastWindowRootView(context, x, y, *excludeViews)
         return if (last is ViewGroup) {
-            capture(last, x, y)
+            capture(last, x, y, excludeViews = excludeViews)
         } else {
             emptyList()
         }
@@ -70,7 +70,7 @@ internal class ViewCapture {
                 for (i in views.indices) {
                     val view = views[views.size - 1 - i]
                     if (!excludeViews.contains(view)) {
-                        if ((x == null || y == null) || inRect(view, x, y)){
+                        if ((x == null || y == null) || inRect(view, x, y)) {
                             return view
                         }
                     }
@@ -96,6 +96,7 @@ internal class ViewCapture {
         y: Int,
         captureInvisible: Boolean,
         out: LinkedList<View>,
+        vararg excludeViews: View
     ) {
         rootView.getLocationOnScreen(position)
         if (inRect(
@@ -106,6 +107,7 @@ internal class ViewCapture {
                 x,
                 y,
             )
+            && !excludeViews.contains(rootView)
         ) {
             if (captureInvisible || rootView.isShown) {
                 if (rootView is ViewGroup) {
@@ -117,6 +119,7 @@ internal class ViewCapture {
                             y,
                             captureInvisible,
                             out,
+                            excludeViews = excludeViews
                         )
                     }
                 } else {

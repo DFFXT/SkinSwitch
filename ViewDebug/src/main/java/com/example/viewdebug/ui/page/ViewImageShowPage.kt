@@ -11,12 +11,13 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.core.view.children
 import com.example.viewdebug.R
+import com.example.viewdebug.ui.WindowControlManager
 import com.example.viewdebug.ui.page.layout.LayoutProfilerView
-import com.example.viewdebug.util.ViewCapture
-import com.fxf.debugwindowlibaray.ui.UIPage
+import com.example.viewdebug.ui.page.parser.AttrTextParser
 import com.example.viewdebug.ui.page.parser.Parser
 import com.example.viewdebug.ui.page.parser.ReferenceParser
-import com.example.viewdebug.ui.page.parser.AttrTextParser
+import com.example.viewdebug.util.ViewCapture
+import com.fxf.debugwindowlibaray.ui.UIPage
 import java.util.LinkedList
 
 /**
@@ -58,7 +59,7 @@ class ViewImageShowPage(
 
     // 调试插件的两个view
     private val rootParentViews by lazy {
-        arrayOf(getRootParent(tabView), getRootParent(contentView))
+        arrayOf(WindowControlManager.getControlRoot(), WindowControlManager.getContentRoot())
     }
 
     override fun enableTouch(): Boolean = true
@@ -138,7 +139,7 @@ class ViewImageShowPage(
         val root = ViewCapture.getLastWindowRootView(activity, excludeViews = rootParentViews) ?: return
         if (root !is ViewGroup) return
         val list = LinkedList<View>()
-        getChildren(root, list)
+        getChildren(root, list, excludeViews = rootParentViews)
         profilerView.update(list)
         profilerView.highlight(null)
     }
@@ -156,12 +157,12 @@ class ViewImageShowPage(
         }
     }
 
-    private fun getChildren(view: ViewGroup, out: MutableList<View>) {
-        view.children.forEach {
-            if (it.isShown) {
-                out.add(it)
-                if (it is ViewGroup) {
-                    getChildren(it, out)
+    private fun getChildren(view: View, out: MutableList<View>, vararg excludeViews: View) {
+        if (view.isShown && !excludeViews.contains(view)) {
+            out.add(view)
+            if (view is ViewGroup) {
+                view.children.forEach {
+                    getChildren(it, out, excludeViews = excludeViews)
                 }
             }
         }

@@ -2,14 +2,13 @@ package com.example.viewdebug.ui
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.view.ViewGroup
 import com.example.viewdebug.apply.dex.DexLoadManager
 import com.example.viewdebug.ui.page.ViewImageShowPage
 import com.example.viewdebug.ui.page.info.ModifyListPage
 import com.example.viewdebug.ui.skin.ViewDebugResourceManager
 import com.example.viewdebug.util.launch
 import com.fxf.debugwindowlibaray.DebugWindowInitializer
-import com.fxf.debugwindowlibaray.ViewDebugManager
-import com.fxf.debugwindowlibaray.ui.EmptyPage
 import com.fxf.debugwindowlibaray.ui.UIPage
 import kotlinx.coroutines.Dispatchers
 
@@ -84,4 +83,8 @@ object WindowControlManager {
     fun resetToEmptyPage() {
         viewDebugManager.switchPage(0)
     }
+
+    fun getContentRoot(): ViewGroup = viewDebugManager.uiControl.getContentRoot()
+
+    fun getControlRoot(): ViewGroup = viewDebugManager.uiControl.getControlBarRoot()
 }

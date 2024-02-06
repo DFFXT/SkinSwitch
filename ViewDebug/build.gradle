@@ -64,7 +64,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.startup:startup-runtime:1.0.0'
-    implementation 'com.github.DFFXT:DebugWindow:1.0.5'
+    implementation 'com.github.DFFXT:DebugWindow:1.0.6'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.1'
     testImplementation 'junit:junit:4.13.2'
