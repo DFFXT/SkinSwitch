@@ -10,6 +10,7 @@ import com.example.viewdebug.databinding.ViewDebugImageDetailBinding
 import com.fxf.debugwindowlibaray.ui.UIPage
 import com.example.viewdebug.ui.dialog.BaseDialog
 import com.example.viewdebug.util.adjustOrientation
+import com.example.viewdebug.util.setSize
 import com.skin.skincore.collector.setBackgroundResourceSkinAble
 import com.skin.skincore.collector.setImageResourceSkinAble
 
@@ -31,7 +32,7 @@ internal class ImageDetailDialog(host: UIPage) : BaseDialog(host) {
         binding.root.apply {
             val width = ctx.resources.displayMetrics.widthPixels
             val height = ctx.resources.displayMetrics.heightPixels
-            layoutParams = ViewGroup.LayoutParams(width / 3, height / 3)
+            this.setSize(width / 3, height / 3)
         }
         binding.color1.setOnClickListener {
             updateSelectedBg(binding.color1, 0)
