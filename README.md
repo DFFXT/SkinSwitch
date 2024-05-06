@@ -2,7 +2,7 @@
 Android 换肤、调试框架<p>
 该仓库分为两个功能：<p>
 SkinCore: 具有动态换肤能力，可单独使用<p>
-ViewDebug：具有调试能力，必须依赖SkinCore，具体包括视图抓取（能方便知道页面上View的一些信息，View位于那个布局xml中），如果和Android studio插件结合(https://github.com/DFFXT/ViewDebug-Trans)，将具备免编译能力，大大缩小大型项目动则2-3分钟的编译等待时间。目前支持快速生效的类型有<p>
+ViewDebug：具有调试能力，必须依赖SkinCore，具体包括视图抓取（能方便知道页面上View的一些信息，View位于那个布局xml中），如果和[Android studio插件](https://github.com/DFFXT/ViewDebug-Trans)结合，将具备免编译能力，大大缩小大型项目动则2-3分钟的编译等待时间。目前支持快速生效的类型有<p>
 1.xml文件，包括：layout、drawable <p>
 2.kotlin代码<p>
 3.部分java代码（通过内部转kotlin，走kotlin编译实现）<p>
@@ -13,9 +13,9 @@ ViewDebug：具有调试能力，必须依赖SkinCore，具体包括视图抓取
   // 视情况添加，如果有guava依赖冲突则添加
   implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
   // 换肤框架
-  implementation 'com.github.DFFXT.SkinSwitch:SkinCore:0.21.8'
+  implementation 'com.github.DFFXT.SkinSwitch:SkinCore:0.22.7'
   // 视情况添加，视图调试框架，支持xml修改实时生效，和kotlin但文件修冷启动生效，用于节省编译时间，具体使用方式需搭配android studio插件使用[插件下载](https://github.com/DFFXT/ViewDebug-Trans)
-  debugImplementation 'com.github.DFFXT.SkinSwitch:ViewDebug:0.21.8'
+  debugImplementation 'com.github.DFFXT.SkinSwitch:ViewDebug:0.22.7'
 </code></pre>
 
 
