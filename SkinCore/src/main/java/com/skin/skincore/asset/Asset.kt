@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.content.res.Resources.Theme
+import android.util.DisplayMetrics
 import com.skin.log.Logger
 import com.skin.skincore.collector.applyNight
 import com.skin.skincore.collector.isNight
@@ -93,11 +94,27 @@ open class Asset(
         return res
     }
 
+    override fun updateDisplayMetrics(update: (DisplayMetrics) -> Unit) {
+        update(day.displayMetrics)
+        update(night.displayMetrics)
+    }
+
     protected open fun createResource(assetInfo: AssetInfo, isNight: Boolean): Resources {
         val config = Configuration(configuration)
         config.applyNight(isNight)
         // 这里创建了Resource对象，会更改AssetManger内部的Configuration，影响其他Resource持有的AssetManger
         // 所以需要一个Resource对应一个AssetManger
-        return Resources(assetInfo.assetManager, displayMetrics, config)
+        /**
+         * 经查看源码（ResourcesImpl.java）,有个判断densityDpi的代码，会重置density数据，所以需要在创建后重新赋值
+         *                 if (mConfiguration.densityDpi != Configuration.DENSITY_DPI_UNDEFINED) {
+         *                     mMetrics.densityDpi = mConfiguration.densityDpi;
+         *                     mMetrics.density =
+         *                             mConfiguration.densityDpi * DisplayMetrics.DENSITY_DEFAULT_SCALE;
+         *                 }
+         */
+        return Resources(assetInfo.assetManager, displayMetrics, config).apply {
+            this.displayMetrics.density = this@Asset.displayMetrics.density
+            this.displayMetrics.scaledDensity = this@Asset.displayMetrics.scaledDensity
+        }
     }
 }

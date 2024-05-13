@@ -87,5 +87,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
+    <View
+        android:id="@+id/viewtest"
+        android:layout_width="@dimen/dp_40"
+        android:layout_height="@dimen/dp_40"
+        android:background="@color/black"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

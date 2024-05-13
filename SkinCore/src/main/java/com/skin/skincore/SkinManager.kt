@@ -192,6 +192,10 @@ object SkinManager {
             ?: ResourcesProviderManager.getResourceProvider(context, DEFAULT_THEME)
     }
 
+    fun getAttachedContext(): List<Context> {
+        return loaderServer.getAllContextLoader().mapNotNull { it.getContextReference().get() }
+    }
+
     /**
      * 从换肤中移除
      */

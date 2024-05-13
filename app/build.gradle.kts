@@ -57,6 +57,8 @@ dependencies {
 
     implementation("androidx.navigation:navigation-fragment-ktx:2.3.2")
     implementation("androidx.navigation:navigation-ui-ktx:2.3.2")
+
+    implementation("com.github.JessYanCoding:AndroidAutoSize:v1.2.1")
 }
 val f = (ext.get("buildSkinModule") as org.codehaus.groovy.runtime.MethodClosure).invoke(
     "skinPack-cartoon",
