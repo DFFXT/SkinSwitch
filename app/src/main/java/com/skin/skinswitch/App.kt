@@ -12,6 +12,7 @@ import com.skin.skincore.asset.AssetLoaderManager
 import com.skin.skincore.asset.IAsset
 import com.skin.skincore.asset.IAssetFactory
 import com.skin.skincore.provider.DefaultProviderFactory
+import com.skin.skincore.provider.DefaultResourceProvider
 import com.skin.skincore.provider.IResourceProvider
 import com.skin.skincore.provider.ISkinPathProvider
 import com.skin.skincore.provider.MergeResource
@@ -45,6 +46,10 @@ class App : Application() {
 
                 override fun getSkinFolder(): String {
                     return getExternalFilesDir(null)?.absolutePath ?: filesDir.absolutePath
+                }
+
+                override fun getResourceProviderKey(ctx: Context, theme: Int): String {
+                    return super.getResourceProviderKey(ctx, theme) + ctx.hashCode()
                 }
             }
         )

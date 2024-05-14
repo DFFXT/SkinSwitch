@@ -20,6 +20,7 @@ import com.skin.log.Logger
 import com.skin.skincore.OnThemeChangeListener
 import com.skin.skincore.SkinManager
 import com.skin.skincore.collector.isNight
+import com.skin.skincore.provider.MergeResource
 import com.skin.skinswitch.const.AppConst
 import com.skin.skinswitch.module.MainFragment
 import java.util.WeakHashMap
