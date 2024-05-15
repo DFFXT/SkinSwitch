@@ -1,12 +1,11 @@
 package com.skin.skincore.loader
 
 import android.content.Context
+import android.content.ContextWrapper
 import android.view.View
 import com.skin.skincore.asset.AssetLoaderManager
-import com.skin.skincore.asset.IAsset
 import com.skin.skincore.parser.AttrParseInterceptor
 import com.skin.skincore.parser.AttrParseListener
-import com.skin.skincore.provider.IResourceProvider
 import com.skin.skincore.provider.ResourcesProviderManager
 import java.util.LinkedList
 
@@ -111,7 +110,10 @@ internal class ContextLoaderServer {
      * 根据context获取loader
      */
     fun getContextLoader(context: Context): ContextLoader? {
-        return loaderContainer.find { it.equalContext(context) }
+        return loaderContainer.find { it.equalContext(context) } ?:
+        return if (context is ContextWrapper) {
+            getContextLoader(context.baseContext)
+        } else null
     }
 
     /**

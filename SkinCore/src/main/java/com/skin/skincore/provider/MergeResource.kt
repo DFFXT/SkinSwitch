@@ -131,9 +131,14 @@ open class MergeResource(
     // region 同步Configuration，确保皮肤包和默认资源使用的是同一种配置
     @Deprecated("")
     override fun updateConfiguration(config: Configuration?, metrics: DisplayMetrics?) {
+        /*val dm = DisplayMetrics()
+        dm.setTo(metrics)*/
         super.updateConfiguration(Configuration(config), metrics)
         default.updateConfiguration(Configuration(config), metrics)
         res.updateConfiguration(Configuration(config), metrics)
+        /*displayMetrics.setTo(dm)
+        default.displayMetrics.setTo(dm)
+        res.displayMetrics.setTo(dm)*/
     }
 
     override fun getConfiguration(): Configuration {

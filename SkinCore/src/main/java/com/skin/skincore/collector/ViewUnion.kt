@@ -213,8 +213,11 @@ fun Configuration.isNight(): Boolean {
 fun Resources.applyNight(isNight: Boolean) {
     val config = Configuration(configuration)
     config.applyNight(isNight)
-    // 更新
+    // updateConfiguration方法会导致displayMetrics.density被重新计算
+    // val dm = DisplayMetrics()
+    // dm.setTo(displayMetrics)
     updateConfiguration(config, displayMetrics)
+    // displayMetrics.setTo(dm)
 }
 
 fun Configuration.applyNight(isNight: Boolean) {

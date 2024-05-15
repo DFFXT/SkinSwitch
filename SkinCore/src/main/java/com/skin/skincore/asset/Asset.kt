@@ -1,6 +1,5 @@
 package com.skin.skincore.asset
 
-import android.app.Application
 import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
@@ -18,7 +17,7 @@ import com.skin.skincore.provider.ISkinPathProvider
  * todo Asset的释放
  */
 open class Asset(
-    context: Context,
+    private val context: Context,
     private val skinPathProvider: ISkinPathProvider,
 ) : IAsset() {
     private val application = context.applicationContext ?: context
@@ -26,21 +25,23 @@ open class Asset(
     private val displayMetrics = context.resources.displayMetrics
     private val resourceLoader: IResourceLoader = DefaultAssetLoader()
     private val info = resourceLoader.createAsset(application, configuration, skinPathProvider)
-    lateinit var res: Resources
-        private set
+
+    /**
+     * 存有一个问题，当创建一个白天的resources，然后立即创建一个黑夜的resources，再创建一个白天的resources，最后这个resources异常，显示为黑夜
+     */
     private val day: Resources by lazy {
-        if (!res.isNight()) return@lazy res
         val info = resourceLoader.createAsset(application, configuration, skinPathProvider)
         createResource(info, false)
     }
     private val night: Resources by lazy {
-        if (res.isNight()) return@lazy res
         val info = resourceLoader.createAsset(application, configuration, skinPathProvider)
-        createResource(info, true)
+        createResource(info, false)
     }
+    var res: Resources = if (context.resources.isNight()) night else day
+        private set
 
     init {
-        res = createResource(info, application.resources.isNight())
+        val f= 0
     }
 
     // 当前皮肤包包含的主题
@@ -81,11 +82,13 @@ open class Asset(
      */
     override fun applyNight(isNight: Boolean) {
         Logger.d("Asset", "applyNight $isNight")
+        // val dm = res.displayMetrics
         res = if (isNight) {
             night
         } else {
             day
         }
+        // res.displayMetrics.setTo(dm)
         // FIX AssetManager和Resource一样，都需要更新Configuration配置
         res.applyNight(isNight)
     }
@@ -95,8 +98,9 @@ open class Asset(
     }
 
     override fun updateDisplayMetrics(update: (DisplayMetrics) -> Unit) {
-        update(day.displayMetrics)
-        update(night.displayMetrics)
+        // update(res.displayMetrics)
+        /*update(day.displayMetrics)
+        update(night.displayMetrics)*/
     }
 
     protected open fun createResource(assetInfo: AssetInfo, isNight: Boolean): Resources {
@@ -111,10 +115,13 @@ open class Asset(
          *                     mMetrics.density =
          *                             mConfiguration.densityDpi * DisplayMetrics.DENSITY_DEFAULT_SCALE;
          *                 }
+         * updateConfiguration会导致density等数据重置
+         * AndroidAutoSize库是对displayMetrics进行的修改，不完全合理
+         * 正常情况下不应该直接修复displayMetrics，而是修改configuration
+         * 此处不兼容AndroidAutoSize，要使用请通过AutoSizeConfig.getInstance().setOnAdaptListener()来监听displayMetrics的变化，同时手动更新configuration
          */
-        return Resources(assetInfo.assetManager, displayMetrics, config).apply {
-            this.displayMetrics.density = this@Asset.displayMetrics.density
-            this.displayMetrics.scaledDensity = this@Asset.displayMetrics.scaledDensity
-        }
+        return Resources(assetInfo.assetManager, displayMetrics, config)/*.apply {
+            this.displayMetrics.setTo(this@Asset.displayMetrics)
+        }*/
     }
 }

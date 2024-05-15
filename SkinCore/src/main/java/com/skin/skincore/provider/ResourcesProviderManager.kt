@@ -12,8 +12,9 @@ import java.util.WeakHashMap
  */
 object ResourcesProviderManager {
     private val map = HashMap<String, IResourceProvider>()
-    private val pathMap = WeakHashMap<Int, ISkinPathProvider>()
-    private lateinit var resourceProviderFactory: ResourceProviderFactory
+    private val pathMap = HashMap<Int, ISkinPathProvider>()
+    lateinit var resourceProviderFactory: ResourceProviderFactory
+        private set
 
     // Resource对象创建器
     internal lateinit var resourceObjectCreator: ResourceObjectCreator

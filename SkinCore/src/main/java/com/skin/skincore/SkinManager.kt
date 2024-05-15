@@ -97,6 +97,10 @@ object SkinManager {
 
     fun destroy(ctx: Context) {
         loaderServer.removeLoader(ctx)
+        // 尝试销毁创建的资源提供者
+        if (ResourcesProviderManager.resourceProviderFactory.differentContextWithDifferentProvider()) {
+            releaseTheme(ctx, getCurrentTheme())
+        }
     }
 
     /**
@@ -106,14 +110,12 @@ object SkinManager {
      * 如果不同context具有不同的key，那么就需要传正确的context，比如加载了其它已安装应用的Context，并且显示了其它应用的View，就需要传这个参数
      */
     fun releaseTheme(context: Context? = null, theme: Int) {
-        if (theme != getCurrentTheme()) {
-            if (context == null) {
-                loaderServer.getAllContextLoader().forEach {
-                    ResourcesProviderManager.releaseProvider(it.getContextReference().get()!!, theme)
-                }
-            } else {
-                ResourcesProviderManager.releaseProvider(context, theme)
+        if (context == null) {
+            loaderServer.getAllContextLoader().forEach {
+                ResourcesProviderManager.releaseProvider(it.getContextReference().get()!!, theme)
             }
+        } else {
+            ResourcesProviderManager.releaseProvider(context, theme)
         }
     }
 
@@ -133,7 +135,7 @@ object SkinManager {
      * @param isNight 使用当前皮肤包的哪种模式
      * @param eventType 事件类型，默认[BaseViewApply.EVENT_TYPE_THEME]换肤事件，可自定义，对应的
      * 需要[BaseViewApply]里面的eventType与之对应
-     * @param releaseOld 是否自动释放老的皮肤资源
+     * @param releaseOld 是否自动释放老的皮肤资源, 如果不自动，需要手动调用releaseTheme
      */
     fun switchTheme(theme: Int,
                     ctx: Context? = null,
@@ -186,6 +188,7 @@ object SkinManager {
 
     /**
      * 获取当前context的资源提供器，如果context不是可换肤context，则返回默认资源提供器
+     * 如果context是dialog的Context，那么也返回的是默认
      */
     fun getResourceProvider(context: Context): IResourceProvider {
         return loaderServer.getContextLoader(context)?.getResourceProvider()
