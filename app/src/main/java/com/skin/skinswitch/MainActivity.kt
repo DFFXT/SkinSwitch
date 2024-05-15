@@ -5,6 +5,7 @@ import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Bundle
 import android.os.Environment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -106,9 +107,18 @@ class MainActivity : AppCompatActivity(), OnThemeChangeListener {
             Logger.i("sss", "click")
             TestActivity.startActivity(this)
         }
+        val r = resources as MergeResource
+        Log.e("ssss", r.asset.getResource().displayMetrics.hashCode().toString()+r.asset.getResource().displayMetrics.toString())
+        Log.e("ssss", r.asset.getResource().toString())
+        Log.e("ssss88", application.resources.displayMetrics.toString())
     }
 
     private fun notifyRadioButton() {
+        val r = resources as MergeResource
+        Log.e("ssss", r.asset.getResource().displayMetrics.hashCode().toString()+r.asset.getResource().displayMetrics.toString())
+        Log.e("ssss", r.asset.getResource().toString())
+        Log.e("ssss88", application.resources.displayMetrics.toString())
+        // Log.e("ssss", r.displayMetrics.toString())
         if (resources.isNight()) {
             nightMode.isChecked = true
         } else {
