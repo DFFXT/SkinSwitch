@@ -1,6 +1,7 @@
 package com.example.viewdebug.ui.page.attribute.impl
 
 import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.core.view.marginBottom
 import androidx.core.view.marginEnd
@@ -40,6 +41,14 @@ internal class ViewBaseInfoProvider : ViewExtraInfoProvider<View>() {
                     view.getLocationOnScreen(p)
                     val wm = view.context.getSystemService(WindowManager::class.java)
                     return "${p[0]},${p[1]} - ${view.measuredWidth + p[0]}, ${view.measuredHeight + p[1]}"
+                }
+            }
+            this["toParent"] = object : Read<View> {
+                override fun getValue(view: View): String? {
+                    val parent = view.parent as? ViewGroup
+                    return if (parent != null) {
+                        "${view.left},${view.top} ${parent.right - view.right},${parent.bottom - view.bottom}"
+                    } else null
                 }
             }
             this["size"] = object : Read<View> {
