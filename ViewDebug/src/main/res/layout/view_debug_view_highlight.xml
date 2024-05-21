@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:background="@color/view_debug_black">
+
+
+    <View
+        android:id="@+id/target"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:background="@drawable/view_debug_highlight_target_bg"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_marginStart="100dp"
+        tools:layout_marginTop="100dp" />
+
+    <View
+        android:id="@+id/line_left"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/view_debug_distance_line_width"
+        android:background="@color/view_debug_distance_line"
+        app:layout_constraintBottom_toBottomOf="@id/target"
+        app:layout_constraintEnd_toStartOf="@id/target"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/target" />
+
+    <TextView
+        android:id="@+id/tv_leftDistance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/view_debug_distance_text_padding"
+        android:background="@drawable/view_debug_distance_text_bg"
+        app:layout_constrainedWidth="false"
+        app:layout_constraintTop_toTopOf="@id/line_left"
+        app:layout_constraintBottom_toBottomOf="@id/line_left"
+        app:layout_constraintEnd_toStartOf="@id/target"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="100" />
+
+    <View
+        android:id="@+id/line_top"
+        android:layout_width="@dimen/view_debug_distance_line_width"
+        android:layout_height="0dp"
+        android:background="@color/view_debug_distance_line"
+        app:layout_constraintBottom_toTopOf="@id/target"
+        app:layout_constraintEnd_toEndOf="@id/target"
+        app:layout_constraintStart_toStartOf="@id/target"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:id="@+id/tv_topDistance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/view_debug_distance_text_padding"
+        android:background="@drawable/view_debug_distance_text_bg"
+        app:layout_constraintBottom_toTopOf="@id/target"
+        app:layout_constraintStart_toStartOf="@id/line_top"
+        app:layout_constraintEnd_toEndOf="@id/line_top"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="100" />
+
+    <View
+        android:id="@+id/line_right"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/view_debug_distance_line_width"
+        android:background="@color/view_debug_distance_line"
+        app:layout_constraintBottom_toBottomOf="@id/target"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/target"
+        app:layout_constraintTop_toTopOf="@id/target" />
+
+    <TextView
+        android:id="@+id/tv_rightDistance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constrainedWidth="false"
+        android:paddingHorizontal="@dimen/view_debug_distance_text_padding"
+        android:background="@drawable/view_debug_distance_text_bg"
+        app:layout_constraintTop_toTopOf="@id/line_right"
+        app:layout_constraintBottom_toBottomOf="@id/line_right"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/target"
+        tools:text="100" />
+
+    <View
+        android:id="@+id/line_bottom"
+        android:layout_width="@dimen/view_debug_distance_line_width"
+        android:layout_height="0dp"
+        android:background="@color/view_debug_distance_line"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/target"
+        app:layout_constraintStart_toStartOf="@id/target"
+        app:layout_constraintTop_toBottomOf="@id/target" />
+
+    <TextView
+        android:id="@+id/tv_bottomDistance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/view_debug_distance_text_padding"
+        android:background="@drawable/view_debug_distance_text_bg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@id/line_bottom"
+        app:layout_constraintEnd_toEndOf="@id/line_bottom"
+        app:layout_constraintTop_toBottomOf="@id/target"
+        tools:text="100" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

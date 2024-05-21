@@ -2,29 +2,24 @@ package com.example.viewdebug.ui.page.layout
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.Rect
 import android.graphics.RectF
-import android.text.DynamicLayout
-import android.text.SpannableString
-import android.text.SpannableStringBuilder
-import android.text.SpannedString
 import android.text.TextPaint
-import android.text.style.BackgroundColorSpan
 import android.util.AttributeSet
+import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewParent
-import androidx.core.text.set
+import android.widget.FrameLayout
+import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import com.example.viewdebug.R
+import com.example.viewdebug.databinding.ViewDebugViewHighlightBinding
 import java.lang.ref.WeakReference
 import java.util.LinkedList
-import kotlin.math.max
-import kotlin.math.min
 
 class LayoutProfilerView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : View(context, attrs, defStyleAttr) {
+) : FrameLayout(context, attrs, defStyleAttr) {
 
     private val viewRects = LinkedList<ViewRect>()
     private val p = intArrayOf(0, 0)
@@ -35,14 +30,6 @@ class LayoutProfilerView @JvmOverloads constructor(
     private val distanceTextColor = context.getColor(R.color.view_debug_distance_text_color)
     private val distanceTextBg = context.getColor(R.color.view_debug_distance_text_bg)
     private val distanceLineColor = context.getColor(R.color.view_debug_distance_line)
-    private val linePaint = Paint().apply {
-        setColor(distanceLineColor)
-    }
-    private val lineTextPaint = TextPaint().apply {
-        setColor(distanceTextColor)
-        isAntiAlias = true
-        textSize = context.resources.getDimension(R.dimen.view_debug_small_text_size)
-    }
     private val lineTextBgPaint = TextPaint().apply {
         setColor(distanceTextBg)
     }
@@ -50,6 +37,41 @@ class LayoutProfilerView @JvmOverloads constructor(
     private var offsetY: Float = 0f
 
     private var highlightTarget: ViewRect? = null
+
+    private val highlightBinding by lazy {
+        val binding = ViewDebugViewHighlightBinding.inflate(LayoutInflater.from(context), this, true)
+        binding.tvLeftDistance.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+            if (left < 0) {
+                v.translationX = -left.toFloat()
+            } else {
+                v.translationX = 0f
+            }
+        }
+        binding.tvTopDistance.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+            if (top < 0) {
+                v.translationY = -top.toFloat()
+            } else {
+                v.translationY = 0f
+            }
+        }
+        binding.tvRightDistance.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+            if (right > binding.root.right) {
+                v.translationX = (binding.root.right - right).toFloat()
+            } else {
+                v.translationX = 0f
+            }
+            Log.e("tvRightDistance", v.translationX.toString())
+        }
+        binding.tvBottomDistance.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+            if (bottom > binding.root.bottom) {
+                v.translationY = (binding.root.bottom - bottom).toFloat()
+            } else {
+                v.translationY = 0f
+            }
+        }
+        binding
+    }
+
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
@@ -74,29 +96,13 @@ class LayoutProfilerView @JvmOverloads constructor(
             paint.style = Paint.Style.FILL
             paint.alpha = 100
             canvas.drawRect(it.left, it.top, it.right, it.bottom, paint)
-            val parentRect = it.parent
-            if (parentRect != null) {
-                // left
-                canvas.drawLine(it.left, it.getCenterY(), parentRect.left, it.getCenterY(), linePaint)
-                drawText(canvas, it.distanceLeft, 0, it.distanceLeft.length, max(it.left - lineTextPaint.measureText(it.distanceLeft.toString()), 0f), it.getCenterY(), lineTextPaint)
-
-                // top
-                canvas.drawLine(it.getCenterX(), it.top, it.getCenterX(), parentRect.top, linePaint)
-                drawText(canvas, it.distanceTop, 0, it.distanceTop.length, it.getCenterX(), max(it.top, lineTextPaint.textSize + offsetY), lineTextPaint)
-                // right
-                canvas.drawLine(it.right, it.getCenterY(), parentRect.right, it.getCenterY(), linePaint)
-                drawText(canvas, it.distanceRight, 0, it.distanceRight.length, min(it.right, right - lineTextPaint.measureText(it.distanceRight.toString())), it.getCenterY(), lineTextPaint)
-                // bottom
-                canvas.drawLine(it.getCenterX(), it.bottom, it.getCenterX(), parentRect.bottom, linePaint)
-                drawText(canvas, it.distanceBottom, 0, it.distanceBottom.length, it.getCenterX(), min(it.bottom + lineTextPaint.textSize + lineTextPaint.descent(), bottom.toFloat() + offsetY), lineTextPaint)
-            }
         }
         canvas.translate(offsetX, offsetY)
     }
 
-    private fun drawText(canvas: Canvas, text: CharSequence,s:Int,t:Int, x: Float, y:Float, paint: Paint) {
-        canvas.drawRect(RectF(x, y - paint.textSize -paint.descent(), x + paint.measureText(text.toString()), y), lineTextBgPaint)
-        canvas.drawText(text.toString(), x, y-paint.descent() , paint)
+    private fun drawText(canvas: Canvas, text: CharSequence, x: Float, y: Float, paint: Paint) {
+        canvas.drawRect(RectF(x, y - paint.textSize - paint.descent(), x + paint.measureText(text.toString()), y), lineTextBgPaint)
+        canvas.drawText(text.toString(), x, y - paint.descent(), paint)
     }
 
     fun update(views: List<View>) {
@@ -112,26 +118,32 @@ class LayoutProfilerView @JvmOverloads constructor(
         target ?: run {
             highlightTarget = null
             invalidate()
+            highlightBinding.root.isVisible = false
             return
         }
+        val parent = target.parent as? View ?: return
         target.getLocationOnScreen(p)
-        val parent = target.parent as? View
-        val parentRect = if (parent != null) {
-            ViewRect(target.parent as View, null)
-        } else null
-        highlightTarget = ViewRect(target, parentRect)
-        invalidate()
+        highlightBinding.root.isVisible = true
+        highlightBinding.target.updateLayoutParams<MarginLayoutParams> {
+            this.marginStart = (p[0] - offsetX).toInt()
+            this.topMargin = (p[1] - offsetY).toInt()
+            this.width = target.measuredWidth
+            this.height = target.measuredHeight
+        }
+        highlightBinding.tvLeftDistance.text = (target.left - parent.left).toString()
+        highlightBinding.tvTopDistance.text = (target.top - parent.top).toString()
+        highlightBinding.tvRightDistance.text = (parent.right - target.right).toString()
+        highlightBinding.tvBottomDistance.text = (parent.bottom - target.bottom).toString()
     }
 
     private inner class ViewRect(
-        target: View,
-        val parent: ViewRect? = null
+        target: View
     ) {
         val left: Float
         val top: Float
         val right: Float
         val bottom: Float
-        val v= WeakReference(target)
+        val v = WeakReference(target)
 
 
         init {
@@ -142,30 +154,7 @@ class LayoutProfilerView @JvmOverloads constructor(
             right = p[0].toFloat() + target.measuredWidth
             bottom = p[1].toFloat() + target.measuredHeight
         }
-        val distanceLeft by lazy {
-            parent ?: return@lazy SpannedString(null)
-            getSpan((left - parent.left).toString())
-        }
-        val distanceTop by lazy {
-            parent ?: return@lazy SpannableString(null)
-            getSpan((top - parent.top).toString())
-        }
-        val distanceRight by lazy {
-            parent ?: return@lazy SpannedString(null)
-            getSpan((parent.right - right).toString())
-        }
-        val distanceBottom by lazy {
-            parent ?: return@lazy SpannedString(null)
-            getSpan((parent.bottom - bottom).toString())
-        }
-        private fun getSpan(text: String): SpannableString {
-            return SpannableString(text).apply {
-                set(0 ,this.length, BackgroundColorSpan(Color.RED))
-            }
-        }
 
-        fun getCenterX() = (right + left) /2
-        fun getCenterY() = (bottom + top) /2
     }
 
 
