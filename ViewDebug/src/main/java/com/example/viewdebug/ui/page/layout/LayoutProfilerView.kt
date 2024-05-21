@@ -41,7 +41,7 @@ class LayoutProfilerView @JvmOverloads constructor(
     private val lineTextPaint = TextPaint().apply {
         setColor(distanceTextColor)
         isAntiAlias = true
-        textSize = context.resources.getDimension(R.dimen.view_debug_min_text_size)
+        textSize = context.resources.getDimension(R.dimen.view_debug_small_text_size)
     }
     private val lineTextBgPaint = TextPaint().apply {
         setColor(distanceTextBg)
