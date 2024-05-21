@@ -2,6 +2,7 @@ package com.example.viewdebug.ui.page.layout
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.text.TextPaint
@@ -26,12 +27,6 @@ class LayoutProfilerView @JvmOverloads constructor(
     private val paint = Paint().apply {
         setColor(this@LayoutProfilerView.context.getColor(R.color.view_debug_red))
         style = Paint.Style.STROKE
-    }
-    private val distanceTextColor = context.getColor(R.color.view_debug_distance_text_color)
-    private val distanceTextBg = context.getColor(R.color.view_debug_distance_text_bg)
-    private val distanceLineColor = context.getColor(R.color.view_debug_distance_line)
-    private val lineTextBgPaint = TextPaint().apply {
-        setColor(distanceTextBg)
     }
     private var offsetX: Float = 0f
     private var offsetY: Float = 0f
@@ -71,6 +66,10 @@ class LayoutProfilerView @JvmOverloads constructor(
         }
         binding
     }
+    init {
+        setWillNotDraw(false)
+        setBackgroundColor(Color.TRANSPARENT)
+    }
 
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
@@ -100,11 +99,6 @@ class LayoutProfilerView @JvmOverloads constructor(
         canvas.translate(offsetX, offsetY)
     }
 
-    private fun drawText(canvas: Canvas, text: CharSequence, x: Float, y: Float, paint: Paint) {
-        canvas.drawRect(RectF(x, y - paint.textSize - paint.descent(), x + paint.measureText(text.toString()), y), lineTextBgPaint)
-        canvas.drawText(text.toString(), x, y - paint.descent(), paint)
-    }
-
     fun update(views: List<View>) {
         viewRects.clear()
         views.forEach {
@@ -130,13 +124,21 @@ class LayoutProfilerView @JvmOverloads constructor(
             this.width = target.measuredWidth
             this.height = target.measuredHeight
         }
-        highlightBinding.tvLeftDistance.text = (target.left - parent.left).toString()
-        highlightBinding.tvTopDistance.text = (target.top - parent.top).toString()
+        parent.getLocationOnScreen(p)
+        highlightBinding.targetParent.updateLayoutParams<MarginLayoutParams> {
+            this.marginStart = (p[0] - offsetX).toInt()
+            this.topMargin = (p[1] - offsetY).toInt()
+            this.width = parent.measuredWidth
+            this.height = parent.measuredHeight
+        }
+        highlightBinding.target.text = "${target.measuredWidth}*${target.measuredHeight}"
+        highlightBinding.tvLeftDistance.text = (target.left).toString()
+        highlightBinding.tvTopDistance.text = (target.top).toString()
         highlightBinding.tvRightDistance.text = (parent.right - target.right).toString()
         highlightBinding.tvBottomDistance.text = (parent.bottom - target.bottom).toString()
     }
 
-    private inner class ViewRect(
+    private class ViewRect(
         target: View
     ) {
         val left: Float
