@@ -4,12 +4,23 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Rect
+import android.graphics.RectF
+import android.text.DynamicLayout
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.SpannedString
+import android.text.TextPaint
+import android.text.style.BackgroundColorSpan
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewParent
+import androidx.core.text.set
 import com.example.viewdebug.R
 import java.lang.ref.WeakReference
 import java.util.LinkedList
+import kotlin.math.max
+import kotlin.math.min
 
 class LayoutProfilerView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -21,12 +32,19 @@ class LayoutProfilerView @JvmOverloads constructor(
         setColor(this@LayoutProfilerView.context.getColor(R.color.view_debug_red))
         style = Paint.Style.STROKE
     }
-
+    private val distanceTextColor = context.getColor(R.color.view_debug_distance_text_color)
+    private val distanceTextBg = context.getColor(R.color.view_debug_distance_text_bg)
+    private val distanceLineColor = context.getColor(R.color.view_debug_distance_line)
     private val linePaint = Paint().apply {
-        setColor(Color.BLUE)
+        setColor(distanceLineColor)
+    }
+    private val lineTextPaint = TextPaint().apply {
+        setColor(distanceTextColor)
         isAntiAlias = true
         textSize = context.resources.getDimension(R.dimen.view_debug_min_text_size)
-        // style = Paint.Style.STROKE
+    }
+    private val lineTextBgPaint = TextPaint().apply {
+        setColor(distanceTextBg)
     }
     private var offsetX: Float = 0f
     private var offsetY: Float = 0f
@@ -60,19 +78,25 @@ class LayoutProfilerView @JvmOverloads constructor(
             if (parentRect != null) {
                 // left
                 canvas.drawLine(it.left, it.getCenterY(), parentRect.left, it.getCenterY(), linePaint)
-                canvas.drawText((it.left - parentRect.left).toString(), it.left - 100, it.getCenterY(), linePaint)
+                drawText(canvas, it.distanceLeft, 0, it.distanceLeft.length, max(it.left - lineTextPaint.measureText(it.distanceLeft.toString()), 0f), it.getCenterY(), lineTextPaint)
+
                 // top
                 canvas.drawLine(it.getCenterX(), it.top, it.getCenterX(), parentRect.top, linePaint)
-                canvas.drawText((it.top - parentRect.top).toString(), it.getCenterX(), it.top, linePaint)
+                drawText(canvas, it.distanceTop, 0, it.distanceTop.length, it.getCenterX(), max(it.top, lineTextPaint.textSize + offsetY), lineTextPaint)
                 // right
                 canvas.drawLine(it.right, it.getCenterY(), parentRect.right, it.getCenterY(), linePaint)
-                canvas.drawText((parentRect.right - it.right).toString(), it.right, it.getCenterY(), linePaint)
+                drawText(canvas, it.distanceRight, 0, it.distanceRight.length, min(it.right, right - lineTextPaint.measureText(it.distanceRight.toString())), it.getCenterY(), lineTextPaint)
                 // bottom
                 canvas.drawLine(it.getCenterX(), it.bottom, it.getCenterX(), parentRect.bottom, linePaint)
-                canvas.drawText((parentRect.bottom - it.bottom).toString(), it.getCenterX(), it.bottom + linePaint.textSize, linePaint)
+                drawText(canvas, it.distanceBottom, 0, it.distanceBottom.length, it.getCenterX(), min(it.bottom + lineTextPaint.textSize + lineTextPaint.descent(), bottom.toFloat() + offsetY), lineTextPaint)
             }
         }
         canvas.translate(offsetX, offsetY)
+    }
+
+    private fun drawText(canvas: Canvas, text: CharSequence,s:Int,t:Int, x: Float, y:Float, paint: Paint) {
+        canvas.drawRect(RectF(x, y - paint.textSize -paint.descent(), x + paint.measureText(text.toString()), y), lineTextBgPaint)
+        canvas.drawText(text.toString(), x, y-paint.descent() , paint)
     }
 
     fun update(views: List<View>) {
@@ -99,7 +123,7 @@ class LayoutProfilerView @JvmOverloads constructor(
         invalidate()
     }
 
-    private class ViewRect(
+    private inner class ViewRect(
         target: View,
         val parent: ViewRect? = null
     ) {
@@ -109,6 +133,7 @@ class LayoutProfilerView @JvmOverloads constructor(
         val bottom: Float
         val v= WeakReference(target)
 
+
         init {
             val p = intArrayOf(0, 0)
             target.getLocationOnScreen(p)
@@ -116,6 +141,27 @@ class LayoutProfilerView @JvmOverloads constructor(
             top = p[1].toFloat()
             right = p[0].toFloat() + target.measuredWidth
             bottom = p[1].toFloat() + target.measuredHeight
+        }
+        val distanceLeft by lazy {
+            parent ?: return@lazy SpannedString(null)
+            getSpan((left - parent.left).toString())
+        }
+        val distanceTop by lazy {
+            parent ?: return@lazy SpannableString(null)
+            getSpan((top - parent.top).toString())
+        }
+        val distanceRight by lazy {
+            parent ?: return@lazy SpannedString(null)
+            getSpan((parent.right - right).toString())
+        }
+        val distanceBottom by lazy {
+            parent ?: return@lazy SpannedString(null)
+            getSpan((parent.bottom - bottom).toString())
+        }
+        private fun getSpan(text: String): SpannableString {
+            return SpannableString(text).apply {
+                set(0 ,this.length, BackgroundColorSpan(Color.RED))
+            }
         }
 
         fun getCenterX() = (right + left) /2
