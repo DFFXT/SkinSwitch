@@ -134,8 +134,8 @@ class LayoutProfilerView @JvmOverloads constructor(
         highlightBinding.target.text = "${target.measuredWidth}*${target.measuredHeight}"
         highlightBinding.tvLeftDistance.text = (target.left).toString()
         highlightBinding.tvTopDistance.text = (target.top).toString()
-        highlightBinding.tvRightDistance.text = (parent.right - target.right).toString()
-        highlightBinding.tvBottomDistance.text = (parent.bottom - target.bottom).toString()
+        highlightBinding.tvRightDistance.text = (parent.measuredWidth - target.right).toString()
+        highlightBinding.tvBottomDistance.text = (parent.measuredHeight - target.bottom).toString()
     }
 
     private class ViewRect(
