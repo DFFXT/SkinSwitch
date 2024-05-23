@@ -11,6 +11,7 @@ import com.example.viewdebug.apply.ChangeApplyManager
 import com.example.viewdebug.apply.IBuildIdentification
 import com.example.viewdebug.apply.dex.ClassLoadObserve
 import com.example.viewdebug.remote.RemoteFileReceiver
+import com.example.viewdebug.server.ServerManager
 import com.example.viewdebug.ui.WindowControlManager
 import com.example.viewdebug.ui.skin.ViewDebugMergeResource
 import com.example.viewdebug.util.ViewDebugInfo
@@ -77,10 +78,10 @@ open class ViewDebugInitializer : Initializer<ViewDebugInitializer> {
         launch(Dispatchers.IO) {
             AndroidXmRuleManager.init(ctx)
             // CompileTest.main()
+            ServerManager.init()
             RemoteFileReceiver.init()
             // PackAssetsFile.clearCachedXml(ctx)
         }
-        // ServerManager.init()
         return this
     }
 

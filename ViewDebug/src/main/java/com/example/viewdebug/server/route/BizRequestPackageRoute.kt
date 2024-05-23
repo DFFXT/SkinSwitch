@@ -8,7 +8,7 @@ import com.example.viewdebug.server.ResponseWriter
  * 请求包名
  */
 internal class BizRequestPackageRoute:BizRoute {
-    override fun onRequest(routeId: String, request: Request, response: ResponseWriter) {
+    override fun onRequest(routeId: String, content: String, response: ResponseWriter) {
         val packageNameByteArray = ViewDebugInitializer.ctx.packageName.toByteArray()
         response.writeContentLength(packageNameByteArray.size)
         response.write(packageNameByteArray)

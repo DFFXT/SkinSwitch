@@ -14,7 +14,7 @@ import com.example.viewdebug.server.ResponseWriter
  * listenFile=xxxx
  */
 internal class BizRequestPushConfigRoute : BizRoute {
-    override fun onRequest(routeId: String, request: Request, response: ResponseWriter) {
+    override fun onRequest(routeId: String, content: String, response: ResponseWriter) {
         // 接收文件路径
         val builder = StringBuilder()
         builder.append("version=1.0\n")

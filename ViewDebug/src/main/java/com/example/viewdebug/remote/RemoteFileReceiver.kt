@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.FileObserver
 import com.example.viewdebug.BuildConfig
 import com.example.viewdebug.ViewDebugInitializer
+import com.example.viewdebug.server.ServerManager
 import com.example.viewdebug.util.launch
 import com.example.viewdebug.util.makeAsDir
 import com.skin.log.Logger
@@ -153,7 +154,12 @@ internal object RemoteFileReceiver {
         // 推送监听文件地址
         builder.append("listenFile=${watchingConfigFile}\n")
         // 清空所有更改信号文件名称
-        builder.append("clearSignalFileName=${CLEAR_SIGNAL}")
+        builder.append("clearSignalFileName=${CLEAR_SIGNAL}\n")
+        // 本地socket服务器端口
+        builder.append("serverPort=${ServerManager.getServerPort() ?: 0}\n")
+        // 本地socket客户端端口
+        builder.append("clientPort=${ServerManager.getClientPort() ?: 0}\n")
+        Logger.d("write agreement", builder.toString())
         agreementFile.writeText(builder.toString())
     }
 
@@ -209,6 +215,9 @@ internal object RemoteFileReceiver {
             const val TYPE_DEX = "dex"
             // 规则文件
             const val TYPE_RULES = "rules"
+
+            // 远程配置文件（Android studio需要传递给应用的一些信息）
+            const val TYPE_REMOTE_CONFIG = "config"
             // launch信号
             const val TYPE_LAUNCH = "launch"
             @Deprecated("不计划实装, 无该功能")

@@ -7,6 +7,7 @@ import java.net.Socket
  * 数据返回操作对象
  */
 class ResponseWriterImpl(private val socket: Socket) : ResponseWriter {
+
     private val output = DataOutputStream(socket.getOutputStream())
     private var writeLength = false
 

@@ -16,11 +16,10 @@ import java.io.File
  */
 internal class BizRequestRClassRoute : BizRoute {
     private val rPath = ViewDebugInitializer.ctx.cacheDir.absolutePath + File.pathSeparator + "R.java"
-    override fun onRequest(routeId: String, request: Request, response: ResponseWriter) {
+    override fun onRequest(routeId: String, content: String, response: ResponseWriter) {
         val file = File(rPath)
         androidx.core.R.layout.notification_action
         R.layout.view_debug_dialog_detail_info
-        val content = String(request.getContent())
         val responseContent = content.split("\n").map {
             createRFile(it).toByteArray()
         }
