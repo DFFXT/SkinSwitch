@@ -5,10 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.ViewDetailInfoDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.example.viewdebug.databinding.ViewDebugLayoutImageItemBinding
 import com.example.viewdebug.rv.ItemHandle
+import com.example.viewdebug.server.RemoteControl
+import com.example.viewdebug.server.ServerManager
 import com.fxf.debugwindowlibaray.ui.UIPage
 import com.example.viewdebug.ui.page.ImageDetailDialog
 import com.example.viewdebug.util.copyToClipboard
@@ -75,6 +78,14 @@ internal class ImageItemHandler(private val host: UIPage, private val itemClick:
             }
             binding.tvTitle.text = item.layoutName
             binding.tvName.text = item.attribute
+            if (ServerManager.isConnected() && item.layoutName.endsWith(".xml")) {
+                binding.ivTitleGo.isVisible = true
+                binding.ivTitleGo.setOnClickListener {
+                    RemoteControl.openFile(item.layoutName)
+                }
+            } else {
+                binding.ivTitleGo.isVisible = false
+            }
 
             binding.tvName.setOnClickListener {
                 onAttributeNameClick?.invoke(item)

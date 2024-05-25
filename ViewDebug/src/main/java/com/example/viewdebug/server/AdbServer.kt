@@ -20,7 +20,6 @@ import java.util.LinkedList
  * 4字节 body长度
  * body内容
  */
-typealias Callback = (String) -> Unit
 
 internal class AdbServer {
     companion object {
@@ -35,7 +34,7 @@ internal class AdbServer {
     private val bizMap = HashMap<String, Class<BizRoute>>()
 
 
-    private var sockets: LinkedList<Socket> = LinkedList()
+
 
     fun init() {
         server = getServerSocket(DEFAULT_CLIENT_PORT)
@@ -43,7 +42,6 @@ internal class AdbServer {
             Logger.d(TAG, "listen port: ${server.localPort}")
             while (true) {
                 val socket = server.accept()
-                sockets.add(socket)
                 Logger.d(TAG, "accept ${socket.remoteSocketAddress}")
                 launch(Dispatchers.IO) {
                     SocketDataDispatcher(socket, bizMap)

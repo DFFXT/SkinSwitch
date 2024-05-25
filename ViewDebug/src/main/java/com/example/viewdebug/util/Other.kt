@@ -15,6 +15,7 @@ import com.example.viewdebug.ui.page.XmlTextDialog
 import com.fxf.debugwindowlibaray.ui.UIPage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import java.io.File
@@ -62,8 +63,8 @@ internal fun launch(
     context: CoroutineContext = EmptyCoroutineContext,
     start: CoroutineStart = CoroutineStart.DEFAULT,
     block: suspend CoroutineScope.() -> Unit
-) {
-    applicationScope.launch(context, start, block)
+): Job {
+    return applicationScope.launch(context, start, block)
 }
 
 

@@ -20,7 +20,8 @@ internal class SocketDataDispatcher(private val socket: Socket, private val bizM
             val contentLength = input.readInt()
             // 路由id
             val routeId = input.readFullSizeString(buffer, cmdLength)
-            val content = input.readFullSizeString(buffer, contentLength)
+            // 内容
+            val content = if(contentLength > 0) input.readFullSizeString(buffer, contentLength) else ""
             // 构建路由处理器
             val routeClass = bizMap.getOrDefault(routeId, BizRequest404Route::class.java)
             // 处理器处理对应请求

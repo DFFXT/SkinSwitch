@@ -34,6 +34,19 @@
         app:layout_constraintHorizontal_bias="0"
         tools:text="layout/main_activity.xml"/>
 
+    <ImageView
+        android:id="@+id/iv_title_go"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="10dp"
+        android:src="@drawable/view_debug_go"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toEndOf="@id/tv_title"
+        app:layout_constraintTop_toTopOf="@id/tv_title"
+        app:layout_constraintBottom_toBottomOf="@id/tv_title"
+        />
+
     <TextView
         android:id="@+id/tv_name"
         android:layout_width="wrap_content"

@@ -19,8 +19,12 @@ object ServerManager {
     }
 
 
-    fun send(cmd: String, content: String, callback: (String) -> Unit) {
-        adbClient?.send(cmd, content, callback)
+    fun isConnected() :Boolean {
+        return adbClient?.isConnected ?: false
+    }
+
+    fun send(cmd: String, content: String, callback: (String) -> Unit, onError:(()->Unit)? = null) {
+        adbClient?.send(cmd, content, callback, onError)
     }
 
     fun getServerPort() = adbServer?.getPort()

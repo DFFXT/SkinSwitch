@@ -145,7 +145,7 @@ class ViewImageCaptureResultDialog(
     private fun createSimpleViewItem(v: View?): Item? {
         v ?: return null
         val debugInfo = v.getViewDebugInfo()
-        val ln = debugInfo?.getLayoutName(v.resources) ?: "???"
+        val ln = debugInfo?.getLayoutName(v.resources)?.let { "$it.xml" } ?: "???"
         return Item(
             WeakReference(v),
             R.mipmap.view_debug_view_view_type_icon,
