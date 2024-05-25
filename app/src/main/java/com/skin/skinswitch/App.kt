@@ -10,6 +10,7 @@ import com.skin.skincore.SkinManager
 import com.skin.skincore.apply.base.BaseViewApply
 import com.skin.skincore.provider.DefaultProviderFactory
 import com.skin.skincore.provider.IResourceProvider
+import com.skin.skincore.provider.MergeResource
 import com.skin.skinswitch.const.AppConst
 import me.jessyan.autosize.AutoSizeConfig
 import me.jessyan.autosize.onAdaptListener

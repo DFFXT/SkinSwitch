@@ -119,9 +119,12 @@ open class Asset(
          * AndroidAutoSize库是对displayMetrics进行的修改，不完全合理
          * 正常情况下不应该直接修复displayMetrics，而是修改configuration
          * 此处不兼容AndroidAutoSize，要使用请通过AutoSizeConfig.getInstance().setOnAdaptListener()来监听displayMetrics的变化，同时手动更新configuration
+         *
+         * 存在AndroidAutoSize插件先修改displayMetrics的情况，此处需要更新displayMetrics
          */
-        return Resources(assetInfo.assetManager, displayMetrics, config)/*.apply {
+
+        return Resources(assetInfo.assetManager, displayMetrics, config).apply {
             this.displayMetrics.setTo(this@Asset.displayMetrics)
-        }*/
+        }
     }
 }
