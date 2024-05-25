@@ -1,5 +1,11 @@
 package com.example.viewdebug.ui.page.attribute.impl
 
+import android.graphics.Color
+import android.text.SpannableString
+import android.text.SpannedString
+import android.text.TextPaint
+import android.text.style.ClickableSpan
+import android.text.style.ForegroundColorSpan
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -8,6 +14,8 @@ import androidx.core.view.marginEnd
 import androidx.core.view.marginStart
 import androidx.core.view.marginTop
 import androidx.fragment.app.FragmentInfoRead
+import com.example.viewdebug.server.RemoteControl
+import com.example.viewdebug.server.ServerManager
 import com.example.viewdebug.ui.page.PlaintTextDialog
 import com.example.viewdebug.ui.page.attribute.Link
 import com.example.viewdebug.ui.page.attribute.Read
@@ -36,7 +44,7 @@ internal class ViewBaseInfoProvider : ViewExtraInfoProvider<View>() {
                 }
             }
             this["rect"] = object : Read<View> {
-                override fun getValue(view: View): String? {
+                override fun getValue(view: View): String {
                     val p = intArrayOf(0, 0)
                     view.getLocationOnScreen(p)
                     val wm = view.context.getSystemService(WindowManager::class.java)
@@ -77,8 +85,26 @@ internal class ViewBaseInfoProvider : ViewExtraInfoProvider<View>() {
             this["adapter"] = RecyclerAdapterReader()
 
             this["layout"] = object : Read<View> {
-                override fun getValue(view: View): String? {
-                    return view.getViewDebugInfo()?.getLayoutTypeAndName(view.resources)
+                override fun getValue(view: View): CharSequence? {
+                    val showText = view.getViewDebugInfo()?.getLayoutTypeAndName(view.resources)
+                    val layoutName = view.getViewDebugInfo()?.getLayoutName(view.resources)
+                    if (layoutName != null && showText != null) {
+                        val sps = SpannableString(showText)
+                        sps.setSpan(object: ClickableSpan(){
+                            override fun onClick(widget: View) {
+                                RemoteControl.openXml("$layoutName.xml")
+                            }
+
+                            override fun updateDrawState(ds: TextPaint) {
+                                if (ServerManager.isConnected()) {
+                                    super.updateDrawState(ds)
+                                }
+                            }
+
+                        }, 0, showText.length, SpannedString.SPAN_INCLUSIVE_EXCLUSIVE)
+                        return sps
+                    }
+                    return null
                 }
             }
             this["layout-trace"] = object : Link<View> {

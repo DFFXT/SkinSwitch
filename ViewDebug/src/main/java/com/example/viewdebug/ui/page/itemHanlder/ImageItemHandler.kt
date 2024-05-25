@@ -81,7 +81,7 @@ internal class ImageItemHandler(private val host: UIPage, private val itemClick:
             if (ServerManager.isConnected() && item.layoutName.endsWith(".xml")) {
                 binding.ivTitleGo.isVisible = true
                 binding.ivTitleGo.setOnClickListener {
-                    RemoteControl.openFile(item.layoutName)
+                    RemoteControl.openXml(item.layoutName)
                 }
             } else {
                 binding.ivTitleGo.isVisible = false

@@ -1,5 +1,7 @@
 package com.example.viewdebug.ui.page.itemHanlder
 
+import android.text.method.LinkMovementMethod
+import android.text.method.MovementMethod
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -22,15 +24,16 @@ internal open class ViewInfoItemHandler : ItemHandle<ViewDetailInfoDialog.Item>(
         vh: RecyclerView.ViewHolder
     ) {
         vh as VH
+        vh.binding.tvName.movementMethod = LinkMovementMethod.getInstance()
         vh.binding.tvName.text = item.name
         if (position.rem(2) == 0) {
             vh.binding.tvName.gravity = Gravity.END or Gravity.TOP
             vh.binding.tvName.setOnClickListener(null)
         } else {
             vh.binding.tvName.gravity = Gravity.START or Gravity.TOP
-            vh.binding.tvName.setOnClickListener {
-                copyToClipboard(it.context, item.name)
-            }
+            /*vh.binding.tvName.setOnClickListener {
+                copyToClipboard(it.context, item.name.toString())
+            }*/
         }
     }
 

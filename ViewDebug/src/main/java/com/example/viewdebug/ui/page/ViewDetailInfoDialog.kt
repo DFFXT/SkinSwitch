@@ -75,7 +75,7 @@ internal class ViewDetailInfoDialog(host: UIPage) : BaseDialog(host) {
     /**
      * 添加详细信息
      */
-    private fun addDescribe(label: String, value: String, extra: Read<*>? = null) {
+    private fun addDescribe(label: String, value: CharSequence, extra: Read<*>? = null) {
         data.add(Item(label, null))
         data.add(Item(value, extra))
     }
@@ -87,5 +87,5 @@ internal class ViewDetailInfoDialog(host: UIPage) : BaseDialog(host) {
         }
     }
 
-    class Item(val name: String,val read: Read<*>?)
+    class Item(val name: CharSequence,val read: Read<*>?)
 }

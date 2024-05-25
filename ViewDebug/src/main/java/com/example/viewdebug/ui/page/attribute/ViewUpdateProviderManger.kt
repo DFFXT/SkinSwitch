@@ -24,26 +24,15 @@ internal object ViewInfoProviderManger {
         val list = LinkedList<ExtraInfo>()
         getProvider(view)?.forEach { provider ->
             provider.extraInfoProvider.forEach {
-                if (it.value is Update) {
+                val value = it.value.getValue(view)
+                if (value != null) {
                     list.add(
                         ExtraInfo(
                             it.key,
-                            it.value.getValue(view) ?: "",
+                            value,
                             it.value
                         )
                     )
-                } else {
-                    val value = it.value.getValue(view)
-                    if (value != null) {
-                        list.add(
-                            ExtraInfo(
-                                it.key,
-                                value,
-                                it.value
-                            )
-                        )
-                    }
-
                 }
             }
         }
@@ -51,5 +40,5 @@ internal object ViewInfoProviderManger {
         return list
     }
 
-    class ExtraInfo(val label: String, val value: String, val extra: Read<View>? = null)
+    class ExtraInfo(val label: String, val value: CharSequence, val extra: Read<View>? = null)
 }

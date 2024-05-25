@@ -4,13 +4,17 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.core.view.children
+import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import com.example.viewdebug.R
+import com.example.viewdebug.server.ServerManager
 import com.example.viewdebug.ui.WindowControlManager
 import com.example.viewdebug.ui.page.layout.LayoutProfilerView
 import com.example.viewdebug.ui.page.parser.AttrTextParser
@@ -18,6 +22,7 @@ import com.example.viewdebug.ui.page.parser.Parser
 import com.example.viewdebug.ui.page.parser.ReferenceParser
 import com.example.viewdebug.util.ViewCapture
 import com.fxf.debugwindowlibaray.ui.UIPage
+import com.skin.skincore.collector.setImageResourceSkinAble
 import java.util.LinkedList
 
 /**
@@ -28,7 +33,7 @@ import java.util.LinkedList
 class ViewImageShowPage(
     private val captureAttrId: ArrayList<Pair<Int, Pair<String, Parser>>> = ArrayList(),
 ) :
-    UIPage() {
+    UIPage(), ServerManager.OnConnectedListener {
 
     private val profilerView by lazy {
         LayoutProfilerView(ctx).apply {
@@ -62,10 +67,15 @@ class ViewImageShowPage(
         arrayOf(WindowControlManager.getControlRoot(), WindowControlManager.getContentRoot())
     }
 
+    private lateinit var ivState: ImageView
+
     override fun enableTouch(): Boolean = true
 
     override fun enableFocus(): Boolean = true
 
+    init {
+        ServerManager.addConnectedListener(this)
+    }
     override fun onCreateTabView(ctx: Context, parent: ViewGroup): View {
         val container = FrameLayout(ctx)
         val iv = super.onCreateTabView(ctx, parent).apply {
@@ -85,7 +95,22 @@ class ViewImageShowPage(
             }
         }
         container.addView(iv)
+        ivState = ImageView(ctx)
+        container.addView(ivState)
+        ivState.setImageResource(R.drawable.view_debug_connected)
+        ivState.updateLayoutParams<FrameLayout.LayoutParams> {
+            val h = ctx.resources.getDimension(R.dimen.view_debug_control_ui_status_bar_height)
+            this.gravity = Gravity.CENTER
+            this.width = (h / 2.5).toInt()
+            this.height = (h / 2.5).toInt()
+        }
+        ivState.imageTintList = ColorStateList.valueOf(Color.RED)
+        ivState.isVisible = ServerManager.isConnected()
         return container
+    }
+
+    override fun onConnectedStateChanged(isConnected: Boolean) {
+        ivState.isVisible = isConnected
     }
     override fun getTabIcon(): Int = R.mipmap.view_debug_image_layer_pick
 
@@ -171,5 +196,10 @@ class ViewImageShowPage(
     override fun onClose() {
         super.onClose()
         dialog?.close()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        ServerManager.removeConnectedListener(this)
     }
 }

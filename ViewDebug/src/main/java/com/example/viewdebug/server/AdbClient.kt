@@ -22,7 +22,6 @@ internal class AdbClient {
         private const val TAG = "AdbServer"
 
         // 默认端口
-        private const val DEFAULT_SERVER_PORT = 49871
         private const val DEFAULT_CLIENT_PORT = 49872
     }
 
@@ -33,7 +32,14 @@ internal class AdbClient {
 
     private var heartBeatJob = false
     var isConnected = false
-        private set
+        private set(value) {
+            field = value
+            launch(Dispatchers.Main) {
+                onConnectedListener?.onConnectedStateChanged(field)
+            }
+        }
+
+    var onConnectedListener: ServerManager.OnConnectedListener? = null
 
     fun init() {
         client = getServerSocket(DEFAULT_CLIENT_PORT)

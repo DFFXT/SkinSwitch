@@ -8,7 +8,7 @@ import com.fxf.debugwindowlibaray.ui.UIPage
  * 获取view信息
  */
 internal interface Read<T : View> {
-    fun getValue(view: T): String?
+    fun getValue(view: T): CharSequence?
 
 }
 

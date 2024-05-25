@@ -17,9 +17,4 @@ internal abstract class ViewExtraInfoProvider<T : View> {
      * 是否支持处理当前view
      */
     abstract fun support(view: View): Boolean
-
-
-    fun update(view: View, attributeName: String, vararg args: String) {
-        (extraInfoProvider[attributeName] as? Update)?.update(view as T, *args)
-    }
 }

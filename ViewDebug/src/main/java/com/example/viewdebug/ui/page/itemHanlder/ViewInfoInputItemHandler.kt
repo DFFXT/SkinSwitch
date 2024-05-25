@@ -20,7 +20,7 @@ internal class ViewInfoInputItemHandler : ItemHandle<ViewDetailInfoDialog.Item>(
         vh as VH
         vh.binding.tvName.setText(item.name)
         vh.binding.tvName.setOnClickListener {
-            copyToClipboard(it.context, item.name)
+            copyToClipboard(it.context, item.name.toString())
         }
         vh.binding.ivSubmit.setOnClickListener {
             updateClick?.invoke(item, vh.binding.tvName.text.toString())
