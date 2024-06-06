@@ -1,6 +1,8 @@
 package com.example.viewdebug.ui.page
 
 import android.content.Context
+import android.graphics.Color
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -59,7 +61,7 @@ class ViewImageCaptureResultDialog(
         attrIds.put(id, pair)
     }
 
-    fun show(title: String, capturedViews: List<View>, mode: Int) {
+    fun show(title: CharSequence, capturedViews: List<View>, mode: Int) {
 
         if (mode == MODE_IMAGE) {
             showModeImage(capturedViews)
@@ -69,6 +71,8 @@ class ViewImageCaptureResultDialog(
         if (rAdapter.itemCount != 0) {
             show()
             dialogBinding.tvHostName.text = title
+            dialogBinding.tvHostName.movementMethod = LinkMovementMethod.getInstance()
+            dialogBinding.tvHostName.highlightColor = Color.TRANSPARENT
         }
     }
 

@@ -4,6 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.text.SpannableString
+import android.text.TextPaint
+import android.text.style.ClickableSpan
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
@@ -14,6 +17,7 @@ import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import com.example.viewdebug.R
+import com.example.viewdebug.server.RemoteControl
 import com.example.viewdebug.server.ServerManager
 import com.example.viewdebug.ui.WindowControlManager
 import com.example.viewdebug.ui.page.layout.LayoutProfilerView
@@ -21,6 +25,7 @@ import com.example.viewdebug.ui.page.parser.AttrTextParser
 import com.example.viewdebug.ui.page.parser.Parser
 import com.example.viewdebug.ui.page.parser.ReferenceParser
 import com.example.viewdebug.util.ViewCapture
+import com.example.viewdebug.util.copyOrJump
 import com.fxf.debugwindowlibaray.ui.UIPage
 import com.skin.skincore.collector.setImageResourceSkinAble
 import java.util.LinkedList
@@ -140,7 +145,20 @@ class ViewImageShowPage(
 
                     // activity名称
                     val hostName = hostActivity?.get()?.javaClass?.simpleName ?: ""
-                    dialog?.show(hostName, capturedViews, mode)
+                    val fullName = hostActivity?.get()?.javaClass?.name ?: hostName
+                    val sps = SpannableString(hostName)
+                    sps.setSpan(object :ClickableSpan() {
+                        override fun onClick(widget: View) {
+                            copyOrJump(fullName, RemoteControl.TYPE_CLASS)
+                        }
+
+                        override fun updateDrawState(ds: TextPaint) {
+                            super.updateDrawState(ds)
+                            ds.color = ctx.getColor(R.color.view_debug_white)
+                        }
+
+                    }, 0, hostName.length, SpannableString.SPAN_INCLUSIVE_EXCLUSIVE)
+                    dialog?.show(sps, capturedViews, mode)
                     val target = dialog?.getFirstShowView()
                     profilerView.highlight(target = target)
                 }

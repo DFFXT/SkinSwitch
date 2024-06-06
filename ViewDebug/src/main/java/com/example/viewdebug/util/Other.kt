@@ -10,6 +10,8 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.example.viewdebug.ViewDebugInitializer
+import com.example.viewdebug.server.RemoteControl
+import com.example.viewdebug.server.ServerManager
 import com.example.viewdebug.ui.page.XmlParser
 import com.example.viewdebug.ui.page.XmlTextDialog
 import com.fxf.debugwindowlibaray.ui.UIPage
@@ -78,6 +80,17 @@ internal fun String.makeAsDir(): File {
         dir.mkdirs()
     }
     return dir
+}
+
+/**
+ * @param type [RemoteControl.TYPE_XMl][RemoteControl.TYPE_CLASS]
+ */
+internal fun copyOrJump(name: String, type: String) {
+    if (ServerManager.isConnected()) {
+        RemoteControl.openFile(name, type)
+    } else {
+        copyToClipboard(ViewDebugInitializer.ctx, name)
+    }
 }
 
 
