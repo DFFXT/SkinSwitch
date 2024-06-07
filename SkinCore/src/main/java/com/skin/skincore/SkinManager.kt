@@ -13,11 +13,9 @@ import com.skin.skincore.loader.ContextLoaderServer
 import com.skin.skincore.parser.AttrParseInterceptor
 import com.skin.skincore.parser.AttrParseListener
 import com.skin.skincore.parser.ParseOutValue
-import com.skin.skincore.plug.SkinPackDeveloping
 import com.skin.skincore.plug.SpeedUpSwitchSkin
 import com.skin.skincore.provider.DefaultProviderFactory
 import com.skin.skincore.provider.IResourceProvider
-import com.skin.skincore.provider.ISkinPathProvider
 import com.skin.skincore.provider.ResourceProviderFactory
 import com.skin.skincore.provider.ResourcesProviderManager
 
@@ -52,7 +50,7 @@ object SkinManager {
         this.providerFactory = providerFactory
         this.isNight = isNight
         ResourcesProviderManager.init(ctx, providerFactory)
-        SkinPackDeveloping.sinkPackInstall(ctx)
+        // SkinPackDeveloping.sinkPackInstall(ctx)
         makeContextSkinAble(ctx)
         ActivitiesCallback.register(ctx)
         if (delayDetachedView) {

@@ -11,6 +11,7 @@ import java.io.FileOutputStream
  * 快速安装开发皮肤包
  * 这个功能仅推荐在开发模式下使用，因为每次启动都会进行皮肤包拷贝，如果皮肤包过多或者过大影响启动速度
  */
+@Deprecated("never use")
 object SkinPackDeveloping {
     /**
      * asset目录皮肤包路径
