@@ -35,7 +35,7 @@ open class Asset(
     }
     private val night: Resources by lazy {
         val info = resourceLoader.createAsset(application, configuration, skinPathProvider)
-        createResource(info, false)
+        createResource(info, true)
     }
     var res: Resources = if (context.resources.isNight()) night else day
         private set
