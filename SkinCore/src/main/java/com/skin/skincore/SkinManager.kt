@@ -49,6 +49,7 @@ object SkinManager {
         this.projectStyle = projectStyle
         this.providerFactory = providerFactory
         this.isNight = isNight
+        Logger.d(TAG, "projectStyle $projectStyle isNight $isNight")
         ResourcesProviderManager.init(ctx, providerFactory)
         // SkinPackDeveloping.sinkPackInstall(ctx)
         makeContextSkinAble(ctx)

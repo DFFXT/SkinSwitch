@@ -1,8 +1,11 @@
 package com.example.viewdebug.server
 
+import android.os.HandlerThread
+import com.example.viewdebug.server.ServerManager.OnConnectedListener
 import com.example.viewdebug.server.route.BizRequestPackageRoute
 import com.example.viewdebug.server.route.BizRequestPushConfigRoute
 import com.example.viewdebug.server.route.BizRequestRClassRoute
+import com.example.viewdebug.server.route.BizRequestTipsRoute
 
 object ServerManager {
     private var adbServer: AdbServer? = AdbServer()
@@ -22,6 +25,11 @@ object ServerManager {
         adbServer?.addBizRoute("request/pkgName", BizRequestPackageRoute::class.java)
         adbServer?.addBizRoute("request/R", BizRequestRClassRoute::class.java)
         adbServer?.addBizRoute("request/requestPushAgreement", BizRequestPushConfigRoute::class.java)
+        adbServer?.addBizRoute("request/tips", BizRequestTipsRoute::class.java)
+
+        // 添加特殊线程，线程名称显示本地socket端口
+        HandlerThread("vd*%${adbServer?.getPort()}:${adbClient?.getPort()}").start()
+
     }
 
 

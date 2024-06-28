@@ -21,7 +21,7 @@ internal interface ResponseWriter {
     fun write(byteArray: ByteArray)
 
     /**
-     * 写入结束，关闭连接
+     * 写入结束
      */
     fun finish()
 }

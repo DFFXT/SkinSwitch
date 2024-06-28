@@ -13,10 +13,10 @@
         android:theme="@style/Theme.SkinSwitch">
         <meta-data
             android:name="design_width_in_dp"
-            android:value="300"/>
+            android:value="1920"/>
         <meta-data
             android:name="design_height_in_dp"
-            android:value="600"/>
+            android:value="720"/>
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"

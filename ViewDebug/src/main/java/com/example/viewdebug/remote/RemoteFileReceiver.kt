@@ -145,6 +145,12 @@ internal object RemoteFileReceiver {
         if (!agreementFile.exists()) {
             agreementFile.createNewFile()
         }
+        val agreement = getAgreement()
+        Logger.d("write agreement", agreement)
+        agreementFile.writeText(agreement)
+    }
+
+    fun getAgreement(): String {
         val builder = StringBuilder()
         builder.append("version=${BuildConfig.gitVersion}\n")
         // 包名
@@ -159,8 +165,7 @@ internal object RemoteFileReceiver {
         builder.append("serverPort=${ServerManager.getServerPort() ?: 0}\n")
         // 本地socket客户端端口
         builder.append("clientPort=${ServerManager.getClientPort() ?: 0}\n")
-        Logger.d("write agreement", builder.toString())
-        agreementFile.writeText(builder.toString())
+        return builder.toString()
     }
 
     /**

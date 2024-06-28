@@ -31,8 +31,8 @@ class ResponseWriterImpl(private val socket: Socket) : ResponseWriter {
             writeContentLength(0)
         }
         output.flush()
-        socket.shutdownOutput()
+        /*socket.shutdownOutput()
         socket.shutdownInput()
-        socket.close()
+        socket.close()*/
     }
 }
