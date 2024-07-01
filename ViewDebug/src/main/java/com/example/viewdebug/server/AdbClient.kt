@@ -100,6 +100,7 @@ internal class AdbClient {
                         callback(responseStr)
                     } ?: onError?.invoke()
                 } catch (e: Exception) {
+                    sockets.remove(socket)
                     e.printStackTrace()
                     try {
                         socket?.close()
