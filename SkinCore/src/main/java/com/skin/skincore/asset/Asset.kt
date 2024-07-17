@@ -97,10 +97,11 @@ open class Asset(
         return res
     }
 
+    // 更新Resource的DisplayMetrics信息，当和AndroidAutoSize共用时可能存在异常，需要在[AutoSizeConfig.getInstance().setOnAdaptListener]中手动更新
     override fun updateDisplayMetrics(update: (DisplayMetrics) -> Unit) {
-        // update(res.displayMetrics)
-        /*update(day.displayMetrics)
-        update(night.displayMetrics)*/
+        update(res.displayMetrics)
+        update(day.displayMetrics)
+        update(night.displayMetrics)
     }
 
     protected open fun createResource(assetInfo: AssetInfo, isNight: Boolean): Resources {
