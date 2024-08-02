@@ -9,6 +9,7 @@ import com.skin.log.Logger
 import com.skin.skincore.collector.applyNight
 import com.skin.skincore.collector.isNight
 import com.skin.skincore.provider.ISkinPathProvider
+import com.skin.skincore.provider.MergeResource
 
 /**
  * 皮肤包（apk）解析的资源
@@ -99,7 +100,9 @@ open class Asset(
 
     // 更新Resource的DisplayMetrics信息，当和AndroidAutoSize共用时可能存在异常，需要在[AutoSizeConfig.getInstance().setOnAdaptListener]中手动更新
     override fun updateDisplayMetrics(update: (DisplayMetrics) -> Unit) {
-        update(res.displayMetrics)
+        if (context.resources is MergeResource) {
+            update((context.resources as MergeResource).default.displayMetrics)
+        }
         update(day.displayMetrics)
         update(night.displayMetrics)
     }
