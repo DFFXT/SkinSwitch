@@ -7,6 +7,7 @@ import android.content.Context
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import com.skin.log.Logger
+import com.skin.skincore.reflex.androidXContentThemeWrapperInflater
 import com.skin.skincore.reflex.inflater
 
 /**
@@ -14,7 +15,8 @@ import com.skin.skincore.reflex.inflater
  */
 internal object InflaterInterceptor {
 
-    private val plan1 = false
+
+    val plan1 = true
 
     /**
      * 给context注入自己的LayoutInflater
@@ -48,6 +50,13 @@ internal object InflaterInterceptor {
         val inflater3 = LayoutInflater.from(context).cloneInContext(context)*/
 
         // 方案1
+        if (context is androidx.appcompat.view.ContextThemeWrapper) {
+            val layoutInflaterDelegate =
+                LayoutInflaterDelegate(origin, context)
+            androidXContentThemeWrapperInflater.set(context, layoutInflaterDelegate)
+            layoutInflaterDelegate.onViewCreatedListener = iOnViewCreated
+        }
+
         if (context is ContextThemeWrapper) {
             // /var skinLayoutInflater: SkinLayoutInflater? = null
             if (context is Activity) {

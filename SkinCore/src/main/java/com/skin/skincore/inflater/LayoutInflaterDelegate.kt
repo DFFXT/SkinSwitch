@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.LayoutInflater.Factory2
 import android.view.View
+import android.view.ViewGroup
 import com.skin.log.Logger
 import com.skin.skincore.reflex.factory2Filed
 import com.skin.skincore.reflex.factoryFiled
@@ -59,6 +60,16 @@ class LayoutInflaterDelegate(original: LayoutInflater, newContext: Context) :
          * 代理origin的Factory
          */
         delegate(original, this, this)
+    }
+
+    override fun onInflateFinish(root: View) {
+        onViewCreatedListener?.onInflateFinish(root)
+    }
+
+    override fun inflate(resource: Int, root: ViewGroup?, attachToRoot: Boolean): View {
+        val rootView = super.inflate(resource, root, attachToRoot)
+        onInflateFinish(rootView)
+        return rootView
     }
 
     override fun setFactory(factory: Factory) {

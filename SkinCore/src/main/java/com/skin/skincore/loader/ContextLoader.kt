@@ -72,6 +72,12 @@ internal class ContextLoader(
                         }
                     }
                 }
+
+                override fun onInflateFinish(root: View) {
+                    attrParseListeners.forEach {
+                        it.onInflateFinish(root)
+                    }
+                }
             },
         )
         switchTheme(asset, iResourceProvider, event)

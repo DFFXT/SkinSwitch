@@ -22,6 +22,12 @@ val contextBaseFiled by lazy {
     }
 }
 
+internal val androidXContentThemeWrapperInflater by lazy {
+    androidx.appcompat.view.ContextThemeWrapper::class.java.getDeclaredField("mInflater").apply {
+        isAccessible = true
+    }
+}
+
 internal val inflater by lazy {
     ContextThemeWrapper::class.java.getDeclaredField("mInflater").apply {
         isAccessible = true

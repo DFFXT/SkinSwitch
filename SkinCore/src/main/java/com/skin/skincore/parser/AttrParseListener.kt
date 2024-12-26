@@ -9,4 +9,6 @@ import com.skin.skincore.collector.ViewUnion
  */
 interface AttrParseListener {
     fun onAttrParsed(parent: View?, view: View, attributeSet: AttributeSet, union: ViewUnion)
+
+    fun onInflateFinish(rootView: View) {}
 }
