@@ -52,30 +52,35 @@ internal object InflaterInterceptor {
         // 方案1
         if (context is androidx.appcompat.view.ContextThemeWrapper) {
             val layoutInflaterDelegate =
-                LayoutInflaterDelegate(origin, context)
+                LayoutInflaterDelegate(origin, context, iOnViewCreated)
             androidXContentThemeWrapperInflater.set(context, layoutInflaterDelegate)
-            layoutInflaterDelegate.onViewCreatedListener = iOnViewCreated
+            // layoutInflaterDelegate.onViewCreatedListener = iOnViewCreated
         }
 
         if (context is ContextThemeWrapper) {
             // /var skinLayoutInflater: SkinLayoutInflater? = null
             if (context is Activity) {
                 // 替换WindowPhone中inflater，因为这个inflater会被fragment复制
-                val phoneWindowClass = Class.forName("com.android.internal.policy.PhoneWindow")
+                /*val phoneWindowClass = Class.forName("com.android.internal.policy.PhoneWindow")
                 // todo api 32 forbidden
                 val field = phoneWindowClass.getDeclaredField("mLayoutInflater")
                 field.isAccessible = true
                 val layoutInflaterDelegate =
                     LayoutInflaterDelegate(origin, context)
                 field.set(context.window, layoutInflaterDelegate)
-                layoutInflaterDelegate.onViewCreatedListener = iOnViewCreated
+                layoutInflaterDelegate.onViewCreatedListener = iOnViewCreated*/
+            } else {
+                inflater.set(context, LayoutInflaterDelegate(origin, context, iOnViewCreated))
             }
             // 替换ContextThemeWrapper中的局部变量
+
+
+
             if (LayoutInflater.from(context) !is LayoutInflaterDelegate) {
                 val layoutInflaterDelegate =
-                    LayoutInflaterDelegate(origin, context)
+                    LayoutInflaterDelegate(origin, context, iOnViewCreated)
                 inflater.set(context, layoutInflaterDelegate)
-                layoutInflaterDelegate.onViewCreatedListener = iOnViewCreated
+                // layoutInflaterDelegate.onViewCreatedListener = iOnViewCreated
             }
         } else if (context is Application) {
             // application中的inflater，暂时代理Factory（看后面是否反射SystemServiceRegister里面的layout_inflater）

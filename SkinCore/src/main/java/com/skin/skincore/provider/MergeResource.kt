@@ -48,23 +48,28 @@ open class MergeResource(
         // FIX 获取style必须要确定包名
         // com.incall.navi.bl:style/ActivityTranslucent
         // android:style/Theme.DeviceDefault.Light.DarkActionBar
-        themeIds.forEach { themeId ->
-            if (themeId == 0) return@forEach
-            var pkgName: String = pkg
-            val themeName = if (default.getResourcePackageName(themeId) != pkg) {
-                pkgName = "android"
-                // 一般是android包名
-                default.getResourceEntryName(themeId)
-            } else {
-                // 项目包名，则不保留包名
-                default.getResourceEntryName(themeId)
-            }
-            val skinThemeId = res.getIdentifier(themeName, default.getResourceTypeName(themeId), pkgName)
-            asset.applyTheme(skinThemeId)
+        try {
+            themeIds.forEach { themeId ->
+                if (themeId == 0) return@forEach
+                var pkgName: String = pkg
+                val themeName = if (default.getResourcePackageName(themeId) != pkg) {
+                    pkgName = "android"
+                    // 一般是android包名
+                    default.getResourceEntryName(themeId)
+                } else {
+                    // 项目包名，则不保留包名
+                    default.getResourceEntryName(themeId)
+                }
+                val skinThemeId = res.getIdentifier(themeName, default.getResourceTypeName(themeId), pkgName)
+                asset.applyTheme(skinThemeId)
 
-            /*val theme = newTheme()
-            theme.applyStyle(themeId, true)*/
+                /*val theme = newTheme()
+                theme.applyStyle(themeId, true)*/
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
+
     }
 
     // 这里需要对每个getDrawable进行重写，因为低版本上各个方法没有收束到一个方法（至少25没有）

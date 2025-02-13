@@ -16,7 +16,7 @@ import com.skin.skincore.tag.TAG_CREATE_VIEW
  * 通过反射，添加自己的Factory（仅仅是一层包装）, 自己的factory内部会调用对应的真实factory
  * 拦截通过xml创建view对象
  */
-class LayoutInflaterDelegate(original: LayoutInflater, newContext: Context) :
+class LayoutInflaterDelegate(original: LayoutInflater, newContext: Context, var onViewCreatedListener: IOnViewCreated?) :
     LayoutInflater(original, newContext), IOnViewCreated {
     private val TAG = "SkinLayoutInflater"
 
@@ -46,7 +46,7 @@ class LayoutInflaterDelegate(original: LayoutInflater, newContext: Context) :
     /**
      * 当view被创建时回调
      */
-    var onViewCreatedListener: IOnViewCreated? = null
+    // var onViewCreatedListener: IOnViewCreated? = null
 
 /*    *//**
      * 优先级：
@@ -101,9 +101,7 @@ class LayoutInflaterDelegate(original: LayoutInflater, newContext: Context) :
     }
 
     override fun cloneInContext(newContext: Context): LayoutInflater {
-        return LayoutInflaterDelegate(this, newContext).apply {
-            onViewCreatedListener = this@LayoutInflaterDelegate.onViewCreatedListener
-        }
+        return LayoutInflaterDelegate(this, newContext, onViewCreatedListener)
     }
 
     override fun onViewCreated(parent: View?, view: View, name: String, attributeSet: AttributeSet) {
