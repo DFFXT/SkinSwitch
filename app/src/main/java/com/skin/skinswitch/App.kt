@@ -4,10 +4,14 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.res.Resources
+import android.util.AttributeSet
+import android.view.View
 import com.CustomViewTestSkinView
 import com.example.skinswitch.R
 import com.skin.skincore.SkinManager
 import com.skin.skincore.apply.base.BaseViewApply
+import com.skin.skincore.collector.ViewUnion
+import com.skin.skincore.parser.AttrParseListener
 import com.skin.skincore.provider.DefaultProviderFactory
 import com.skin.skincore.provider.IResourceProvider
 import com.skin.skincore.provider.MergeResource
@@ -75,6 +79,15 @@ class App : Application() {
             override fun apply(view: CustomViewTestSkinView, resId: Int, resType: String, provider: IResourceProvider, theme: Resources.Theme?) {
                 // 当View创建时，会立即执行
                 view.setCustomBg(provider.getDrawable(resId, theme))
+            }
+        })
+        SkinManager.addViewAttrParseListener(object :AttrParseListener {
+            override fun onAttrParsed(parent: View?, view: View, attributeSet: AttributeSet, union: ViewUnion) {
+                val f= 0
+            }
+
+            override fun onInflateFinish(rootView: View) {
+                super.onInflateFinish(rootView)
             }
         })
 

@@ -16,7 +16,10 @@ import com.skin.skincore.tag.TAG_CREATE_VIEW
  * 通过反射，添加自己的Factory（仅仅是一层包装）, 自己的factory内部会调用对应的真实factory
  * 拦截通过xml创建view对象
  */
-class LayoutInflaterDelegate(original: LayoutInflater, newContext: Context, var onViewCreatedListener: IOnViewCreated?) :
+class LayoutInflaterDelegate(
+    original: LayoutInflater, newContext: Context,
+    private val iOnViewCreated: IOnViewCreated
+) :
     LayoutInflater(original, newContext), IOnViewCreated {
     private val TAG = "SkinLayoutInflater"
 
@@ -42,13 +45,7 @@ class LayoutInflaterDelegate(original: LayoutInflater, newContext: Context, var 
             )
         }
     }
-
-    /**
-     * 当view被创建时回调
-     */
-    // var onViewCreatedListener: IOnViewCreated? = null
-
-/*    *//**
+    /*    *//**
      * 优先级：
      * factory2->factory->privateFactory
      *//*
@@ -63,7 +60,7 @@ class LayoutInflaterDelegate(original: LayoutInflater, newContext: Context, var 
     }
 
     override fun onInflateFinish(root: View) {
-        onViewCreatedListener?.onInflateFinish(root)
+        this.iOnViewCreated?.onInflateFinish(root)
     }
 
     override fun inflate(resource: Int, root: ViewGroup?, attachToRoot: Boolean): View {
@@ -95,17 +92,17 @@ class LayoutInflaterDelegate(original: LayoutInflater, newContext: Context, var 
         val v = super.onCreateView(viewContext, parent, name, attrs)
         Logger.v(TAG_CREATE_VIEW, "3 onCreateView $name")
         if (v != null && attrs != null) {
-            onViewCreatedListener?.onViewCreated(parent, v, name, attrs)
+            this.iOnViewCreated?.onViewCreated(parent, v, name, attrs)
         }
         return v
     }
 
     override fun cloneInContext(newContext: Context): LayoutInflater {
-        return LayoutInflaterDelegate(this, newContext, onViewCreatedListener)
+        return LayoutInflaterDelegate(this, newContext, iOnViewCreated)
     }
 
     override fun onViewCreated(parent: View?, view: View, name: String, attributeSet: AttributeSet) {
-        onViewCreatedListener?.onViewCreated(parent, view, name, attributeSet)
+        this.iOnViewCreated?.onViewCreated(parent, view, name, attributeSet)
     }
 }
 
