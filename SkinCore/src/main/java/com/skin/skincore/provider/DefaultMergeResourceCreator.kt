@@ -10,7 +10,7 @@ object DefaultMergeResourceCreator : ResourceObjectCreator {
     override fun createResourceObject(
         asset: IAsset,
         defaultContext: Context,
-        themeIds: IntArray,
+        themeIds: IntArray
     ): MergeResource {
         return MergeResource(asset, defaultContext.resources, themeIds)
     }

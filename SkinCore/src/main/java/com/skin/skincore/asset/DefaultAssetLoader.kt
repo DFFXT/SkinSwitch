@@ -24,7 +24,7 @@ class DefaultAssetLoader : IResourceLoader {
     override fun createAsset(
         application: Context,
         configuration: Configuration,
-        provider: ISkinPathProvider,
+        provider: ISkinPathProvider
     ): AssetInfo {
         val path = provider.getSkinPath()
         // 查看缓存

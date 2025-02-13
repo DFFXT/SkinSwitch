@@ -42,7 +42,7 @@ internal class ContextLoaderServer {
     fun switchTheme(
         ctx: Context?,
         theme: Int,
-        eventType: IntArray,
+        eventType: IntArray
     ) {
         checkContext()
         if (ctx != null) {
@@ -60,7 +60,7 @@ internal class ContextLoaderServer {
         val ctx = loader.getContextReference().get() ?: return
         val asset = AssetLoaderManager.getAsset(
             ctx,
-            ResourcesProviderManager.getPathProvider(ctx, theme),
+            ResourcesProviderManager.getPathProvider(ctx, theme)
         )
         loader.switchTheme(asset, ResourcesProviderManager.getResourceProvider(ctx, theme), eventType)
     }

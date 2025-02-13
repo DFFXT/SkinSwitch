@@ -146,8 +146,8 @@ fun View.setBackgroundResourceSkinAble(@DrawableRes backgroundRes: Int) {
         this.addViewSkinAttrs(
             Attrs(
                 backgroundRes,
-                android.R.attr.background,
-            ),
+                android.R.attr.background
+            )
         )
     }
 }
@@ -164,8 +164,8 @@ fun ImageView.setImageResourceSkinAble(@DrawableRes resId: Int) {
         this.addViewSkinAttrs(
             Attrs(
                 resId,
-                android.R.attr.src,
-            ),
+                android.R.attr.src
+            )
         )
         val providedBitmap = SkinManager.getResourceProvider(this.context).getDrawable(resId, context.theme)
         this.setImageDrawable(providedBitmap)

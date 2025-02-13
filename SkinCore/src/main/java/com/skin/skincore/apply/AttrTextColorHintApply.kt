@@ -15,7 +15,7 @@ internal class AttrTextColorHintApply : BaseViewApply<TextView>(android.R.attr.t
         resId: Int,
         resType: String,
         provider: IResourceProvider,
-        theme: Theme?,
+        theme: Theme?
     ) {
         when (resType) {
             ResType.DRAWABLE,

@@ -16,6 +16,6 @@ interface ResourceObjectCreator {
     fun createResourceObject(
         asset: IAsset,
         defaultContext: Context,
-        themeIds: IntArray,
+        themeIds: IntArray
     ): MergeResource
 }

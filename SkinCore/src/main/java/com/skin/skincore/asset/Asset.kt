@@ -19,7 +19,7 @@ import com.skin.skincore.provider.MergeResource
  */
 open class Asset(
     private val context: Context,
-    private val skinPathProvider: ISkinPathProvider,
+    private val skinPathProvider: ISkinPathProvider
 ) : IAsset() {
     private val application = context.applicationContext ?: context
     private val configuration = context.resources.configuration

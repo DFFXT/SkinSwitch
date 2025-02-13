@@ -79,15 +79,15 @@ object SkinManager {
         if (!loaderServer.containsContext(context)) {
             val asset = AssetLoaderManager.getAsset(
                 context,
-                ResourcesProviderManager.getPathProvider(context, theme),
+                ResourcesProviderManager.getPathProvider(context, theme)
             )
             loaderServer.addLoader(
                 ContextLoader(
                     context,
                     asset,
                     ResourcesProviderManager.getResourceProvider(context, theme),
-                    AttrApplyManager.parser,
-                ),
+                    AttrApplyManager.parser
+                )
             )
         }
         // 不应该通知换肤

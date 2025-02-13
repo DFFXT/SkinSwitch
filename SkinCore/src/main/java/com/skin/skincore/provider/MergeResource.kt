@@ -17,11 +17,11 @@ import com.skin.skincore.asset.IAsset
 open class MergeResource(
     var asset: IAsset,
     val default: Resources,
-    private val themeId: IntArray,
+    private val themeId: IntArray
 ) : Resources(
     default.assets,
     default.displayMetrics,
-    default.configuration,
+    default.configuration
 ) {
     private val res: Resources
         get() = asset.getResource()

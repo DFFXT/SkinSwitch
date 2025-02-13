@@ -55,7 +55,7 @@ internal fun Context.updateResource(asset: IAsset) {
         val mergeResource = ResourcesProviderManager.resourceObjectCreator.createResourceObject(
             asset,
             this,
-            keys,
+            keys
         )
 
         /**
@@ -100,7 +100,7 @@ private fun Context.setResourceDefault(filed: Field, target: Context, asset: IAs
         ResourcesProviderManager.resourceObjectCreator.createResourceObject(
             asset,
             this,
-            intArrayOf(getCurrentThemeId()),
+            intArrayOf(getCurrentThemeId())
         )
     )
 }

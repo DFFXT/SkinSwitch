@@ -33,7 +33,7 @@ internal class ContextLoader(
     context: Context,
     private var asset: IAsset?,
     private var iResourceProvider: IResourceProvider,
-    private val parser: IParser,
+    private val parser: IParser
 ) {
     companion object {
         // 当view创建后立即进行换肤操作
@@ -55,7 +55,7 @@ internal class ContextLoader(
                     parent: View?,
                     view: View,
                     name: String,
-                    attributeSet: AttributeSet,
+                    attributeSet: AttributeSet
                 ) {
                     // 判断是否拦截
                     if (interceptor?.beforeParse(parent, view, attributeSet) != true) {
@@ -78,7 +78,7 @@ internal class ContextLoader(
                         it.onInflateFinish(root)
                     }
                 }
-            },
+            }
         )
         switchTheme(asset, iResourceProvider, event)
     }

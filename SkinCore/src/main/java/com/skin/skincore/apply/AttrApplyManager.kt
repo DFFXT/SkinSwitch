@@ -4,7 +4,6 @@ import android.content.res.Resources
 import android.util.SparseArray
 import android.util.SparseBooleanArray
 import android.view.View
-import androidx.core.util.keyIterator
 import com.skin.log.Logger
 import com.skin.skincore.OnThemeChangeListener
 import com.skin.skincore.SkinManager
@@ -36,7 +35,11 @@ object AttrApplyManager {
     var applySystemResources = false
 
     // 属性解析器
-    internal val parser by lazy { DefaultParser(applySet.keyIterator().asSequence().toHashSet()) }
+    internal val parser by lazy { DefaultParser(object : IntIterator() {
+        var index = 0
+        override fun hasNext() = index < applySet.size()
+        override fun nextInt() = applySet.keyAt(index++)
+    }.asSequence().toHashSet()) }
 
     init {
         addViewApplyInternal(AttrBackgroundApply())
@@ -104,7 +107,7 @@ object AttrApplyManager {
         resId: Int,
         @ResType resType: String,
         provider: IResourceProvider,
-        theme: Resources.Theme?,
+        theme: Resources.Theme?
     ) {
         if (!applySystemResources && resId and 0x7f000000 != 0x7f000000) {
             // Logger.v("AttrApplyManager", "skip:${view.resources.getResourceName(resId)}")
@@ -116,7 +119,7 @@ object AttrApplyManager {
             resId,
             resType,
             provider,
-            theme,
+            theme
         )
     }
 

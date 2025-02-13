@@ -59,7 +59,7 @@ object ResourcesProviderManager {
                     context,
                     theme,
                     asset,
-                    getResourceProvider(context, SkinManager.DEFAULT_THEME),
+                    getResourceProvider(context, SkinManager.DEFAULT_THEME)
                 )
             }
             map[key] = provider

@@ -34,7 +34,7 @@ internal class DefaultParser(supportAttr: HashSet<Int>) : IParser {
         // obtainStyledAttributes 参数2必须是升序数组
         val typedArray = view.context.obtainStyledAttributes(
             attributeSet,
-            keys,
+            keys
         )
         val union = ViewUnion()
         val parentUnion = parent?.getViewUnion()
@@ -51,7 +51,7 @@ internal class DefaultParser(supportAttr: HashSet<Int>) : IParser {
                     if (resId != 0) {
                         val attr = Attrs(
                             resId,
-                            value,
+                            value
                         )
                         union.addAttr(attr)
                     }

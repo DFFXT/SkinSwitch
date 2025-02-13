@@ -15,6 +15,6 @@ interface IResourceLoader {
     fun createAsset(
         application: Context,
         configuration: Configuration,
-        provider: ISkinPathProvider,
+        provider: ISkinPathProvider
     ): AssetInfo
 }
