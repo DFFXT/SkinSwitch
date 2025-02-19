@@ -68,7 +68,7 @@
 
     <Button
         android:id="@+id/btn_dialog"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/m_btn_width"
         android:layout_height="wrap_content"
         android:text="dialog"
         app:layout_constraintStart_toStartOf="@id/group_skin"

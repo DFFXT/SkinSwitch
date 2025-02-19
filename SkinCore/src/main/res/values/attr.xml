@@ -5,7 +5,7 @@
     <!--skin属性是否能被继承子节点，默认false不继承-->
     <attr name="skin_forDescendants" format="boolean"/>
 
-    <declare-styleable name="SkinAttr">
+ <!--   <declare-styleable name="SkinAttr">
         <attr name="android:background" />
         <attr name="android:foreground" />
         <attr name="android:drawableStart" />
@@ -26,10 +26,10 @@
         <attr name="android:foregroundTint" />
         <attr name="android:tint" />
         <attr name="android:indeterminateDrawable" />
-        <!--<attr name="android:scrollbarThumbHorizontal" />
-        <attr name="android:scrollbarThumbVertical" />-->
+        &lt;!&ndash;<attr name="android:scrollbarThumbHorizontal" />
+        <attr name="android:scrollbarThumbVertical" />&ndash;&gt;
 
-    </declare-styleable>
+    </declare-styleable>-->
 
     <item name="view_sKinAttr" type="id"/>
 </resources>

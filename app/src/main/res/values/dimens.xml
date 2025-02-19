@@ -18,5 +18,7 @@
     <dimen name="dp_70">70dp</dimen>
     <dimen name="dp_80">80dp</dimen>
     <dimen name="dp_90">90dp</dimen>
+    <dimen name="m_btn_width">100dp</dimen>
+    <dimen name="m_btn_width_vertical">200dp</dimen>
 
 </resources>

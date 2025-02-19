@@ -22,3 +22,4 @@ include ':skinPack-cartoon'
 include ':ViewDebug'
 /*include ':DebugWindow'
 project(":DebugWindow").projectDir = new File("D:\\Android\\Project\\DebugWindow\\DebugWindowLibaray")*/
+include ':MultiPixelsUIAdapter'

@@ -35,10 +35,10 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
-        kotlinOptions {
+        /*kotlinOptions {
             apiVersion = "1.3"
             languageVersion = "1.3"
-        }
+        }*/
     }
     kotlinOptions {
         jvmTarget = "1.8"
@@ -49,6 +49,7 @@ android {
 dependencies {
     implementation(project(":SkinCore"))
     implementation(project(":ViewDebug"))
+    implementation(project(":MultiPixelsUIAdapter"))
     implementation("androidx.core:core-ktx:1.6.0")
     implementation("androidx.appcompat:appcompat:1.3.0")
     implementation("com.google.android.material:material:1.4.0")

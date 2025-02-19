@@ -62,13 +62,18 @@ internal object InflaterInterceptor {
             // /var skinLayoutInflater: SkinLayoutInflater? = null
             if (context is Activity) {
                 // 替换WindowPhone中inflater，因为这个inflater会被fragment复制
-                val phoneWindowClass = Class.forName("com.android.internal.policy.PhoneWindow")
-                // todo api 32 forbidden
-                val field = phoneWindowClass.getDeclaredField("mLayoutInflater")
-                field.isAccessible = true
-                val layoutInflaterDelegate =
-                    LayoutInflaterDelegate(origin, context,iOnViewCreated)
-                field.set(context.window, layoutInflaterDelegate)
+                try {
+                    val phoneWindowClass = Class.forName("com.android.internal.policy.PhoneWindow")
+                    // todo api 32 forbidden
+                    val field = phoneWindowClass.getDeclaredField("mLayoutInflater")
+                    field.isAccessible = true
+                    val layoutInflaterDelegate =
+                        LayoutInflaterDelegate(origin, context,iOnViewCreated)
+                    field.set(context.window, layoutInflaterDelegate)
+                } catch (e: Throwable) {
+                    e.printStackTrace()
+                }
+
             }
             // 替换ContextThemeWrapper中的局部变量
             if (LayoutInflater.from(context) !is LayoutInflaterDelegate) {

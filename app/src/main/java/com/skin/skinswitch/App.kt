@@ -7,6 +7,8 @@ import android.content.res.Resources
 import android.util.AttributeSet
 import android.view.View
 import com.CustomViewTestSkinView
+import com.cneeds.multipixelsuiadapter.MultiPixelsAdjust
+import com.cneeds.multipixelsuiadapter.MultiPixelsAdjustManager
 import com.example.skinswitch.R
 import com.skin.skincore.SkinManager
 import com.skin.skincore.apply.base.BaseViewApply
@@ -58,22 +60,6 @@ class App : Application() {
                 }
             }
         )
-        AutoSizeConfig.getInstance().setOnAdaptListener(object : onAdaptListener {
-            override fun onAdaptBefore(target: Any?, activity: Activity?) {
-
-            }
-
-            override fun onAdaptAfter(target: Any?, activity: Activity) {
-                val c = activity.resources.configuration
-                val dm = activity.resources.displayMetrics
-                if (c.densityDpi != dm.densityDpi) {
-                    c.densityDpi = dm.densityDpi
-                    activity.resources.updateConfiguration(c, dm)
-                }
-                // activity?.resources?.updateMergeResourceDisplayMetrics()
-            }
-
-        })
 
         SkinManager.addAttributeCollection(object : BaseViewApply<CustomViewTestSkinView>(R.attr.custom_bg) {
             override fun apply(view: CustomViewTestSkinView, resId: Int, resType: String, provider: IResourceProvider, theme: Resources.Theme?) {
@@ -90,6 +76,10 @@ class App : Application() {
                 super.onInflateFinish(rootView)
             }
         })
+
+        MultiPixelsAdjustManager.addMultiPixelsSuffix(MultiPixelsAdjust.UIConfig(1280, 720), "")
+        MultiPixelsAdjustManager.addMultiPixelsSuffix(MultiPixelsAdjust.UIConfig(1080, 1920), "_vertical")
+        MultiPixelsAdjustManager.recalculate()
 
         //SkinManager.switchTheme(AppConst.THEME_CARTOON)
     }
