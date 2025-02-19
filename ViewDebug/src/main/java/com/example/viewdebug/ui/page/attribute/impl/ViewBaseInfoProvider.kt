@@ -75,13 +75,7 @@ internal class ViewBaseInfoProvider : ViewExtraInfoProvider<View>() {
                 }
             }
 
-            this["Activity|Context"] = object : Read<View> {
-                override fun getValue(view: View): String {
-                    return view.context::class.java.simpleName
-                }
-            }
-
-            this["Fragment"] = FragmentInfoRead()
+            this["SpecialParents"] = FragmentInfoRead()
             this["adapter"] = RecyclerAdapterReader()
 
             this["layout"] = object : Read<View> {
