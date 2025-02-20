@@ -18,7 +18,7 @@ import com.skin.skincore.tag.TAG_CREATE_VIEW
  */
 class LayoutInflaterDelegate(
     original: LayoutInflater, newContext: Context,
-    private val iOnViewCreated: IOnViewCreated
+    internal var iOnViewCreated: IOnViewCreated?
 ) :
     LayoutInflater(original, newContext), IOnViewCreated {
     private val TAG = "SkinLayoutInflater"

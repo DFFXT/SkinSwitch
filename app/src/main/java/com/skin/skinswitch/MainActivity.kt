@@ -1,21 +1,15 @@
 package com.skin.skinswitch
 
-import android.app.Presentation
 import android.content.res.Configuration
-import android.content.res.Resources
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.PopupWindow
 import android.widget.RadioButton
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDialog
-import androidx.core.widget.PopupMenuCompat
-import com.CustomV
 import com.example.skinswitch.R
 import com.skin.log.Logger
 import com.skin.skincore.OnThemeChangeListener
@@ -41,6 +35,10 @@ class MainActivity : AppCompatActivity(), OnThemeChangeListener {
 
     override fun onThemeChanged(theme: Int, isNight: Boolean, eventType: IntArray) {
         notifyRadioButton()
+    }
+
+    override fun getLayoutInflater(): LayoutInflater {
+        return LayoutInflater.from(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -98,6 +98,10 @@ internal val xmlParser: Field by lazy {
     field
 }
 
+internal val contextImplCls: Class<*> by lazy {
+    Class.forName("android.app.ContextImpl")
+}
+
 /**
  * 获取当前context设置的themeId
  */

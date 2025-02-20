@@ -8,6 +8,7 @@ import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import com.skin.log.Logger
 import com.skin.skincore.reflex.androidXContentThemeWrapperInflater
+import com.skin.skincore.reflex.contextImplCls
 import com.skin.skincore.reflex.inflater
 
 /**
@@ -72,6 +73,18 @@ internal object InflaterInterceptor {
                     field.set(context.window, layoutInflaterDelegate)
                 } catch (e: Throwable) {
                     e.printStackTrace()
+                    try {
+                        val windowInflater = context.layoutInflater
+                        if (windowInflater !is LayoutInflaterDelegate) {
+                            LayoutInflaterDelegate.delegate(context.layoutInflater, context.layoutInflater, iOnViewCreated)
+                        } else {
+                            windowInflater.iOnViewCreated = iOnViewCreated
+                            Logger.e("InflaterInterceptor", "${context}的window中存在没有替换的LayoutInflater, 具体解决方式见：com.skin.skincore.inflater.IOnViewCreated.onInflateFinish()的注释")
+                        }
+                    } catch (_: Throwable) {
+
+                    }
+
                 }
 
             }
@@ -89,9 +102,8 @@ internal object InflaterInterceptor {
             Logger.d("InflaterInterceptor", "not support context: ${context::class.java.name}")
         } else {
             // 是ContextImpl，可以替换里面的service
-            val cls = Class.forName("android.app.ContextImpl")
-            if (cls.isAssignableFrom(context::class.java)) {
-                val field = cls.getDeclaredField("mServiceCache")
+            if (contextImplCls.isAssignableFrom(context::class.java)) {
+                val field = contextImplCls.getDeclaredField("mServiceCache")
                 field.isAccessible = true
                 val service = field.get(context) as Array<Any>
                 for (index in service.indices) {
